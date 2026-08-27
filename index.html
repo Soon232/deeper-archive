@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>곰곰 — 기록의 자리</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;      /* 배경 — 동트기 직전 하늘빛 */
+  --ink: #232E3B;     /* 본문 글자 — 밤이 남은 먹빛 */
+  --navy: #1E3A5F;    /* 강조 — 깊은 밤바다 (인사이트) */
+  --blue: #3D5A80;    /* 보조 — 먼바다의 푸름 */
+  --dawn: #A85426;    /* 포인트 — 수평선의 여명 (과제) */
+  --mist: #8DA3B9;    /* 선·아이콘 전용 — 글자로 쓰지 않는다 */
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  text-align: center;
+}
+.eyebrow {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
+  color: var(--blue);
+  margin-bottom: 1.1rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.9rem;
+}
+.tagline {
+  font-size: clamp(0.95rem, 3.4vw, 1.08rem);
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 1.8rem;
+}
+.divider {
+  width: 44px;
+  height: 1px;
+  background: var(--mist);
+  margin-bottom: 2.2rem;
+}
+.cards {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+.card {
+  display: block;
+  width: 250px;
+  padding: 1.8rem 1.5rem 1.6rem;
+  background: #FDFEFE;
+  border: 1px solid #DDE5EC;
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(30, 58, 95, 0.13);
+}
+.card .icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card.insight .icon { background: #E3EAF2; }
+.card.assignment .icon { background: #F2E6DD; }
+.card .name {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+.card.insight .name { color: var(--navy); }
+.card.assignment .name { color: var(--dawn); }
+.card .desc {
+  display: block;
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--ink);
+}
+footer {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 560px) {
+  body { justify-content: flex-start; padding-top: 4rem; }
+  .cards { flex-direction: column; width: 100%; max-width: 320px; }
+  .card { width: 100%; }
+}
+</style>
+</head>
+<body>
+  <p class="eyebrow">DEEPER UNBRANDING SALON</p>
+  <h1>곰곰</h1>
+  <p class="tagline">읽고, 만들고, 되짚은 것을 한자리에 모은다</p>
+  <div class="divider"></div>
+  <nav class="cards">
+    <a class="card insight" href="insight/index.html">
+      <span class="icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <path d="M19.5 15.5a8 8 0 1 1-9-9 6.5 6.5 0 0 0 9 9z" stroke="#1E3A5F" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="name">인사이트</span>
+      <span class="desc">살롱에서 보낸 한 주의 성찰.<br>만든 것과 만든 방법을 함께 남긴다.</span>
+    </a>
+    <a class="card assignment" href="assignment/index.html">
+      <span class="icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <path d="M6 17a7 7 0 0 1 14 0" stroke="#A85426" stroke-width="1.6"/>
+          <line x1="3" y1="17" x2="23" y2="17" stroke="#A85426" stroke-width="1.6"/>
+          <line x1="13" y1="4" x2="13" y2="7" stroke="#A85426" stroke-width="1.6"/>
+        </svg>
+      </span>
+      <span class="name">과제</span>
+      <span class="desc">살롱 과제로 지은 결과물.<br>한 편씩, 만든 날짜와 함께 쌓인다.</span>
+    </a>
+  </nav>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

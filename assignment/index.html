@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>과제 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+h1 {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 2.2rem 0 0.5rem;
+}
+.lead {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.1rem;
+}
+.card {
+  display: block;
+  padding: 1.3rem 1.2rem;
+  background: #FDFEFE;
+  border: 1px solid #DDE5EC;
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(168, 84, 38, 0.12);
+}
+.card.featured { grid-column: 1 / -1; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.7rem;
+}
+.title {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.35rem;
+}
+.desc {
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.placeholder {
+  padding: 2rem 1.2rem;
+  border: 1.5px dashed var(--mist);
+  border-radius: 10px;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+</style>
+</head>
+<body>
+  <a class="back" href="../index.html">← 곰곰</a>
+  <h1>과제</h1>
+  <p class="lead">살롱 과제로 지은 결과물. 한 편씩, 만든 날짜와 함께 쌓인다.</p>
+  <div class="grid">
+    <!-- 새 과제는 이 줄 바로 아래에 얹는다. 최신이 앞. 중요한 것은 class="card featured" -->
+    <div class="placeholder">첫 결과물이 올 자리<br>YYMMDD-이름.html로 지으면 카드가 하나씩 늘어난다</div>
+    <div class="placeholder">다음 결과물의 자리</div>
+  </div>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>
