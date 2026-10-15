@@ -1,0 +1,845 @@
+<title>전개도 접기 교실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desk:#e7ecf1; --paper:#ffffff; --paper-edge:#d3dce5;
+  --grid:#e2ecf5; --grid-strong:#a8c2d9;
+  --ink:#1c2630; --muted:#55616d;
+  --accent:#1c5d8c; --accent-ink:#ffffff; --accent-soft:#dcebf6;
+  --ok:#157a46; --ok-soft:#ddf2e5; --bad:#c3322a; --bad-soft:#fbe3e0;
+  --info-soft:#eef3f8;
+  --tape:rgba(247,214,88,.78);
+  --f1:#e5483e; --f2:#f39a1d; --f3:#f0cf2e; --f4:#36a35a; --f5:#2e7fd0; --f6:#e26aa5;
+  --badge:#ffffff; --badge-ink:#1c2630;
+  --edge:rgba(0,0,0,.38);
+  --thumb:#9fbcd6; --thumb-found:#2e7fd0;
+  --shadow:0 1px 2px rgba(20,30,40,.08),0 8px 20px rgba(20,30,40,.07);
+  --focus:#0b63c4; --stamp:#c3322a;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#13171c; --paper:#1d232a; --paper-edge:#2f3842;
+    --grid:#242d36; --grid-strong:#3e4c5a;
+    --ink:#e6ecf1; --muted:#9eabb7;
+    --accent:#6db3ea; --accent-ink:#0d1a24; --accent-soft:#1c3346;
+    --ok:#62d297; --ok-soft:#163326; --bad:#ff7d70; --bad-soft:#3b1e1b;
+    --info-soft:#232b33;
+    --tape:rgba(214,186,72,.42);
+    --f1:#d9473e; --f2:#e08d1c; --f3:#d8b929; --f4:#33955a; --f5:#3a7fc7; --f6:#cc5f97;
+    --badge:#f4f6f8; --badge-ink:#1c2630;
+    --edge:rgba(0,0,0,.55);
+    --thumb:#3f5466; --thumb-found:#6db3ea;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 20px rgba(0,0,0,.28);
+    --focus:#8cc8ff; --stamp:#ff7d70;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#13171c; --paper:#1d232a; --paper-edge:#2f3842;
+  --grid:#242d36; --grid-strong:#3e4c5a;
+  --ink:#e6ecf1; --muted:#9eabb7;
+  --accent:#6db3ea; --accent-ink:#0d1a24; --accent-soft:#1c3346;
+  --ok:#62d297; --ok-soft:#163326; --bad:#ff7d70; --bad-soft:#3b1e1b;
+  --info-soft:#232b33;
+  --tape:rgba(214,186,72,.42);
+  --f1:#d9473e; --f2:#e08d1c; --f3:#d8b929; --f4:#33955a; --f5:#3a7fc7; --f6:#cc5f97;
+  --badge:#f4f6f8; --badge-ink:#1c2630;
+  --edge:rgba(0,0,0,.55);
+  --thumb:#3f5466; --thumb-found:#6db3ea;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 20px rgba(0,0,0,.28);
+  --focus:#8cc8ff; --stamp:#ff7d70;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{font-size:clamp(16px, 0.55vw + 11px, 22px); -webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--desk); color:var(--ink);
+  font-family:"Gowun Dodum","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.55;
+}
+h1,h2,.btn,.seg button,.n,.count,.quiz-score,.v-main{font-family:"Jua","Gowun Dodum","Malgun Gothic","Apple SD Gothic Neo",sans-serif; font-weight:400}
+button{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+
+.wrap{max-width:1500px; margin:0 auto; padding:20px 16px 40px}
+@media (min-width:700px){ .wrap{padding:28px 28px 48px} }
+
+.top{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 18px; margin:0 0 18px}
+.top h1{margin:0; font-size:1.9rem; letter-spacing:-.01em}
+.top p{margin:0; color:var(--muted)}
+
+.layout{display:grid; gap:20px; grid-template-columns:minmax(0,1fr)}
+@media (min-width:960px){
+  .layout{grid-template-columns:minmax(0,1fr) minmax(0,1.12fr); align-items:start}
+}
+
+/* 종이 한 장 + 마스킹테이프 */
+.sheet{
+  position:relative; background:var(--paper); border:1px solid var(--paper-edge);
+  border-radius:4px; box-shadow:var(--shadow); padding:22px 18px 18px; min-width:0;
+}
+@media (min-width:700px){ .sheet{padding:26px 24px 22px} }
+.sheet::before{
+  content:""; position:absolute; top:-9px; left:22px; width:78px; height:20px;
+  background:var(--tape); transform:rotate(-3deg); border-radius:1px;
+}
+.sheet h2{margin:0; font-size:1.3rem; display:flex; align-items:center; gap:10px}
+.step{
+  display:inline-grid; place-items:center; width:1.6em; height:1.6em; border-radius:50%;
+  border:2px solid var(--ink); font-size:.85em; flex:none;
+}
+.sheet-head{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 14px}
+.hint{margin:8px 0 12px; color:var(--muted); font-size:.95rem}
+
+/* 버튼 */
+.btn{
+  min-height:44px; padding:8px 18px; border-radius:8px; cursor:pointer;
+  background:var(--accent); color:var(--accent-ink); border:2px solid var(--accent);
+  font-size:1.05rem; touch-action:manipulation;
+}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent; color:var(--accent)}
+.btn.small{min-height:38px; font-size:.95rem; padding:6px 14px}
+.btn:disabled{opacity:.45; cursor:not-allowed; filter:none}
+.row-btns{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+
+.seg{display:inline-flex; border:2px solid var(--accent); border-radius:9px; overflow:hidden; flex:none}
+.seg button{
+  min-height:42px; padding:6px 14px; border:0; background:transparent; color:var(--accent);
+  cursor:pointer; font-size:1rem; touch-action:manipulation;
+}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+.seg button:disabled{opacity:.45; cursor:not-allowed}
+
+/* 모눈 판 */
+.board-wrap{
+  padding:12px; border-radius:4px; margin-top:4px;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:12px 12px;
+}
+.board{
+  --cols:6; display:grid; grid-template-columns:repeat(var(--cols), 1fr);
+  width:100%; max-width:560px; margin:0 auto;
+  border-top:2px solid var(--grid-strong); border-left:2px solid var(--grid-strong);
+  touch-action:manipulation;
+}
+.cell{
+  --fc:transparent;
+  position:relative; aspect-ratio:1/1; min-width:0; padding:0; cursor:pointer;
+  background:transparent; border:0;
+  border-right:2px solid var(--grid-strong); border-bottom:2px solid var(--grid-strong);
+  display:grid; place-items:center;
+}
+.cell:hover:not(.on){background:var(--accent-soft)}
+.cell.on{background:var(--fc); box-shadow:inset 0 0 0 2px var(--edge)}
+.cell .n{
+  display:none; min-width:1.7em; height:1.7em; padding:0 .3em; border-radius:999px;
+  background:var(--badge); color:var(--badge-ink); font-size:clamp(.85rem, 3.4vw, 1.3rem);
+  line-height:1.7em; text-align:center; box-shadow:0 1px 0 rgba(0,0,0,.25);
+}
+.cell.on .n{display:inline-block}
+.cell.ov{
+  background-image:repeating-linear-gradient(135deg, transparent 0 7px, rgba(0,0,0,.42) 7px 10px);
+  box-shadow:inset 0 0 0 4px var(--bad);
+}
+.cell.loose{box-shadow:inset 0 0 0 3px var(--bad); background-image:repeating-linear-gradient(45deg, transparent 0 6px, rgba(255,255,255,.55) 6px 9px)}
+.cell.dim{background:color-mix(in srgb, var(--fc) 30%, var(--paper))}
+.cell.pick{box-shadow:inset 0 0 0 5px var(--ink); z-index:1}
+.cell.opp{box-shadow:inset 0 0 0 5px var(--ink), 0 0 0 4px var(--fc); z-index:1; animation:glow 1.1s ease-in-out infinite alternate}
+@keyframes glow{from{box-shadow:inset 0 0 0 5px var(--ink), 0 0 0 2px var(--fc)} to{box-shadow:inset 0 0 0 5px var(--ink), 0 0 0 7px var(--fc)}}
+.board.locked .cell{cursor:default}
+.board.locked .cell:hover:not(.on){background:transparent}
+
+/* 판정 글 */
+.verdict{margin-top:14px; padding:12px 14px; border-radius:6px; background:var(--info-soft); border-left:6px solid var(--muted); min-height:4.2em}
+.verdict.ok{background:var(--ok-soft); border-left-color:var(--ok)}
+.verdict.bad{background:var(--bad-soft); border-left-color:var(--bad)}
+.v-main{margin:0; font-size:1.35rem}
+.verdict.ok .v-main{color:var(--ok)}
+.verdict.bad .v-main{color:var(--bad)}
+.v-sub{margin:2px 0 0}
+
+/* 퀴즈 띠 */
+.quiz-bar{margin:10px 0 12px; padding:12px 14px; border:2px dashed var(--accent); border-radius:8px}
+.quiz-bar .quiz-score{margin:0; color:var(--muted)}
+.quiz-bar .quiz-q{margin:4px 0 0; font-size:1.15rem}
+.quiz-bar .row-btns{margin-top:10px}
+.quiz-result{margin:10px 0 0; font-size:1.15rem}
+.quiz-result.right{color:var(--ok)}
+.quiz-result.wrong{color:var(--bad)}
+
+/* 3D 무대 */
+.scene{
+  position:relative; width:100%; aspect-ratio:4/3; min-height:260px; max-height:72vh; margin-top:12px;
+  border-radius:4px; overflow:hidden; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;
+  border:1px solid var(--paper-edge);
+}
+.scene:active{cursor:grabbing}
+.stage{position:absolute; left:50%; top:50%; width:0; height:0; transform-style:preserve-3d}
+.face3{
+  --fc:#888;
+  position:absolute; transform-style:preserve-3d; background:var(--fc);
+  box-shadow:inset 0 0 0 2px var(--edge);
+  display:grid; place-items:center;
+}
+.face3 > .n{
+  min-width:1.8em; height:1.8em; padding:0 .3em; border-radius:999px; background:var(--badge); color:var(--badge-ink);
+  line-height:1.8em; text-align:center; font-size:var(--nsize,1.2rem); pointer-events:none;
+}
+.face3.ov{background-image:repeating-linear-gradient(135deg, transparent 0 8px, rgba(0,0,0,.42) 8px 12px); box-shadow:inset 0 0 0 5px var(--bad)}
+.face3.dim{background:color-mix(in srgb, var(--fc) 30%, var(--paper))}
+.face3.pick{box-shadow:inset 0 0 0 6px var(--ink)}
+.face3.opp{box-shadow:inset 0 0 0 6px var(--ink), inset 0 0 0 12px var(--badge)}
+.scene-empty{position:absolute; inset:0; display:grid; place-items:center; margin:0; padding:20px; text-align:center; color:var(--muted)}
+.scene-tip{position:absolute; left:10px; bottom:8px; margin:0; font-size:.85rem; color:var(--muted); pointer-events:none}
+.fold-note{margin:8px 0 0; color:var(--bad); font-size:.95rem}
+
+.fold-ctrl{margin-top:14px}
+.fold-ctrl label{display:flex; justify-content:space-between; gap:10px; font-size:1rem}
+.fold-ctrl output{font-family:"Jua",sans-serif; font-size:1.15rem}
+input[type=range]{width:100%; height:36px; accent-color:var(--accent); margin:2px 0 0}
+
+/* 11가지 모음 */
+.count{margin:0; font-size:1.2rem; color:var(--accent)}
+.check{display:inline-flex; align-items:center; gap:8px; margin:0 0 12px; cursor:pointer; min-height:36px}
+.check input{width:20px; height:20px; accent-color:var(--accent)}
+.gallery{display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:10px}
+.thumb{
+  position:relative; display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:10px 6px 6px; border:2px solid var(--paper-edge); border-radius:8px; background:var(--paper);
+  cursor:pointer; min-height:104px; touch-action:manipulation;
+}
+.thumb:hover{border-color:var(--accent)}
+.thumb[aria-current="true"]{border-color:var(--accent); background:var(--accent-soft)}
+.thumb svg{width:100%; max-width:84px; height:58px}
+.thumb svg rect{fill:var(--thumb); stroke:var(--paper); stroke-width:1.5}
+.thumb.found svg rect{fill:var(--thumb-found)}
+.thumb .t-num{font-family:"Jua",sans-serif; font-size:.95rem; color:var(--muted)}
+.thumb .q{display:none; height:58px; place-items:center; font-family:"Jua",sans-serif; font-size:2rem; color:var(--muted)}
+.thumb.masked svg{display:none}
+.thumb.masked .q{display:grid}
+.thumb:disabled{cursor:not-allowed; background:var(--info-soft)}
+.stamp{
+  display:none; position:absolute; top:4px; right:2px; padding:1px 6px; border:2px solid var(--stamp); border-radius:6px;
+  color:var(--stamp); font-family:"Jua",sans-serif; font-size:.75rem; transform:rotate(-12deg); background:var(--paper);
+}
+.thumb.found .stamp{display:block}
+.gallery-foot{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:14px}
+.gallery-foot .note{color:var(--muted); font-size:.9rem}
+
+.quiz-sheet .quiz-total{margin:10px 0 0; font-size:1.05rem}
+
+@media (prefers-reduced-motion: reduce){
+  .cell.opp{animation:none}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+<meta name="robots" content="noindex, nofollow">
+    <h1>전개도 접기 교실</h1>
+    <p>모눈 칸 6개로 전개도를 그리고, 접어서 정육면체가 되는지 봐요.</p>
+  </header>
+
+  <main class="layout">
+    <section class="sheet board-sheet" id="boardSheet" aria-labelledby="h-board">
+      <div class="sheet-head">
+        <h2 id="h-board"><span class="step">1</span>전개도 그리기</h2>
+        <div class="seg" role="group" aria-label="칸을 누르면 하는 일">
+          <button type="button" id="modeDraw" aria-pressed="true">칸 놓기</button>
+          <button type="button" id="modeOpp" aria-pressed="false">마주 보는 면</button>
+        </div>
+      </div>
+      <p class="hint" id="modeHint"></p>
+
+      <div class="quiz-bar" id="quizBar" hidden>
+        <p class="quiz-score" id="quizScore"></p>
+        <p class="quiz-q" id="quizQ">이 모양을 접으면 정육면체가 될까요?</p>
+        <div class="row-btns" id="quizAns">
+          <button type="button" class="btn" data-ans="yes">될 거예요</button>
+          <button type="button" class="btn" data-ans="no">안 될 거예요</button>
+        </div>
+        <p class="quiz-result" id="quizResult" aria-live="polite"></p>
+        <div class="row-btns">
+          <button type="button" class="btn" id="btnQuizNext" hidden>다음 문제</button>
+          <button type="button" class="btn ghost" id="btnQuizEnd">퀴즈 그만하기</button>
+        </div>
+      </div>
+
+      <div class="board-wrap">
+        <div class="board" id="board" aria-label="모눈 판, 6칸 5줄. 화살표 키로 칸을 옮겨 다닐 수 있어요."></div>
+      </div>
+
+      <div class="verdict" id="verdict" aria-live="polite">
+        <p class="v-main" id="vMain"></p>
+        <p class="v-sub" id="vSub"></p>
+      </div>
+      <div class="row-btns">
+        <button type="button" class="btn ghost" id="btnClear">모두 지우기</button>
+      </div>
+    </section>
+
+    <section class="sheet fold-sheet" aria-labelledby="h-fold">
+      <h2 id="h-fold"><span class="step">2</span>접어 보기</h2>
+      <div class="scene" id="scene" tabindex="0" role="img" aria-label="접은 모양. 끌거나 화살표 키로 돌려 볼 수 있어요.">
+        <div class="stage" id="stage"></div>
+        <p class="scene-empty" id="sceneEmpty" hidden></p>
+        <p class="scene-tip">끌어서 돌려 보세요</p>
+      </div>
+      <p class="fold-note" id="foldNote" hidden></p>
+      <div class="fold-ctrl">
+        <label for="angle"><span>접은 정도</span><output id="angleOut" for="angle">0°</output></label>
+        <input type="range" id="angle" min="0" max="90" step="1" value="0">
+        <div class="row-btns">
+          <button type="button" class="btn" id="btnFold">접기</button>
+          <button type="button" class="btn" id="btnUnfold">펴기</button>
+          <button type="button" class="btn ghost" id="btnView">처음 각도로</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet gallery-sheet" aria-labelledby="h-gal">
+      <div class="sheet-head">
+        <h2 id="h-gal"><span class="step">3</span>정육면체 전개도 11가지</h2>
+        <p class="count" id="foundCount" aria-live="polite"></p>
+      </div>
+      <p class="hint">직접 그린 모양이 정육면체가 되면 도장이 찍혀요. 돌리거나 뒤집어서 겹치는 모양은 같은 것으로 셉니다.</p>
+      <label class="check"><input type="checkbox" id="hideUnfound">아직 못 찾은 모양 가리기</label>
+      <div class="gallery" id="gallery"></div>
+      <div class="gallery-foot">
+        <button type="button" class="btn ghost small" id="btnReset">도장 기록 지우기</button>
+        <span class="note" id="resetNote"></span>
+      </div>
+    </section>
+
+    <section class="sheet quiz-sheet" aria-labelledby="h-quiz">
+      <h2 id="h-quiz"><span class="step">4</span>퀴즈: 정육면체가 될까?</h2>
+      <p class="hint">모눈 판에 아무렇게나 붙인 6칸이 나와요. 머릿속으로 먼저 접어 보고 고른 다음, 접어서 확인해요.</p>
+      <button type="button" class="btn" id="btnQuizStart">퀴즈 시작</button>
+      <p class="quiz-total" id="quizTotal" hidden></p>
+    </section>
+  </main>
+</div>
+
+<script>
+// LOGIC-START
+const COLS = 6, ROWS = 5;
+const DIRS = { R:[1,0], L:[-1,0], D:[0,1], U:[0,-1] };
+// 접힐 때 부모 면 기준 회전(화면 좌표: x 오른쪽, y 아래, z 보는 사람 쪽). 면은 보는 사람 반대쪽으로 접힌다.
+const ROT90 = {
+  R:[[0,0,1],[0,1,0],[-1,0,0]],   // rotateY(+90)
+  L:[[0,0,-1],[0,1,0],[1,0,0]],   // rotateY(-90)
+  D:[[1,0,0],[0,0,1],[0,-1,0]],   // rotateX(-90)
+  U:[[1,0,0],[0,0,-1],[0,1,0]]    // rotateX(+90)
+};
+function mul3(a,b){
+  const r=[[0,0,0],[0,0,0],[0,0,0]];
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)for(let k=0;k<3;k++)r[i][j]+=a[i][k]*b[k][j];
+  return r;
+}
+function ap3(m,v){return [m[0][0]*v[0]+m[0][1]*v[1]+m[0][2]*v[2], m[1][0]*v[0]+m[1][1]*v[1]+m[1][2]*v[2], m[2][0]*v[0]+m[2][1]*v[1]+m[2][2]*v[2]]}
+const I3=[[1,0,0],[0,1,0],[0,0,1]];
+const ck=(x,y)=>x+','+y;
+
+function analyze(input){
+  const map=new Map();
+  input.forEach(([x,y])=>map.set(ck(x,y),[x,y]));
+  const cells=[...map.values()].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);
+  const index=new Map(); cells.forEach((c,i)=>index.set(ck(c[0],c[1]),i));
+  const n=cells.length;
+  const nb=i=>{const [x,y]=cells[i]; const out=[];
+    for(const d in DIRS){const j=index.get(ck(x+DIRS[d][0],y+DIRS[d][1])); if(j!==undefined)out.push([j,d]);}
+    return out;};
+  // 이어진 덩어리
+  const comp=new Array(n).fill(-1), comps=[];
+  for(let s=0;s<n;s++){ if(comp[s]>=0)continue; const q=[s]; comp[s]=comps.length; const list=[];
+    while(q.length){const i=q.shift(); list.push(i); for(const [j] of nb(i)) if(comp[j]<0){comp[j]=comps.length; q.push(j);}}
+    comps.push(list.sort((a,b)=>a-b)); }
+  let main=[]; for(const c of comps) if(c.length>main.length) main=c;
+  const res={cells,index,count:n,comps,main,connected:comps.length===1&&n>0,tree:null,normals:[],overlaps:[],valid:false,opp:new Array(n).fill(-1),netIndex:-1};
+  if(!n) return res;
+  // 기준 면: 이웃이 가장 많은 칸
+  let root=main[0], best=-1;
+  for(const i of main){const k=nb(i).length; if(k>best){best=k; root=i;}}
+  const parent=new Array(n).fill(-2), dir=new Array(n).fill(null), rot=new Array(n).fill(null), order=[];
+  parent[root]=-1; rot[root]=I3; const q=[root];
+  while(q.length){const i=q.shift(); order.push(i);
+    for(const [j,d] of nb(i)) if(parent[j]===-2){parent[j]=i; dir[j]=d; rot[j]=mul3(rot[i],ROT90[d]); q.push(j);}}
+  res.tree={root,order,parent,dir};
+  const normals=new Array(n).fill(null);
+  for(const i of order) normals[i]=ap3(rot[i],[0,0,1]).map(v=>Math.round(v));
+  res.normals=normals;
+  if(n===6 && res.connected){
+    const groups=new Map();
+    for(const i of order){const k=normals[i].join(','); if(!groups.has(k))groups.set(k,[]); groups.get(k).push(i);}
+    res.overlaps=[...groups.values()].filter(g=>g.length>1).map(g=>g.sort((a,b)=>a-b)).sort((a,b)=>a[0]-b[0]);
+    res.valid=res.overlaps.length===0;
+    if(res.valid){
+      for(const i of order){const neg=normals[i].map(v=>-v).join(','); res.opp[i]=groups.get(neg)[0];}
+      res.netIndex=netIndexOf(cells);
+    }
+  }
+  return res;
+}
+
+const SYM=[(x,y)=>[x,y],(x,y)=>[-x,y],(x,y)=>[x,-y],(x,y)=>[-x,-y],(x,y)=>[y,x],(x,y)=>[-y,x],(x,y)=>[y,-x],(x,y)=>[-y,-x]];
+function normalize(cells){
+  const mx=Math.min(...cells.map(c=>c[0])), my=Math.min(...cells.map(c=>c[1]));
+  return cells.map(([x,y])=>[x-mx,y-my]).sort((a,b)=>a[1]-b[1]||a[0]-b[0]);
+}
+function canon(cells){
+  let best=null;
+  for(const t of SYM){const s=normalize(cells.map(([x,y])=>t(x,y))).map(c=>c.join(',')).join(';'); if(best===null||s<best)best=s;}
+  return best;
+}
+function parseRows(rows){const out=[]; rows.forEach((r,y)=>[...r].forEach((ch,x)=>{if(ch==='X')out.push([x,y]);})); return out;}
+const NET_ROWS=[
+  ["X...","XXXX","X..."],
+  ["X...","XXXX",".X.."],
+  ["X...","XXXX","..X."],
+  ["X...","XXXX","...X"],
+  [".X..","XXXX",".X.."],
+  [".X..","XXXX","..X."],
+  ["XX..",".XXX",".X.."],
+  ["XX..",".XXX","..X."],
+  ["XX..",".XXX","...X"],
+  ["XX..",".XX.","..XX"],
+  ["XXX..","..XXX"]
+];
+const NET_CELLS=NET_ROWS.map(parseRows);
+const NET_CANON=NET_CELLS.map(canon);
+function netIndexOf(cells){return NET_CANON.indexOf(canon(cells));}
+
+function has2x2(cells){const s=new Set(cells.map(c=>ck(c[0],c[1])));
+  return cells.some(([x,y])=>s.has(ck(x+1,y))&&s.has(ck(x,y+1))&&s.has(ck(x+1,y+1)));}
+function randomHexomino(rand){
+  const cells=[[0,0]]; const ds=Object.values(DIRS);
+  while(cells.length<6){const c=cells[Math.floor(rand()*cells.length)], d=ds[Math.floor(rand()*4)], p=[c[0]+d[0],c[1]+d[1]];
+    if(!cells.some(q=>q[0]===p[0]&&q[1]===p[1]))cells.push(p);}
+  return cells;
+}
+function placeOnBoard(cells){
+  let c=normalize(cells);
+  let w=Math.max(...c.map(p=>p[0]))+1, h=Math.max(...c.map(p=>p[1]))+1;
+  if(w>COLS||h>ROWS){c=normalize(c.map(([x,y])=>[y,x])); [w,h]=[h,w];}
+  if(w>COLS||h>ROWS) return null;
+  const ox=Math.floor((COLS-w)/2), oy=Math.floor((ROWS-h)/2);
+  return c.map(([x,y])=>[x+ox,y+oy]);
+}
+
+// 접는 각도 a(도)에서 각 면의 3D 자리. CSS와 같은 식: 자식 = 부모 ∘ 이동(left,top) ∘ 이동(축) ∘ 회전 ∘ 이동(-축)
+function rotMat(d,deg){
+  const a=deg*Math.PI/180, c=Math.cos(a), s=Math.sin(a);
+  const rY=t=>[[Math.cos(t),0,Math.sin(t)],[0,1,0],[-Math.sin(t),0,Math.cos(t)]];
+  const rX=t=>[[1,0,0],[0,Math.cos(t),-Math.sin(t)],[0,Math.sin(t),Math.cos(t)]];
+  if(d==='R')return rY(a); if(d==='L')return rY(-a); if(d==='D')return rX(-a); return rX(a);
+}
+function pivot(d,S){return d==='R'?[0,S/2,0]:d==='L'?[S,S/2,0]:d==='D'?[S/2,0,0]:[S/2,S,0];}
+function foldWorld(ana,S,deg){
+  const W=new Array(ana.count).fill(null), centers=new Array(ana.count).fill(null);
+  if(!ana.tree) return {W,centers};
+  for(const i of ana.tree.order){
+    const p=ana.tree.parent[i];
+    if(p<0){W[i]={R:I3,t:[0,0,0]};}
+    else{
+      const d=ana.tree.dir[i], R=rotMat(d,deg), o=pivot(d,S), off=[DIRS[d][0]*S,DIRS[d][1]*S,0];
+      const Ro=ap3(R,o), lt=[off[0]+o[0]-Ro[0], off[1]+o[1]-Ro[1], off[2]+o[2]-Ro[2]];
+      const P=W[p], t2=ap3(P.R,lt);
+      W[i]={R:mul3(P.R,R), t:[t2[0]+P.t[0], t2[1]+P.t[1], t2[2]+P.t[2]]};
+    }
+    const c=ap3(W[i].R,[S/2,S/2,0]); centers[i]=[c[0]+W[i].t[0],c[1]+W[i].t[1],c[2]+W[i].t[2]];
+  }
+  return {W,centers};
+}
+// LOGIC-END
+
+/* ---------- 화면 ---------- */
+const $=s=>document.querySelector(s);
+const store={
+  get(k){try{return window.localStorage.getItem(k);}catch(e){return null;}},
+  set(k,v){try{window.localStorage.setItem(k,v);}catch(e){}}
+};
+const FOUND_KEY='jeongaedo-found-v1';
+const mq=window.matchMedia?window.matchMedia('(prefers-reduced-motion: reduce)'):null;
+const reduced=()=>!!(mq&&mq.matches);
+const FACE_VARS=['--f1','--f2','--f3','--f4','--f5','--f6'];
+const faceColor=i=>`var(${FACE_VARS[i%6]})`;
+const VIEW0={rx:-24, ry:32};
+
+let found=new Set();
+try{const raw=JSON.parse(store.get(FOUND_KEY)||'[]'); if(Array.isArray(raw))raw.forEach(v=>{if(Number.isInteger(v)&&v>=0&&v<11)found.add(v);});}catch(e){}
+
+const state={
+  cells:new Set(), mode:'draw', pick:-1, angle:0, rx:VIEW0.rx, ry:VIEW0.ry,
+  byHand:false, justFound:false, quiz:null, S:80, ana:null
+};
+
+const board=$('#board'), stage=$('#stage'), scene=$('#scene');
+const cellBtns=[];
+for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+  const b=document.createElement('button'); b.type='button'; b.className='cell';
+  b.dataset.x=x; b.dataset.y=y; b.innerHTML='<span class="n"></span>';
+  b.addEventListener('click',()=>onCell(x,y));
+  board.appendChild(b); cellBtns.push(b);
+}
+board.addEventListener('keydown',e=>{
+  const t=e.target.closest('.cell'); if(!t)return;
+  const m={ArrowRight:[1,0],ArrowLeft:[-1,0],ArrowDown:[0,1],ArrowUp:[0,-1]}[e.key]; if(!m)return;
+  e.preventDefault();
+  const x=Math.min(COLS-1,Math.max(0,+t.dataset.x+m[0])), y=Math.min(ROWS-1,Math.max(0,+t.dataset.y+m[1]));
+  cellBtns[y*COLS+x].focus();
+});
+
+const cellList=()=>[...state.cells].map(k=>k.split(',').map(Number));
+const quizHidden=()=>!!(state.quiz&&!state.quiz.answered);
+
+function onCell(x,y){
+  const k=ck(x,y), ana=state.ana;
+  if(state.mode==='opp'){
+    const i=ana.index.get(k);
+    if(i===undefined){flashHint('색칠된 칸을 눌러 보세요.'); return;}
+    if(!ana.valid){return;}
+    state.pick=(state.pick===i)?-1:i; paintHighlights(); renderVerdict(); return;
+  }
+  if(state.quiz){flashHint('퀴즈 중에는 칸을 바꿀 수 없어요.'); return;}
+  if(state.cells.has(k))state.cells.delete(k); else state.cells.add(k);
+  state.byHand=true; state.pick=-1;
+  refresh(true);
+}
+
+let hintTimer=0;
+function setModeHint(){
+  $('#modeHint').textContent = state.mode==='draw'
+    ? '칸을 누르면 색종이가 놓이고, 한 번 더 누르면 빠져요.'
+    : '색칠된 면 하나를 누르면, 접었을 때 그 면과 마주 보는 면이 함께 빛나요.';
+}
+function flashHint(t){clearTimeout(hintTimer); $('#modeHint').textContent=t; hintTimer=setTimeout(setModeHint,2200);}
+
+function setMode(m){
+  state.mode=m; state.pick=-1;
+  $('#modeDraw').setAttribute('aria-pressed',m==='draw'); $('#modeOpp').setAttribute('aria-pressed',m==='opp');
+  setModeHint(); paintBoard(); paintHighlights(); renderVerdict();
+}
+$('#modeDraw').addEventListener('click',()=>setMode('draw'));
+$('#modeOpp').addEventListener('click',()=>setMode('opp'));
+
+function refresh(rebuild){
+  const ana=analyze(cellList()); state.ana=ana;
+  state.justFound=false;
+  if(ana.valid && state.byHand && !state.quiz && ana.netIndex>=0 && !found.has(ana.netIndex)){
+    found.add(ana.netIndex); state.justFound=true; store.set(FOUND_KEY,JSON.stringify([...found]));
+  }
+  if(state.pick>=ana.count) state.pick=-1;
+  paintBoard(); renderVerdict(); if(rebuild) build3D(); paintHighlights(); renderGallery(); renderControls();
+}
+
+const numsText=g=>g.map(i=>(i+1)+'번').join('과 ').replace(/과 (?=.*과 )/g,', ');
+function renderVerdict(){
+  const ana=state.ana, v=$('#verdict'); let tone='info', main='', sub='';
+  if(quizHidden()){
+    main='먼저 골라 보세요.'; sub='접지 말고 머릿속으로만 생각해요. 위에서 「될 거예요」나 「안 될 거예요」를 눌러요.';
+  }else if(ana.count===0){
+    main='칸 6개를 놓아 보세요.'; sub='모눈 칸을 누르면 정사각형 색종이가 놓여요.';
+  }else if(!ana.connected){
+    tone='bad'; main='떨어진 칸이 있어요.';
+    const loose=new Set(); ana.cells.forEach((c,i)=>{if(!ana.main.includes(i))loose.add(i);});
+    const mainSet=new Set(ana.main.map(i=>ck(...ana.cells[i])));
+    const corner=[...loose].some(i=>{const [x,y]=ana.cells[i]; return [[1,1],[1,-1],[-1,1],[-1,-1]].some(([a,b])=>mainSet.has(ck(x+a,y+b)));});
+    sub='칸끼리 변이 딱 붙어야 접을 수 있어요.'+(corner?' 꼭짓점만 닿은 칸은 떨어진 칸이에요.':' 빗금 친 칸을 옮겨 보세요.');
+  }else if(ana.count<6){
+    main=`지금 ${ana.count}칸이에요.`; sub=`정육면체는 면이 6개. ${6-ana.count}칸 더 놓아요.`;
+  }else if(ana.count>6){
+    tone='bad'; main=`지금 ${ana.count}칸이에요.`; sub=`정육면체는 면이 6개라서 ${ana.count-6}칸을 빼야 해요.`;
+  }else if(!ana.valid){
+    tone='bad'; main='정육면체가 안 돼요.';
+    sub='접으면 '+ana.overlaps.map(numsText).join(', 그리고 ')+' 면이 겹쳐요. 빗금 친 면을 보세요.';
+  }else{
+    tone='ok'; main='정육면체가 돼요!';
+    const k=ana.netIndex+1;
+    if(state.mode==='opp'){
+      sub = state.pick>=0
+        ? `${state.pick+1}번 면과 마주 보는 면은 ${ana.opp[state.pick]+1}번이에요. 접어서 확인해 보세요.`
+        : '면을 하나 눌러 보세요. 마주 보는 면이 함께 빛나요.';
+    }else if(state.justFound){
+      sub=`새 모양을 찾았어요. 11가지 중 ${k}번에 도장을 찍었어요.`;
+    }else{
+      sub=`11가지 중 ${k}번 모양이에요.`+(found.has(ana.netIndex)&&state.byHand?' 이미 찾은 모양이에요.':'');
+    }
+  }
+  v.className='verdict '+tone; $('#vMain').textContent=main; $('#vSub').textContent=sub;
+}
+
+function paintBoard(){
+  const ana=state.ana, hide=quizHidden();
+  const ovSet=new Set(hide?[]:ana.overlaps.flat());
+  const mainSet=new Set(ana.main);
+  cellBtns.forEach(b=>{
+    const x=+b.dataset.x, y=+b.dataset.y, i=ana.index.get(ck(x,y));
+    const on=i!==undefined;
+    b.classList.toggle('on',on);
+    b.classList.toggle('ov',on&&ovSet.has(i));
+    b.classList.toggle('loose',on&&!ana.connected&&!mainSet.has(i));
+    b.style.setProperty('--fc', on?faceColor(i):'transparent');
+    b.querySelector('.n').textContent=on?(i+1):'';
+    b.setAttribute('aria-label', `${y+1}째 줄 ${x+1}째 칸`+(on?`, ${i+1}번 면`:', 빈칸'));
+    b.setAttribute('aria-pressed', on?'true':'false');
+  });
+  board.classList.toggle('locked', !!state.quiz && state.mode==='draw');
+}
+
+function paintHighlights(){
+  const ana=state.ana, p=state.pick, o=p>=0?ana.opp[p]:-1, active=state.mode==='opp'&&p>=0&&ana.valid;
+  cellBtns.forEach(b=>{
+    const i=ana.index.get(ck(+b.dataset.x,+b.dataset.y)); const on=i!==undefined;
+    b.classList.toggle('pick',active&&on&&i===p);
+    b.classList.toggle('opp',active&&on&&i===o);
+    b.classList.toggle('dim',active&&on&&i!==p&&i!==o);
+  });
+  const ovSet=new Set(quizHidden()?[]:ana.overlaps.flat());
+  faceEls.forEach((el,i)=>{ if(!el)return;
+    el.classList.toggle('pick',active&&i===p);
+    el.classList.toggle('opp',active&&i===o);
+    el.classList.toggle('dim',active&&i!==p&&i!==o);
+    el.classList.toggle('ov',ovSet.has(i));
+  });
+}
+
+/* ---------- 3D ---------- */
+let faceEls=[], rootEl=null;
+function computeSize(){
+  const ana=state.ana, w=scene.clientWidth||400, h=scene.clientHeight||300;
+  let wc=3, hc=3;
+  if(ana&&ana.main.length){const xs=ana.main.map(i=>ana.cells[i][0]), ys=ana.main.map(i=>ana.cells[i][1]);
+    wc=Math.max(...xs)-Math.min(...xs)+1; hc=Math.max(...ys)-Math.min(...ys)+1;}
+  return Math.max(26, Math.floor(Math.min(w/(wc+1.5), h/(hc+1.5), w/3.6, h/3.1)));
+}
+function build3D(){
+  const ana=state.ana; stage.textContent=''; faceEls=new Array(ana.count).fill(null); rootEl=null;
+  const empty=$('#sceneEmpty'), note=$('#foldNote');
+  if(!ana.tree){empty.hidden=false; empty.textContent='모눈 판에 칸을 놓으면 여기에 나타나요.'; note.hidden=true; return;}
+  empty.hidden=true;
+  note.hidden=ana.connected; note.textContent='떨어진 칸은 빼고 이어진 칸만 보여 줘요.';
+  const S=state.S=computeSize();
+  scene.style.perspective=(S*11)+'px';
+  stage.style.setProperty('--nsize', Math.max(12, Math.round(S*0.26))+'px');
+  for(const i of ana.tree.order){
+    const el=document.createElement('div'); el.className='face3';
+    el.style.width=el.style.height=S+'px'; el.style.setProperty('--fc',faceColor(i));
+    el.dataset.i=i; el.innerHTML=`<span class="n">${i+1}</span>`;
+    const p=ana.tree.parent[i];
+    if(p<0){el.style.left='0px'; el.style.top='0px'; el.style.transformOrigin='0 0'; stage.appendChild(el); rootEl=el;}
+    else{
+      const d=ana.tree.dir[i];
+      el.style.left=DIRS[d][0]*S+'px'; el.style.top=DIRS[d][1]*S+'px';
+      el.style.transformOrigin={R:'0 50%',L:'100% 50%',D:'50% 0',U:'50% 100%'}[d];
+      faceEls[p].appendChild(el);
+    }
+    faceEls[i]=el;
+  }
+  applyAngle(); applyView();
+}
+function applyAngle(){
+  state.angle=Math.max(0,Math.min(90,state.angle));
+  const a=state.angle, ana=state.ana;
+  $('#angle').value=Math.round(a); $('#angleOut').textContent=Math.round(a)+'°';
+  if(!ana||!ana.tree||!rootEl)return;
+  for(const i of ana.tree.order){
+    const d=ana.tree.dir[i]; if(!d)continue;
+    faceEls[i].style.transform = d==='R'?`rotateY(${a}deg)`:d==='L'?`rotateY(${-a}deg)`:d==='D'?`rotateX(${-a}deg)`:`rotateX(${a}deg)`;
+  }
+  const {centers}=foldWorld(ana,state.S,a); let c=[0,0,0], k=0;
+  ana.tree.order.forEach(i=>{c[0]+=centers[i][0]; c[1]+=centers[i][1]; c[2]+=centers[i][2]; k++;});
+  c=c.map(v=>v/k);
+  rootEl.style.transform=`translate3d(${-c[0]}px,${-c[1]}px,${-c[2]}px)`;
+  applyView();
+}
+// 다 접힐수록 조금씩 크게 보여 준다(펼친 판보다 정육면체가 작아서)
+function applyView(){
+  const ana=state.ana; let z=1;
+  if(ana&&ana.main.length){
+    const xs=ana.main.map(i=>ana.cells[i][0]), ys=ana.main.map(i=>ana.cells[i][1]);
+    const ext=Math.max(Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys))+1;
+    z=1+Math.max(0,Math.min(0.75,(ext-1.6)/2.4))*(state.angle/90);
+  }
+  stage.style.transform=`rotateX(${state.rx}deg) rotateY(${state.ry}deg) scale3d(${z},${z},${z})`;
+}
+
+let anim=0;
+function animateTo(target){
+  cancelAnimationFrame(anim);
+  if(reduced()){state.angle=target; applyAngle(); return;}
+  const from=state.angle, dur=Math.abs(target-from)/90*1800; // 90도를 1.8초에
+  if(dur<1){state.angle=target; applyAngle(); return;}
+  const t0=performance.now();
+  const step=()=>{
+    const k=Math.min(1, Math.max(0,(performance.now()-t0)/dur));
+    state.angle=from+(target-from)*k; applyAngle();
+    if(k<1) anim=requestAnimationFrame(step);
+  };
+  anim=requestAnimationFrame(step);
+}
+$('#angle').addEventListener('input',e=>{cancelAnimationFrame(anim); state.angle=+e.target.value; applyAngle();});
+$('#btnFold').addEventListener('click',()=>animateTo(90));
+$('#btnUnfold').addEventListener('click',()=>animateTo(0));
+$('#btnView').addEventListener('click',()=>{state.rx=VIEW0.rx; state.ry=VIEW0.ry; applyView();});
+
+// 끌어서 돌리기 + 톡 누르면 면 고르기
+let drag=null;
+scene.addEventListener('pointerdown',e=>{
+  if(e.button!==undefined&&e.button!==0)return;
+  drag={id:e.pointerId,x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,moved:false};
+  try{scene.setPointerCapture(e.pointerId);}catch(err){}
+});
+scene.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.x=e.clientX; drag.y=e.clientY;
+  if(Math.abs(e.clientX-drag.sx)+Math.abs(e.clientY-drag.sy)>6)drag.moved=true;
+  state.ry+=dx*0.45; state.rx=Math.max(-90,Math.min(90,state.rx-dy*0.45)); applyView();
+});
+const endDrag=e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  const tap=!drag.moved && e.type==='pointerup'; drag=null;
+  if(tap){
+    const hit=document.elementFromPoint(e.clientX,e.clientY); const f=hit&&hit.closest&&hit.closest('.face3');
+    if(f&&state.ana.valid&&!quizHidden()){
+      const i=+f.dataset.i; if(state.mode!=='opp')setMode('opp');
+      state.pick=(state.pick===i)?-1:i; paintHighlights(); renderVerdict();
+    }
+  }
+};
+scene.addEventListener('pointerup',endDrag);
+scene.addEventListener('pointercancel',endDrag);
+scene.addEventListener('keydown',e=>{
+  const m={ArrowRight:[0,10],ArrowLeft:[0,-10],ArrowUp:[10,0],ArrowDown:[-10,0]}[e.key];
+  if(e.key==='Home'){state.rx=VIEW0.rx; state.ry=VIEW0.ry; applyView(); e.preventDefault(); return;}
+  if(!m)return; e.preventDefault();
+  state.rx=Math.max(-90,Math.min(90,state.rx+m[0])); state.ry+=m[1]; applyView();
+});
+if(window.ResizeObserver){
+  let lastW=0; new ResizeObserver(()=>{const w=scene.clientWidth; if(Math.abs(w-lastW)>2){lastW=w; if(state.ana)build3D(); paintHighlights();}}).observe(scene);
+}
+
+/* ---------- 11가지 모음 ---------- */
+const gallery=$('#gallery'), thumbs=[];
+NET_CELLS.forEach((cells,i)=>{
+  const c=normalize(cells), w=Math.max(...c.map(p=>p[0]))+1, h=Math.max(...c.map(p=>p[1]))+1, u=10;
+  const b=document.createElement('button'); b.type='button'; b.className='thumb';
+  b.innerHTML=`<span class="stamp">찾았어요</span>`+
+    `<svg viewBox="-1 -1 ${w*u+2} ${h*u+2}" aria-hidden="true">${c.map(([x,y])=>`<rect x="${x*u}" y="${y*u}" width="${u}" height="${u}"/>`).join('')}</svg>`+
+    `<span class="q" aria-hidden="true">?</span><span class="t-num">${i+1}번</span>`;
+  b.addEventListener('click',()=>loadNet(i));
+  gallery.appendChild(b); thumbs.push(b);
+});
+function renderGallery(){
+  const hide=$('#hideUnfound').checked, cur=state.ana?state.ana.netIndex:-1;
+  thumbs.forEach((b,i)=>{
+    const f=found.has(i), masked=hide&&!f;
+    b.classList.toggle('found',f); b.classList.toggle('masked',masked);
+    b.disabled=masked || (!!state.quiz);
+    b.setAttribute('aria-current', (cur===i&&!quizHidden())?'true':'false');
+    b.setAttribute('aria-label', masked?`${i+1}번, 아직 못 찾은 모양`:`${i+1}번 전개도 불러오기`+(f?', 찾았어요':''));
+  });
+  $('#foundCount').textContent=`${found.size} / 11 찾았어요`;
+}
+$('#hideUnfound').addEventListener('change',renderGallery);
+function setCells(list){state.cells=new Set(list.map(([x,y])=>ck(x,y)));}
+function loadNet(i){
+  setCells(placeOnBoard(NET_CELLS[i])); state.byHand=false; state.pick=-1;
+  cancelAnimationFrame(anim); state.angle=0; refresh(true); animateTo(90);
+}
+let resetArm=false, resetTimer=0;
+$('#btnReset').addEventListener('click',()=>{
+  if(!resetArm){resetArm=true; $('#btnReset').textContent='한 번 더 누르면 지워져요';
+    resetTimer=setTimeout(()=>{resetArm=false; $('#btnReset').textContent='도장 기록 지우기';},3500); return;}
+  clearTimeout(resetTimer); resetArm=false; $('#btnReset').textContent='도장 기록 지우기';
+  found=new Set(); store.set(FOUND_KEY,'[]'); $('#resetNote').textContent='도장을 모두 지웠어요.';
+  setTimeout(()=>{$('#resetNote').textContent='';},2500); refresh(false);
+});
+$('#btnClear').addEventListener('click',()=>{
+  if(state.quiz)endQuiz();
+  state.cells.clear(); state.byHand=true; state.pick=-1; cancelAnimationFrame(anim); state.angle=0; refresh(true);
+});
+
+/* ---------- 퀴즈 ---------- */
+function makeQuizShape(prev){
+  const wantNet=Math.random()<0.5;
+  for(let t=0;t<400;t++){
+    let cells;
+    if(wantNet){const t=SYM[Math.floor(Math.random()*8)]; cells=NET_CELLS[Math.floor(Math.random()*11)].map(([x,y])=>t(x,y));}
+    else{cells=randomHexomino(Math.random);
+      if(analyze(cells).valid)continue;
+      if(has2x2(cells)&&Math.random()<0.7)continue; // 너무 쉬운 문제는 덜 나오게
+    }
+    const placed=placeOnBoard(cells); if(!placed)continue;
+    if(canon(placed)===prev)continue;
+    return placed;
+  }
+  return placeOnBoard(NET_CELLS[0]);
+}
+function renderQuiz(){
+  const q=state.quiz, bar=$('#quizBar');
+  bar.hidden=!q; $('#btnQuizStart').textContent=q?'퀴즈 하는 중':'퀴즈 시작'; $('#btnQuizStart').disabled=!!q;
+  if(!q)return;
+  $('#quizScore').textContent=`${q.n}번째 문제 · 맞힌 개수 ${q.score}`;
+  $('#quizAns').hidden=q.answered; $('#btnQuizNext').hidden=!q.answered;
+  $('#modeOpp').disabled=!q.answered;
+}
+function nextQuestion(){
+  const q=state.quiz; q.n++; q.answered=false; $('#quizResult').textContent=''; $('#quizResult').className='quiz-result';
+  q.prev=null;
+  const shape=makeQuizShape(q.last); q.last=canon(shape);
+  setCells(shape); state.byHand=false; state.pick=-1;
+  if(state.mode!=='draw'){state.mode='draw'; $('#modeDraw').setAttribute('aria-pressed','true'); $('#modeOpp').setAttribute('aria-pressed','false'); setModeHint();}
+  cancelAnimationFrame(anim); state.angle=0; renderQuiz(); refresh(true);
+}
+function answerQuiz(sayYes){
+  const q=state.quiz; if(!q||q.answered)return;
+  const truth=state.ana.valid, right=(sayYes===truth);
+  q.answered=true; q.done++; if(right)q.score++;
+  const r=$('#quizResult');
+  r.className='quiz-result '+(right?'right':'wrong');
+  r.textContent=(right?'맞았어요! ':'아쉬워요. ')+(truth?'이 모양은 정육면체가 돼요.':'이 모양은 정육면체가 안 돼요.')+' 접히는 걸 보세요.';
+  renderQuiz(); refresh(false); animateTo(90);
+}
+function startQuiz(){
+  state.quiz={n:0,score:0,done:0,answered:false,last:null};
+  nextQuestion();
+  $('#boardSheet').scrollIntoView({behavior:reduced()?'auto':'smooth',block:'start'});
+  const first=$('#quizAns .btn'); if(first)first.focus({preventScroll:true});
+}
+function endQuiz(){
+  const q=state.quiz; if(!q)return;
+  const t=$('#quizTotal'); t.hidden=false; t.textContent=`지난 퀴즈: ${q.done}문제 중 ${q.score}개 맞혔어요.`;
+  state.quiz=null; renderQuiz(); $('#modeOpp').disabled=false; refresh(false);
+}
+$('#btnQuizStart').addEventListener('click',startQuiz);
+$('#btnQuizEnd').addEventListener('click',endQuiz);
+$('#btnQuizNext').addEventListener('click',()=>{nextQuestion(); const f=$('#quizAns .btn'); if(f)f.focus({preventScroll:true});});
+$('#quizAns').addEventListener('click',e=>{const b=e.target.closest('[data-ans]'); if(b)answerQuiz(b.dataset.ans==='yes');});
+
+function renderControls(){
+  const ana=state.ana, lock=quizHidden()||!ana.tree;
+  ['#btnFold','#btnUnfold','#angle'].forEach(s=>{$(s).disabled=lock;});
+  $('#modeOpp').disabled=quizHidden();
+}
+
+/* ---------- 처음 ---------- */
+setModeHint();
+setCells(placeOnBoard(NET_CELLS[4]));
+refresh(true);
+if(reduced()){state.angle=60; applyAngle();}
+else setTimeout(()=>{ if(state.angle===0 && !state.quiz) animateTo(90); },700);
+</script>

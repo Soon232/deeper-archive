@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>나의 용돈 일주일</title>
+<!--
+  나의 용돈 일주일 — 실과 5단원 4차시 「용돈 자원 관리」 수업용 견본 (2026-08-31 자료제작소)
+  「나의 하루 설계」(시간 자원)의 형제 앱. 심장: 아이는 선택만 하고, 기입장이 저절로 채워진다.
+  교과서 재료: 87쪽 생각 그물(예상 수입·예상 지출) / 87쪽 기입장 예시(일주일 수입 6,000원).
+  ★ 곰곰님 검수 자리 ★
+   ① 마무리 화면의 제목·정리 문장(네 단계 이름) — 교과서 낱말과 맞추기
+   ② "생각 그물", "용돈 기입장", "예상 수입·예상 지출" 낱말 확인
+   ③ 착지 발문(맨 끝 .finalq) — 원하시는 문구로 바꾸기
+   ④ 물건 값(아이스크림 500원 등) — 요즘 물가·우리 반 실감에 맞추기
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { touch-action:manipulation; }
+  body {
+    font-family:'Malgun Gothic','맑은 고딕',sans-serif;
+    background:#faf5ea; color:#3a3226;
+    min-height:100vh; padding:14px;
+    word-break:keep-all;
+  }
+  .wrap { max-width:940px; margin:0 auto; }
+
+  .screen { display:none; }
+  .screen.on { display:block; animation:fadein .35s ease; }
+  @keyframes fadein { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+  h1 { font-size:34px; text-align:center; margin:26px 0 10px; color:#4a3b22; }
+  .sub { text-align:center; font-size:18px; color:#7a6a50; line-height:1.6; }
+  .warmline {
+    margin:26px auto 8px; max-width:470px; text-align:center;
+    background:#fff8e8; border:2px dashed #e0c98f; border-radius:16px;
+    padding:16px 20px; font-size:19px; color:#8a6d3b; line-height:1.6;
+  }
+  .btn {
+    display:inline-block; border:none; cursor:pointer;
+    font-family:inherit; font-weight:bold;
+    border-radius:14px; padding:14px 26px; font-size:20px;
+    background:#e8853c; color:#fff;
+    box-shadow:0 3px 0 #c2691f;
+  }
+  .btn:active { transform:translateY(2px); box-shadow:0 1px 0 #c2691f; }
+  .btn.big { font-size:23px; padding:17px 38px; }
+  .btn.gray { background:#b8ad99; box-shadow:0 3px 0 #948a77; }
+  .btn.green { background:#3f9e63; box-shadow:0 3px 0 #2c7a49; }
+  .btn.blue { background:#4a7bd0; box-shadow:0 3px 0 #3560ab; }
+  .center { text-align:center; }
+
+  .stepbadge {
+    display:inline-block; background:#4a3b22; color:#ffe9b8;
+    border-radius:999px; padding:5px 16px; font-size:16px; font-weight:bold;
+    margin-bottom:8px;
+  }
+  .phase-title { font-size:25px; font-weight:bold; margin:4px 0 6px; color:#4a3b22; }
+  .phase-desc { font-size:17px; color:#7a6a50; line-height:1.55; }
+
+  /* 목표 고르기 */
+  .goal-list { display:flex; flex-direction:column; gap:14px; max-width:470px; margin:24px auto; }
+  .goal-btn {
+    font-family:inherit; font-size:21px; font-weight:bold; cursor:pointer;
+    padding:18px 20px; border-radius:16px; border:3px solid #d8c9a8;
+    background:#fffdf6; color:#4a3b22; text-align:left;
+  }
+  .goal-btn small { display:block; font-size:15px; font-weight:normal; color:#8a7a5e; margin-top:4px; line-height:1.45; }
+  .goal-btn:active { background:#fff1d2; }
+
+  /* 계획 화면 */
+  .topbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:10px 0 12px; }
+  .chip {
+    background:#fff; border:2px solid #d8c9a8; border-radius:999px;
+    padding:6px 14px; font-size:16px; font-weight:bold; color:#6b5a3d;
+  }
+  .chip.goal { border-color:#e05c7a; color:#c2385a; }
+  .chip.leave { background:#f7e39a; border-color:#c9a83c; color:#6b5a1e; }
+  .chip.leave.low { background:#fdecec; border-color:#d63333; color:#a02020; }
+  .hintline {
+    background:#eef6ee; border-left:5px solid #3f9e63; border-radius:0 10px 10px 0;
+    padding:10px 14px; font-size:16px; color:#2c6a44; margin:10px 0; line-height:1.5;
+  }
+  .planmsg { min-height:24px; font-size:16px; color:#c2385a; font-weight:bold; margin:6px 0; }
+
+  .netbox { background:#f3ead7; border-radius:16px; padding:12px 14px; margin:12px 0; }
+  .netbox h4 { font-size:16px; color:#6b5a3d; margin-bottom:9px; }
+  .inchip {
+    display:inline-block; background:#eef6ee; border:2px solid #9fd0b2;
+    border-radius:12px; padding:10px 16px; font-size:18px; font-weight:bold; color:#2c7a49;
+  }
+  .pgrid { display:flex; flex-wrap:wrap; gap:9px; }
+  .pitem {
+    font-family:inherit; cursor:pointer; text-align:left;
+    border:3px solid var(--c); border-radius:14px; padding:10px 13px;
+    background:#fffdf6; color:#4a3b22; flex:1 1 150px; min-width:145px; min-height:48px;
+  }
+  .pitem .pi-top { font-size:18px; font-weight:bold; }
+  .pitem .pi-sub { display:block; font-size:14px; color:#8a7a5e; margin-top:3px; }
+  .pitem .reqmark { color:#c2385a; font-size:14px; }
+  .pitem.on { background:var(--c); color:#fff; }
+  .pitem.on .pi-sub { color:rgba(255,255,255,.9); }
+  .pitem.on .reqmark { color:#ffe9b8; }
+
+  /* 실천 화면 */
+  .clockbar {
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    background:#4a3b22; color:#ffe9b8; border-radius:14px;
+    padding:12px 18px; margin:10px 0 10px; font-size:18px; font-weight:bold;
+    position:sticky; top:0; z-index:20;
+  }
+  .clockbar .now { font-size:23px; color:#fff; }
+  .daypills { display:flex; gap:5px; margin:4px 0 12px; flex-wrap:wrap; }
+  .dp {
+    border-radius:999px; padding:4px 11px; background:#efe7d2;
+    color:#8a7a5e; font-size:14px; font-weight:bold;
+  }
+  .dp.cur { background:#4a3b22; color:#ffe9b8; }
+  .dp.past { opacity:.45; }
+
+  .runmain { display:flex; gap:18px; align-items:flex-start; }
+  .dayside { flex:1.15; min-width:0; }
+  .ledgerside { flex:1; min-width:0; }
+  @media (max-width:680px){ .runmain { flex-direction:column; } .ledgerside { width:100%; } }
+
+  #day-banner { font-size:22px; font-weight:bold; color:#4a3b22; margin:2px 0 10px; }
+
+  .icard {
+    background:#fff; border-radius:20px; padding:22px 20px 18px;
+    text-align:center; border-top:10px solid #e8853c;
+    animation:pop .28s ease; box-shadow:0 2px 8px rgba(74,59,34,.08);
+  }
+  .icard.calm { border-top-color:#3f9e63; }
+  .icard.resolved { opacity:.45; pointer-events:none; }
+  @keyframes pop { from{transform:scale(.9); opacity:0;} to{transform:none; opacity:1;} }
+  .icard .tag { display:inline-block; background:#fdecec; color:#c22; border-radius:999px; padding:4px 14px; font-size:15px; font-weight:bold; margin-bottom:10px; }
+  .icard.calm .tag { background:#eef6ee; color:#2c7a49; }
+  .icard h3 { font-size:22px; margin-bottom:10px; color:#3a3226; line-height:1.4; }
+  .icard p { font-size:17px; color:#6b5a3d; line-height:1.6; margin-bottom:16px; }
+  .icard .btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+
+  /* 기입장 */
+  .ledgerbox { background:#fff; border:2px solid #e6dcc4; border-radius:16px; padding:12px 13px; margin:6px 0 14px; }
+  .ledgerbox h4 { font-size:17px; color:#6b5a3d; margin-bottom:8px; }
+  .ledgerbox h4 small { font-weight:normal; color:#a4967a; font-size:13px; }
+  table.ledger { width:100%; border-collapse:collapse; font-size:15px; }
+  .ledger th { background:#f3ead7; color:#6b5a3d; padding:6px 4px; font-size:13px; font-weight:bold; }
+  .ledger td { border-bottom:1px solid #eee4cf; padding:7px 4px; text-align:right; white-space:nowrap; }
+  .ledger td.dy { text-align:center; color:#8a7a5e; font-weight:bold; width:34px; }
+  .ledger td.nm { text-align:left; white-space:normal; }
+  .ledger td.in { color:#2c7a49; font-weight:bold; }
+  .ledger td.out { color:#c23; font-weight:bold; }
+  .ledger td.bal { font-weight:bold; color:#4a3b22; }
+  .ledger tfoot td { border-top:3px solid #c9b98f; border-bottom:none; font-weight:bold; background:#fffbef; }
+  .ledger tr.new td { animation:rowin .6s ease; }
+  @keyframes rowin { from{background:#ffe9a8;} to{background:transparent;} }
+  .ledger-empty { font-size:15px; color:#a4967a; padding:10px 2px; }
+
+  /* 토스트 */
+  #toast {
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+    background:#4a3b22; color:#ffe9b8; border-radius:999px;
+    padding:12px 24px; font-size:17px; font-weight:bold;
+    opacity:0; pointer-events:none; transition:opacity .3s; z-index:60;
+    max-width:90vw; text-align:center;
+  }
+  #toast.on { opacity:1; }
+
+  /* 평가 화면 */
+  .bigwallet {
+    display:inline-block; background:#4a3b22; color:#ffe9b8;
+    border-radius:14px; padding:10px 22px; font-size:22px; font-weight:bold; margin:10px 0 6px;
+  }
+  .resultbox { background:#fff; border-radius:18px; padding:16px 20px; margin:12px 0; border:2px solid #e6dcc4; }
+  .resultbox h4 { font-size:18px; color:#8a7a5e; margin-bottom:10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .rchip { border-radius:999px; padding:7px 15px; font-size:16px; font-weight:bold; }
+  .rchip.ok { background:#eef6ee; color:#2c7a49; border:2px solid #9fd0b2; }
+  .rchip.no { background:#fdecec; color:#c22; border:2px solid #eda9a9; }
+  .rchip.ex { background:#fff3e2; color:#b5651d; border:2px solid #eec9a0; }
+  .rchip.dim { background:#f4efe3; color:#a4967a; border:2px solid #ddd3bc; }
+  .lesson {
+    background:#fff8e8; border:2px dashed #e0c98f; border-radius:16px;
+    padding:16px 20px; font-size:18px; color:#8a6d3b; line-height:1.65; margin:16px 0;
+  }
+  .btnrow { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+
+  /* 마무리 화면 */
+  .wheelwrap { text-align:center; margin:16px 0; }
+  .finalq {
+    margin:20px auto; max-width:520px; text-align:center;
+    background:#4a3b22; color:#ffe9b8; border-radius:18px;
+    padding:22px 24px; font-size:22px; line-height:1.6; font-weight:bold;
+  }
+
+  /* 카드 모달(확인용) */
+  .overlay {
+    display:none; position:fixed; inset:0; background:rgba(40,30,10,.45);
+    z-index:50; align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay.on { display:flex; }
+  .overlay .icard { max-width:430px; width:100%; animation:pop .28s ease; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══════ 시작 화면 ══════ -->
+  <section id="scr-start" class="screen on">
+    <h1>💰 나의 용돈 일주일</h1>
+    <p class="sub">용돈 자원 연습장<br>일주일 용돈 6,000원. 월요일부터 일요일까지, 나의 일주일을 살아 봐요.</p>
+    <div class="warmline">내가 고르는 동안, 용돈 기입장이 저절로 적혀요.<br>일요일에 그 기입장을 읽으면 — 그게 나의 일주일이에요.</div>
+    <p class="center" style="margin-top:24px;">
+      <button class="btn big green" id="btn-continue" style="display:none;" onclick="continueGame()">이어서 하기</button>
+      <button class="btn big" onclick="startNew()">처음부터 시작하기</button>
+    </p>
+  </section>
+
+  <!-- ══════ ① 목표 세우기 ══════ -->
+  <section id="scr-goal" class="screen">
+    <span class="stepbadge">① 목표 세우기</span>
+    <div class="phase-title">이번 일주일, 용돈으로 이루고 싶은 것을 하나 골라요.</div>
+    <p class="phase-desc">구체적이고 이룰 수 있는 목표를 세웁니다.</p>
+    <div class="goal-list">
+      <button class="goal-btn" onclick="pickGoal('save2000')">💰 2,000원 모으기<small>사고 싶은 물건이 있어요. 일요일에 2,000원이 남아 있으면 성공!</small></button>
+      <button class="goal-btn" onclick="pickGoal('save500')">🍀 쓸 건 쓰고 500원 남기기<small>먹고 싶은 것도 먹으면서, 일요일에 500원은 남아 있게!</small></button>
+      <button class="goal-btn" onclick="pickGoal('noshort')">🛟 돈이 모자라는 날 없이 일주일 나기<small>사야 할 때 지갑이 비어 있는 날이 없으면 성공!</small></button>
+    </div>
+  </section>
+
+  <!-- ══════ ② 계획하기 ══════ -->
+  <section id="scr-plan" class="screen">
+    <span class="stepbadge">② 계획하기</span>
+    <div class="phase-title">일주일 동안 돈을 어떻게 쓸지, 생각 그물을 펼쳐요.</div>
+    <p class="phase-desc">사고 싶은 것을 탭해서 고르고, 다시 탭하면 되돌려요.<br>고르지 않은 돈은 그대로 <b>남겨 두는 돈</b>이 돼요.</p>
+    <div class="topbar">
+      <span class="chip" id="round-chip">1번째 일주일</span>
+      <span class="chip goal" id="goal-chip"></span>
+    </div>
+    <div class="hintline" id="plan-hint" style="display:none;">
+      지난 일주일, 예상하지 못한 일이 있었지요?<br>쓰지 않고 남겨 두는 돈이 있으면 그런 날에도 든든해요.
+    </div>
+    <div class="netbox">
+      <h4>💵 들어올 돈 (예상 수입)</h4>
+      <span class="inchip">일주일 용돈 6,000원</span>
+    </div>
+    <div class="netbox">
+      <h4>🛒 쓸 돈 (예상 지출) — 사고 싶은 것을 골라요</h4>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+    <div class="topbar">
+      <span class="chip" id="sum-chip">쓰기로 한 돈 0원</span>
+      <span class="chip leave" id="leave-chip">남겨 두는 돈 6,000원</span>
+    </div>
+    <div class="planmsg" id="plan-msg"></div>
+    <p class="center" style="margin:20px 0;">
+      <button class="btn big green" onclick="tryStartRun()">③ 실천하기 — 일주일 살아보기 ▶</button>
+    </p>
+  </section>
+
+  <!-- ══════ ③ 실천하기 ══════ -->
+  <section id="scr-run" class="screen">
+    <span class="stepbadge">③ 실천하기</span>
+    <div class="clockbar">
+      <span>오늘은</span><span class="now" id="day-now">월요일</span>
+      <span style="margin-left:auto;">💰 지갑</span><span class="now" id="wallet-now">0원</span>
+      <span id="run-round" style="font-size:15px;">1번째 일주일</span>
+    </div>
+    <div class="daypills" id="daypills"></div>
+    <div class="runmain">
+      <div class="dayside">
+        <div id="day-banner"></div>
+        <div id="dayarea"></div>
+      </div>
+      <div class="ledgerside">
+        <div class="ledgerbox">
+          <h4>📒 용돈 기입장 <small>— 저절로 적혀요</small></h4>
+          <div id="ledger-body"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ ④ 평가하기 ══════ -->
+  <section id="scr-result" class="screen">
+    <span class="stepbadge">④ 평가하기</span>
+    <div class="phase-title" id="result-title">일주일 끝!</div>
+    <p class="phase-desc">기입장을 위에서 아래로 읽어 봐요. 남은 돈이 어떻게 움직였나요?</p>
+    <div class="center"><span class="bigwallet" id="res-wallet"></span></div>
+    <div class="ledgerbox">
+      <h4>📒 나의 용돈 기입장</h4>
+      <div id="res-ledger"></div>
+    </div>
+    <div class="resultbox">
+      <h4>🎯 나의 목표</h4>
+      <div class="chips" id="res-goal"></div>
+    </div>
+    <div class="resultbox">
+      <h4>✅ 계획한 대로 산 것</h4>
+      <div class="chips" id="res-bought"></div>
+    </div>
+    <div class="resultbox">
+      <h4>💪 참은 것 · 아낀 것</h4>
+      <div class="chips" id="res-hold"></div>
+    </div>
+    <div class="resultbox">
+      <h4>⚡ 예상하지 못한 일</h4>
+      <div class="chips" id="res-unexp"></div>
+    </div>
+    <div class="resultbox">
+      <h4>😢 돈이 모자라서 못 한 것</h4>
+      <div class="chips" id="res-short"></div>
+    </div>
+    <div class="lesson" id="res-lesson"></div>
+    <div class="btnrow">
+      <button class="btn big blue" onclick="retryPlan()">🔄 계획 고쳐서 새 일주일 살기</button>
+      <button class="btn gray" onclick="goFinal()">마무리하기</button>
+    </div>
+  </section>
+
+  <!-- ══════ 마무리 화면 ══════ -->
+  <section id="scr-final" class="screen">
+    <h1 style="font-size:28px;">용돈을 관리하는 네 단계</h1>
+    <div class="wheelwrap">
+      <svg viewBox="0 0 360 360" width="320" height="320" style="max-width:88vw;height:auto;">
+        <defs>
+          <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#9a8a68"/>
+          </marker>
+        </defs>
+        <path d="M 224 76 A 115 115 0 0 1 284 224" fill="none" stroke="#9a8a68" stroke-width="5" marker-end="url(#arw)"/>
+        <path d="M 224 284 A 115 115 0 0 1 76 224" fill="none" stroke="#9a8a68" stroke-width="5" marker-end="url(#arw)"/>
+        <path d="M 76 136 A 115 115 0 0 1 136 76" fill="none" stroke="#9a8a68" stroke-width="5" marker-end="url(#arw)"/>
+        <g text-anchor="middle" font-family="'Malgun Gothic',sans-serif" font-weight="bold">
+          <circle cx="180" cy="52" r="46" fill="#d63384"/>
+          <text x="180" y="46" fill="#fff" font-size="20">1</text>
+          <text x="180" y="70" fill="#fff" font-size="16">목표 세우기</text>
+          <circle cx="308" cy="180" r="46" fill="#e8622c"/>
+          <text x="308" y="174" fill="#fff" font-size="20">2</text>
+          <text x="308" y="198" fill="#fff" font-size="16">계획하기</text>
+          <circle cx="180" cy="308" r="46" fill="#2f9e44"/>
+          <text x="180" y="302" fill="#fff" font-size="20">3</text>
+          <text x="180" y="326" fill="#fff" font-size="16">실천하기</text>
+          <circle cx="52" cy="180" r="46" fill="#1c7ed6"/>
+          <text x="52" y="174" fill="#fff" font-size="20">4</text>
+          <text x="52" y="198" fill="#fff" font-size="16">평가하기</text>
+          <text x="180" y="172" fill="#4a3b22" font-size="21">이 바퀴를</text>
+          <text x="180" y="202" fill="#c2385a" font-size="26" id="wheel-count">0번</text>
+        </g>
+      </svg>
+      <p class="sub" style="margin-top:6px;" id="final-sub">너는 방금 이 바퀴를 돌았어요.</p>
+    </div>
+    <div class="lesson center">
+      쓰기 전에 계획을 세우고, 쓴 돈은 기입장에 적어요.<br>
+      일주일을 돌아보고 안 것은 <b>다음 계획</b>에 반영해요.
+    </div>
+    <!-- 착지 발문 — 곰곰님이 원하시는 문구로 바꿔 주세요 -->
+    <div class="finalq">💭 예상하지 못한 일이 생겼을 때,<br>무엇이 있어서 괜찮았나요?</div>
+    <div class="btnrow">
+      <button class="btn gray" onclick="clearSave();location.reload()">처음부터 다시 하기</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- 확인용 모달 -->
+<div class="overlay" id="overlay">
+  <div class="icard" id="ov-card">
+    <h3 id="ov-title"></h3>
+    <p id="ov-body"></p>
+    <div class="btns" id="ov-btns"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ─────────── 데이터 ─────────── */
+const ALLOW = 6000;
+const DAYS   = ['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
+const DAYS_S = ['월','화','수','목','금','토','일'];
+
+/* 예상 지출 후보 — 합계 8,000원 > 용돈 6,000원 (다 고를 수는 없다) */
+const PLAN_ITEMS = [
+  {id:'ice',      day:0, emoji:'🍦', name:'아이스크림',        price:500,  color:'#2e8f9e'},
+  {id:'supplies', day:1, emoji:'✏️', name:'학용품(연필·지우개)', price:1000, color:'#4a7bd0', req:true},
+  {id:'note',     day:2, emoji:'📒', name:'예쁜 공책',          price:1000, color:'#8a63c9'},
+  {id:'jelly',    day:3, emoji:'🍬', name:'젤리',              price:500,  color:'#e05c7a'},
+  {id:'tteok',    day:4, emoji:'🍢', name:'떡볶이(친구와)',      price:1500, color:'#d0684a'},
+  {id:'toy',      day:5, emoji:'🧸', name:'미니 장난감',        price:1500, color:'#3f9e63'},
+  {id:'pencil12', day:5, emoji:'🎨', name:'캐릭터 색연필',      price:2000, color:'#a9793b'},
+];
+
+const GOALS = {
+  save2000:{icon:'💰', name:'2,000원 모으기', target:2000},
+  save500 :{icon:'🍀', name:'쓸 건 쓰고 500원 남기기', target:500},
+  noshort :{icon:'🛟', name:'돈이 모자라는 날 없이 일주일 나기', target:0, kind:'noshort'},
+};
+
+/* ── 변수 카드 풀 — 주마다 유혹 2·돌발 2·수입 1을 무작위로 뽑는다 ── */
+const CARD_POOL = {
+  tempt: [ // 하고 싶은 일 — 살지 말지 고른다
+    {key:'jellypen', name:'젤리 펜', cost:800,
+      title:'문구점에 새로 나온 젤리 펜!',
+      body:'친구들이 다 샀대요. 한 자루에 <b>800원</b>.<br>어떻게 할까요?',
+      yes:'하나 살래요 (−800원)', no:'구경만 할래요',
+      noToast:'구경만 하고 나왔어요.'},
+    {key:'slush', name:'슬러시', cost:700,
+      title:'친구가 슬러시를 같이 먹자고 해요!',
+      body:'한 컵에 <b>700원</b>.<br>어떻게 할까요?',
+      yes:'같이 먹을래요 (−700원)', no:'오늘은 안 먹을래요',
+      noToast:'아쉽지만 오늘은 참았어요.'},
+    {key:'bbopgi', name:'뽑기', cost:500,
+      title:'학교 앞 뽑기 기계다!',
+      body:'한 번에 <b>500원</b>.<br>이번엔 왠지 나올 것 같아요.',
+      yes:'한 번만 해 볼래요 (−500원)', no:'오늘은 그냥 갈래요',
+      noToast:'뽑기 기계 앞을 씩씩하게 지나갔어요.'},
+    {key:'sticker', name:'캐릭터 스티커', cost:1000,
+      title:'문구점에 캐릭터 스티커가 나왔어요!',
+      body:'한 장에 <b>1,000원</b>.<br>어떻게 할까요?',
+      yes:'한 장 살래요 (−1,000원)', no:'오늘은 안 살래요',
+      noToast:'스티커는 다음에 사기로 했어요.'},
+  ],
+  sudden: [ // 갑자기 돈 쓸 일이 생긴다
+    {key:'gift', name:'동생 선물', cost:1000,
+      title:'내일이 동생 생일이에요!',
+      body:'작은 선물을 사 주고 싶어요.<br>선물 값은 <b>1,000원</b>.',
+      btn:'선물을 살래요 (−1,000원)',
+      short:'지갑에 1,000원이 없어요…<br>선물 대신 편지를 써서 주기로 했어요.',
+      shortBtn:'편지를 쓸래요'},
+    {key:'paper', name:'색종이(준비물)', cost:500,
+      title:'내일 미술 시간에 색종이가 필요해요!',
+      body:'알림장을 다시 보니 적혀 있었어요.<br>색종이는 <b>500원</b>.',
+      btn:'문구점에 다녀올래요 (−500원)',
+      short:'지갑에 500원이 없어요…<br>짝에게 나눠 달라고 부탁하기로 했어요.',
+      shortBtn:'부탁해 볼래요'},
+    {key:'eraser', name:'지우개(새로 삼)', cost:500,
+      title:'지우개를 잃어버렸어요!',
+      body:'가방을 다 뒤져도 없어요.<br>새로 사면 <b>500원</b>.',
+      btn:'새로 살래요 (−500원)',
+      short:'지갑에 500원이 없어요…<br>당분간 짝에게 빌려 쓰기로 했어요.',
+      shortBtn:'빌려 쓸래요'},
+    {key:'group', name:'모둠 재료비', cost:500,
+      title:'모둠 숙제 재료비를 나눠 내기로 했어요.',
+      body:'내 몫은 <b>500원</b>이에요.',
+      btn:'내 몫을 낼래요 (−500원)',
+      short:'지갑에 500원이 없어요…<br>내 몫은 다음 주에 주기로 했어요.',
+      shortBtn:'미안하다고 말할래요'},
+  ],
+  income: [ // 뜻밖에 돈이 들어온다
+    {key:'errand', name:'심부름 값', amt:1000,
+      title:'엄마가 심부름을 부탁하셨어요.',
+      body:'“두부 한 모만 사다 줄래?<br>심부름 값은 1,000원!”',
+      yes:'다녀올게요! (+1,000원)', no:'지금은 못 해요',
+      noToast:'오늘은 심부름을 못 했어요.'},
+    {key:'grandma', name:'할머니 용돈', amt:2000,
+      title:'할머니께서 오셨어요!',
+      body:'“우리 강아지, 맛있는 거 사 먹어라.”<br><b>2,000원</b>을 주셨어요.',
+      btn:'감사합니다! (+2,000원)'},
+    {key:'aunt', name:'이모 용돈', amt:1000,
+      title:'이모가 놀러 왔어요!',
+      body:'“잘 지냈어? 이걸로 맛있는 거 사 먹어.”<br><b>1,000원</b>을 주셨어요.',
+      btn:'이모, 감사해요! (+1,000원)'},
+  ],
+};
+
+const SAVE_KEY = 'yongdon-week-v1';
+
+/* ─────────── 상태 ─────────── */
+let phase='start', goal=null, round=0, runsDone=0;
+let sel=new Set();                 // 계획한 지출 id
+let wallet=0, ledger=[], rec=null; // 지갑·기입장·이번 주 기록
+let events=[], dayIdx=0;           // 요일별 변수 카드, 오늘
+let resolved=new Set();            // 이번 주에 처리된 계획 id
+let prevWeek={tempt:[],sudden:[],income:[]}, thisWeek={tempt:[],sudden:[],income:[]};
+let queue=[], qi=0, cardLock=false, T=null;
+
+/* ─────────── 공통 ─────────── */
+function fmt(n){ return n.toLocaleString('ko-KR')+'원'; }
+function josa(w, a, b){ // a: 받침 있을 때(을/은), b: 없을 때(를/는) — 괄호 앞 낱말 기준
+  const head=String(w).replace(/\(.*?\)/g,'').trim();
+  let c=0;
+  for(let i=head.length-1;i>=0;i--){ const k=head.charCodeAt(i); if(k>=0xAC00&&k<=0xD7A3){ c=k; break; } }
+  if(!c) return w+a+'('+b+')';
+  return w+(((c-0xAC00)%28)? a : b);
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+/* 예약 타이머는 늘 한 개만 — 이중 체인 방지 */
+function schedule(ms, fn){ clearTimeout(T); T=setTimeout(fn, ms); }
+let toastT=null;
+function toast(t){
+  const el=document.getElementById('toast');
+  el.textContent=t; el.classList.add('on');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('on'), 2600);
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+/* ─────────── 저장·복원 (새로고침해도 이어짐) ─────────── */
+function saveState(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      v:1, phase, goal, round, runsDone,
+      sel:[...sel], wallet, ledger, rec, dayIdx,
+      events: events.map(e=> e? {t:e.t, key:e.c.key} : null),
+      resolved:[...resolved], prevWeek, thisWeek,
+    }));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const s=localStorage.getItem(SAVE_KEY);
+    return s? JSON.parse(s) : null;
+  }catch(e){ return null; }
+}
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+
+(function initStart(){
+  try{
+    const sv=loadState();
+    if(sv && sv.v===1 && sv.phase && sv.phase!=='start' && GOALS[sv.goal]!==undefined){
+      document.getElementById('btn-continue').style.display='inline-block';
+    }
+  }catch(e){}
+})();
+
+function continueGame(){
+  const sv=loadState();
+  if(!sv || sv.v!==1){ startNew(); return; }
+  goal=sv.goal; round=sv.round||1; runsDone=sv.runsDone||0;
+  sel=new Set(sv.sel||[]); wallet=sv.wallet||0; ledger=sv.ledger||[];
+  rec=sv.rec||null; dayIdx=sv.dayIdx||0; resolved=new Set(sv.resolved||[]);
+  prevWeek=sv.prevWeek||{tempt:[],sudden:[],income:[]};
+  thisWeek=sv.thisWeek||{tempt:[],sudden:[],income:[]};
+  events=(sv.events||[]).map(e=>{
+    if(!e) return null;
+    const c=(CARD_POOL[e.t]||[]).find(x=>x.key===e.key);
+    return c? {t:e.t, c} : null;
+  });
+  if(sv.phase==='goal'){ goGoal(); }
+  else if(sv.phase==='plan' && goal){ enterPlan(); }
+  else if(sv.phase==='run' && goal && rec){ phase='run'; show('scr-run'); startDay(dayIdx); }
+  else if(sv.phase==='result' && goal && rec){ phase='result'; buildResult(); saveState(); show('scr-result'); }
+  else if(sv.phase==='final'){ goFinal(); }
+  else startNew();
+}
+function startNew(){ clearSave(); goGoal(); }
+
+/* ─────────── ① 목표 세우기 ─────────── */
+function goGoal(){ phase='goal'; saveState(); show('scr-goal'); }
+function pickGoal(g){ goal=g; round=1; enterPlan(); }
+
+/* ─────────── ② 계획하기 ─────────── */
+function enterPlan(){
+  phase='plan';
+  document.getElementById('round-chip').textContent=round+'번째 일주일';
+  const G=GOALS[goal];
+  document.getElementById('goal-chip').textContent='목표: '+G.icon+' '+G.name;
+  document.getElementById('plan-hint').style.display=(round>=2)?'block':'none';
+  msg('');
+  renderPlanItems(); updateSum();
+  saveState();
+  show('scr-plan');
+}
+function msg(t){ document.getElementById('plan-msg').textContent=t; }
+function planSum(){ let s=0; PLAN_ITEMS.forEach(it=>{ if(sel.has(it.id)) s+=it.price; }); return s; }
+function renderPlanItems(){
+  const g=document.getElementById('pgrid');
+  g.innerHTML='';
+  PLAN_ITEMS.forEach(it=>{
+    const b=document.createElement('button');
+    b.className='pitem'+(sel.has(it.id)?' on':'');
+    b.style.setProperty('--c', it.color);
+    b.innerHTML='<span class="pi-top">'+it.emoji+' '+esc(it.name)
+      +(it.req?' <span class="reqmark">(꼭!)</span>':'')
+      +(sel.has(it.id)?' ✓':'')+'</span>'
+      +'<span class="pi-sub">'+DAYS[it.day]+'에 · <b>'+fmt(it.price)+'</b></span>';
+    b.onclick=()=>toggleItem(it.id);
+    g.appendChild(b);
+  });
+}
+function toggleItem(id){
+  const it=PLAN_ITEMS.find(x=>x.id===id);
+  if(sel.has(id)){ sel.delete(id); }
+  else{
+    if(planSum()+it.price>ALLOW){
+      msg('용돈 '+fmt(ALLOW)+'보다 많이 계획할 수는 없어요. 무엇을 하나 포기할까요?');
+      return;
+    }
+    sel.add(id);
+  }
+  msg(''); renderPlanItems(); updateSum(); saveState();
+}
+function updateSum(){
+  const s=planSum(), leave=ALLOW-s;
+  document.getElementById('sum-chip').textContent='쓰기로 한 돈 '+fmt(s);
+  const lc=document.getElementById('leave-chip');
+  const G=GOALS[goal]||{target:0};
+  lc.textContent='남겨 두는 돈 '+fmt(leave)+(G.target>0?' (목표 '+fmt(G.target)+')':'');
+  lc.classList.toggle('low', G.target>0 && leave<G.target);
+}
+function tryStartRun(){
+  if(!sel.has('supplies')){ msg('✏️ 학용품은 이번 주에 꼭 사야 해요. 계획에 넣어요!'); return; }
+  const G=GOALS[goal], leave=ALLOW-planSum();
+  if(G.target>0 && leave<G.target){
+    showOverlay({
+      title:'⭐ 목표를 다시 볼까요?',
+      body:'목표는 <b>'+esc(G.name)+'</b>인데,<br>남겨 두는 돈이 <b>'+fmt(leave)+'</b>이에요.<br>이대로 가 볼까요?',
+      btns:[
+        {label:'계획을 고칠래요', fn:()=>{ hideOverlay(); }},
+        {label:'이대로 가 볼래요', gray:true, fn:()=>{ hideOverlay(); startWeek(); }},
+      ]});
+    return;
+  }
+  startWeek();
+}
+
+/* ─────────── ③ 실천하기 ─────────── */
+function draw(type){
+  const pool=CARD_POOL[type];
+  let cand=pool.filter(c=>!prevWeek[type].includes(c.key) && !thisWeek[type].includes(c.key));
+  if(!cand.length) cand=pool.filter(c=>!thisWeek[type].includes(c.key));
+  const pick=cand[Math.floor(Math.random()*cand.length)];
+  thisWeek[type].push(pick.key);
+  return {t:type, c:pick};
+}
+function startWeek(){
+  wallet=0; ledger=[]; resolved=new Set();
+  rec={bought:[], saved:[], short:[], uOut:[], uIn:[], refused:[]};
+  prevWeek=thisWeek; thisWeek={tempt:[],sudden:[],income:[]};
+  const evs=shuffle([draw('tempt'), draw('sudden'), draw('income'), draw('tempt'), draw('sudden')]);
+  events=[null, evs[0], evs[1], evs[2], evs[3], evs[4], null]; // 화~토에 하나씩
+  phase='run'; show('scr-run');
+  startDay(0);
+}
+function startDay(d){
+  dayIdx=d; qi=0; cardLock=false;
+  queue=buildQueue(d);
+  document.getElementById('day-now').textContent=DAYS[d];
+  document.getElementById('run-round').textContent=round+'번째 일주일';
+  renderPills(); renderWallet(); renderLedger();
+  document.getElementById('day-banner').textContent=(d===6?'🌙 ':'🌞 ')+DAYS[d]+'이에요.';
+  document.getElementById('dayarea').innerHTML='';
+  saveState();
+  schedule(650, nextItem);
+}
+function buildQueue(d){
+  const q=[];
+  if(d===0) q.push({kind:'allow'});
+  PLAN_ITEMS.forEach(it=>{
+    if(it.day===d && sel.has(it.id) && !resolved.has(it.id)) q.push({kind:'plan', it});
+  });
+  if(events[d]) q.push({kind:'event', ev:events[d]});
+  if(d===6) q.push({kind:'sunday'});
+  if(!q.length) q.push({kind:'rest'});
+  return q;
+}
+function nextItem(){
+  if(phase!=='run') return;
+  if(qi>=queue.length){
+    if(dayIdx<6) schedule(600, ()=>startDay(dayIdx+1));
+    return;
+  }
+  const item=queue[qi];
+  if(item.kind==='allow') cardAllow();
+  else if(item.kind==='plan') cardPlan(item.it);
+  else if(item.kind==='event'){
+    if(item.ev.t==='tempt') cardTempt(item.ev.c);
+    else if(item.ev.t==='sudden') cardSudden(item.ev.c);
+    else cardIncome(item.ev.c);
+  }
+  else if(item.kind==='rest') cardRest();
+  else if(item.kind==='sunday') cardSunday();
+}
+function proceed(){ qi++; schedule(550, nextItem); }
+function pick(fn){
+  return ()=>{
+    if(cardLock) return;
+    cardLock=true;
+    const c=document.querySelector('#dayarea .icard');
+    if(c) c.classList.add('resolved');
+    fn();
+    cardLock=false;
+  };
+}
+function showInline(o){
+  const area=document.getElementById('dayarea');
+  const div=document.createElement('div');
+  div.className='icard'+(o.calm?' calm':'');
+  div.innerHTML='<span class="tag">'+esc(o.tag||'')+'</span><h3>'+o.title+'</h3><p>'+o.body+'</p>';
+  const row=document.createElement('div'); row.className='btns';
+  o.btns.forEach(b=>{
+    const el=document.createElement('button');
+    el.className='btn'+(b.gray?' gray':'');
+    el.textContent=b.label;
+    el.onclick=b.fn;
+    row.appendChild(el);
+  });
+  div.appendChild(row);
+  area.innerHTML='';
+  area.appendChild(div);
+}
+function addLedger(name, inA, outA){
+  wallet += inA - outA;
+  ledger.push({d:DAYS_S[dayIdx], name, in:inA, out:outA, bal:wallet});
+  renderWallet(); renderLedger();
+}
+function remainingPlanned(){
+  let s=0;
+  PLAN_ITEMS.forEach(it=>{ if(sel.has(it.id) && !resolved.has(it.id)) s+=it.price; });
+  return s;
+}
+
+/* ── 카드들 ── */
+function cardAllow(){
+  showInline({tag:'일주일의 시작', calm:true,
+    title:'월요일 아침, 일주일 용돈을 받았어요!',
+    body:'이번 주 용돈은 <b>'+fmt(ALLOW)+'</b>.<br>받은 돈은 기입장에 적혀요.',
+    btns:[{label:'용돈 받기 (+'+fmt(ALLOW)+')', fn:pick(()=>{
+      addLedger('일주일 용돈', ALLOW, 0);
+      proceed();
+    })}]});
+}
+function cardPlan(it){
+  if(wallet<it.price){
+    showInline({tag:'계획한 일',
+      title:it.emoji+' '+esc(josa(it.name,'을','를'))+' 사러 갔어요.',
+      body:'그런데 지갑을 보니 <b>돈이 모자라요</b>…<br>(지갑 '+fmt(wallet)+' · 값 '+fmt(it.price)+')',
+      btns:[{label:'아쉽지만 돌아섰어요', gray:true, fn:pick(()=>{
+        resolved.add(it.id); rec.short.push(it.name);
+        toast('돈이 모자라서 '+josa(it.name,'을','를')+' 못 샀어요…');
+        proceed();
+      })}]});
+    return;
+  }
+  const btns=[{label:'살래요 (−'+fmt(it.price)+')', fn:pick(()=>{
+    resolved.add(it.id); rec.bought.push({name:it.name, price:it.price});
+    addLedger(it.name, 0, it.price);
+    proceed();
+  })}];
+  if(!it.req){
+    btns.push({label:'오늘은 안 살래요', gray:true, fn:pick(()=>{
+      resolved.add(it.id); rec.saved.push(it.name);
+      toast(it.name+' 값 '+fmt(it.price)+'을 아꼈어요.');
+      proceed();
+    })});
+  }
+  showInline({tag:'계획한 일',
+    title:it.emoji+' '+esc(josa(it.name,'을','를'))+' 사기로 한 날이에요.',
+    body:(it.req?'연필과 지우개가 다 떨어졌어요. 꼭 사야 해요.<br>':'')
+      +'값은 <b>'+fmt(it.price)+'</b>.'+(it.req?'':' 어떻게 할까요?'),
+    btns});
+}
+function cardSudden(c){
+  if(wallet<c.cost){
+    showInline({tag:'예상하지 못한 일!', title:c.title, body:c.short,
+      btns:[{label:c.shortBtn, gray:true, fn:pick(()=>{
+        rec.short.push(c.name);
+        toast('돈이 모자라서 '+josa(c.name,'은','는')+' 돈으로 못 했어요…');
+        proceed();
+      })}]});
+    return;
+  }
+  showInline({tag:'예상하지 못한 일!', title:c.title, body:c.body,
+    btns:[{label:c.btn, fn:pick(()=>{
+      rec.uOut.push({name:c.name, price:c.cost});
+      addLedger(c.name, 0, c.cost);
+      if(wallet>=remainingPlanned()) toast('남겨 둔 돈이 있어서 괜찮았어요.');
+      else toast('이대로면 계획한 것을 다 못 살 수도 있어요…');
+      proceed();
+    })}]});
+}
+function cardTempt(c){
+  if(wallet<c.cost){
+    showInline({tag:'살까? 말까?', title:c.title,
+      body:'그런데 지갑을 보니 <b>돈이 모자라요</b>…<br>(지갑 '+fmt(wallet)+' · '+fmt(c.cost)+' 필요)',
+      btns:[{label:'아쉽다…', gray:true, fn:pick(()=>{
+        rec.short.push(c.name);
+        proceed();
+      })}]});
+    return;
+  }
+  showInline({tag:'살까? 말까?', title:c.title, body:c.body,
+    btns:[
+      {label:c.yes, fn:pick(()=>{
+        rec.uOut.push({name:c.name, price:c.cost});
+        addLedger(c.name, 0, c.cost);
+        if(wallet<remainingPlanned()) toast('이대로면 계획한 것을 다 못 살 수도 있어요…');
+        proceed();
+      })},
+      {label:c.no, gray:true, fn:pick(()=>{
+        rec.refused.push(c.name);
+        toast(c.noToast);
+        proceed();
+      })},
+    ]});
+}
+function cardIncome(c){
+  if(c.yes){
+    showInline({tag:'뜻밖의 용돈!', calm:true, title:c.title, body:c.body,
+      btns:[
+        {label:c.yes, fn:pick(()=>{
+          rec.uIn.push({name:c.name, amt:c.amt});
+          addLedger(c.name, c.amt, 0);
+          proceed();
+        })},
+        {label:c.no, gray:true, fn:pick(()=>{
+          toast(c.noToast);
+          proceed();
+        })},
+      ]});
+  } else {
+    showInline({tag:'뜻밖의 용돈!', calm:true, title:c.title, body:c.body,
+      btns:[{label:c.btn, fn:pick(()=>{
+        rec.uIn.push({name:c.name, amt:c.amt});
+        addLedger(c.name, c.amt, 0);
+        proceed();
+      })}]});
+  }
+}
+function cardRest(){
+  showInline({tag:DAYS[dayIdx], calm:true,
+    title:'오늘은 돈 쓸 일이 없는 날이에요.',
+    body:'지갑에 '+fmt(wallet)+' 그대로 있어요.',
+    btns:[{label:'다음 날로 →', fn:pick(proceed)}]});
+}
+function cardSunday(){
+  showInline({tag:'일주일 끝!', calm:true,
+    title:'일요일 — 한 주가 끝났어요.',
+    body:'지갑에 <b>'+fmt(wallet)+'</b> 남았어요.<br>기입장에 나의 일주일이 다 적혀 있어요.',
+    btns:[{label:'④ 내 기입장 읽어 보기', fn:pick(()=>{ finishWeek(); })}]});
+}
+
+/* ── 그리기 ── */
+function renderWallet(){ document.getElementById('wallet-now').textContent=fmt(wallet); }
+function renderPills(){
+  const p=document.getElementById('daypills');
+  p.innerHTML='';
+  DAYS_S.forEach((d,i)=>{
+    const s=document.createElement('span');
+    s.className='dp'+(i===dayIdx?' cur':'')+(i<dayIdx?' past':'');
+    s.textContent=(i<dayIdx?'✓':'')+d;
+    p.appendChild(s);
+  });
+}
+function ledgerHTML(){
+  if(!ledger.length) return '<div class="ledger-empty">아직 적힌 것이 없어요.</div>';
+  let ti=0, to=0;
+  let h='<table class="ledger"><thead><tr><th>요일</th><th>내용</th><th>들어온 돈</th><th>나간 돈</th><th>남은 돈</th></tr></thead><tbody>';
+  ledger.forEach((l,i)=>{
+    ti+=l.in; to+=l.out;
+    h+='<tr'+(i===ledger.length-1?' class="new"':'')+'>'
+      +'<td class="dy">'+esc(l.d)+'</td>'
+      +'<td class="nm">'+esc(l.name)+'</td>'
+      +'<td class="in">'+(l.in?'+'+fmt(l.in):'')+'</td>'
+      +'<td class="out">'+(l.out?'−'+fmt(l.out):'')+'</td>'
+      +'<td class="bal">'+fmt(l.bal)+'</td></tr>';
+  });
+  h+='</tbody><tfoot><tr><td></td><td class="nm">합계</td><td class="in">'+(ti?'+'+fmt(ti):'')+'</td><td class="out">'+(to?'−'+fmt(to):'')+'</td><td class="bal">'+fmt(wallet)+'</td></tr></tfoot></table>';
+  return h;
+}
+function renderLedger(){ document.getElementById('ledger-body').innerHTML=ledgerHTML(); }
+
+/* ─────────── ④ 평가하기 ─────────── */
+function finishWeek(){
+  phase='result'; runsDone++;
+  buildResult();
+  saveState();
+  show('scr-result');
+}
+function chipHTML(cls, txt){ return '<span class="rchip '+cls+'">'+txt+'</span>'; }
+function fillBox(id, chips, emptyText, emptyCls){
+  document.getElementById(id).innerHTML = chips.length? chips.join('') : chipHTML(emptyCls||'dim', emptyText);
+}
+function buildResult(){
+  document.getElementById('result-title').textContent=round+'번째 일주일 끝!';
+  document.getElementById('res-wallet').textContent='남은 돈 '+fmt(wallet);
+  document.getElementById('res-ledger').innerHTML=ledgerHTML();
+
+  const G=GOALS[goal];
+  let ok, word;
+  if(G.kind==='noshort'){
+    ok = rec.short.length===0;
+    word = ok? '달성! 돈이 모자라는 날이 없었어요 🎉'
+             : '다음에 다시! 돈이 모자란 일이 '+rec.short.length+'번 있었어요';
+  } else {
+    ok = wallet>=G.target;
+    word = ok? '달성! 남은 돈 '+fmt(wallet)+' 🎉'
+             : '다음에 다시! 남은 돈 '+fmt(wallet)+' (목표 '+fmt(G.target)+')';
+  }
+  document.getElementById('res-goal').innerHTML=chipHTML(ok?'ok':'no', G.icon+' '+esc(G.name)+' — '+word);
+
+  fillBox('res-bought', rec.bought.map(b=>chipHTML('ok', esc(b.name)+' −'+fmt(b.price))), '이번 주엔 없었어요');
+  fillBox('res-hold',
+    rec.saved.map(n=>chipHTML('ok','💪 '+esc(n)+' (계획했지만 안 샀어요)'))
+      .concat(rec.refused.map(n=>chipHTML('ok','💪 '+esc(n)+' (참았어요)'))),
+    '이번 주엔 없었어요');
+  fillBox('res-unexp',
+    rec.uOut.map(o=>chipHTML('ex','⚡ '+esc(o.name)+' −'+fmt(o.price)))
+      .concat(rec.uIn.map(o=>chipHTML('ok','➕ '+esc(o.name)+' +'+fmt(o.amt)))),
+    '이번 주엔 없었어요');
+  fillBox('res-short', rec.short.map(n=>chipHTML('no','😢 '+esc(n))), '없음! 🎉', 'ok');
+
+  const les=document.getElementById('res-lesson');
+  if(rec.short.length>0){
+    les.innerHTML='돈이 모자라서 못 한 일이 있었어요.<br>'
+      +'다음 일주일에는 쓰지 않고 <b>남겨 두는 돈</b>을 조금 더 잡아 두면 어떨까요?';
+  } else if(rec.uOut.length>0){
+    les.innerHTML='예상하지 못한 지출이 있었지만, <b>남겨 둔 돈</b>이 있어서 괜찮았어요.<br>'
+      +'이게 용돈을 잘 관리하는 힘이에요!';
+  } else {
+    les.innerHTML='이번 주는 예상하지 못한 지출 없이 지나갔어요.<br>'
+      +'진짜 일주일에도 그럴까요? 한 번 더 살아 봐요!';
+  }
+}
+function retryPlan(){ round++; enterPlan(); }
+function goFinal(){
+  phase='final';
+  document.getElementById('wheel-count').textContent=runsDone+'번';
+  document.getElementById('final-sub').textContent='목표 세우기 → 계획하기 → 실천하기 → 평가하기. 너는 방금 이 바퀴를 '+runsDone+'번 돌았어요.';
+  saveState();
+  show('scr-final');
+}
+
+/* ─────────── 확인용 모달 ─────────── */
+function showOverlay(o){
+  document.getElementById('ov-title').innerHTML=o.title;
+  document.getElementById('ov-body').innerHTML=o.body;
+  const row=document.getElementById('ov-btns');
+  row.innerHTML='';
+  o.btns.forEach(b=>{
+    const el=document.createElement('button');
+    el.className='btn'+(b.gray?' gray':'');
+    el.textContent=b.label;
+    el.onclick=b.fn;
+    row.appendChild(el);
+  });
+  document.getElementById('overlay').classList.add('on');
+}
+function hideOverlay(){ document.getElementById('overlay').classList.remove('on'); }
+
+/* 검토용 (수업에는 영향 없음) */
+window.App={
+  get state(){ return {phase, goal, round, runsDone, wallet, ledger, rec,
+    sel:[...sel], resolved:[...resolved], dayIdx, queue, qi,
+    events:events.map(e=>e?e.t+':'+e.c.key:null)}; },
+};
+</script>
+</body>
+</html>

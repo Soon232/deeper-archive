@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>말판 도우미</title>
+<style>
+  :root {
+    --bg: #eaf4f4;
+    --card: #ffffff;
+    --ink: #1f2d2d;
+    --accent: #2f8f8f;
+    --accent-dark: #1f6b6b;
+    --shadow: rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    color: var(--ink);
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 14px 14px 24px;
+    min-height: 100%;
+  }
+  h1 {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin: 6px 0 14px;
+    letter-spacing: 0.02em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  }
+  .cell {
+    aspect-ratio: 1 / 1;
+    background: var(--card);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 3px 0 var(--shadow);
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--accent-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.06s ease, background 0.15s ease;
+  }
+  .cell:active {
+    transform: translateY(2px);
+    background: #d8efef;
+  }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 40, 40, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 10;
+  }
+  .overlay.show { display: flex; }
+  .panel {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 28px 24px 22px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  .panel .num {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    padding: 4px 16px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .line {
+    font-size: 22px;
+    line-height: 1.55;
+    margin: 8px 0;
+    font-weight: 600;
+  }
+  .line .who {
+    color: var(--accent-dark);
+    font-weight: 800;
+    margin-right: 6px;
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px 0;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+  }
+  .btn.replay {
+    background: var(--accent);
+    color: white;
+  }
+  .btn.replay:active { background: var(--accent-dark); }
+  .btn.close {
+    background: #eee;
+    color: var(--ink);
+  }
+  .btn.close:active { background: #ddd; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>해변 말판 도우미</h1>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="num" id="panelNum">1</div>
+    <div id="panelLines"></div>
+    <div class="btn-row">
+      <button class="btn replay" id="replayBtn">🔊 다시 듣기</button>
+      <button class="btn close" id="closeBtn">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CELLS = {
+  1:  [["A","Where are you from?"], ["B","I am from India."]],
+  2:  [["A","Can I bring animals?"], ["B","Yes, you can."]],
+  3:  [["A","What will you do this summer?"], ["B","I will join a science camp."]],
+  4:  [["A","What are these?"], ["B","They are spoons."]],
+  5:  [["A","Whose bottle is this?"], ["B","It's Brian's."]],
+  6:  [["A","Let's go to the movies."], ["B","Sounds good."]],
+  7:  [["A","Can I take pictures?"], ["B","No, you can't."]],
+  8:  [["A","What will you do this summer?"], ["B","I will read many books."]],
+  9:  [["A","Where are you from?"], ["B","I am from the U.S."]],
+  10: [["A","Let's play a board game."], ["B","Sounds good."], ["B","(or) Sorry, but I'm busy."]],
+  11: [["A","What are those?"], ["B","They are buttons."]],
+  12: [["A","Whose textbook is this?"], ["B","It's Jiho's."]]
+};
+
+const grid = document.getElementById('grid');
+const overlay = document.getElementById('overlay');
+const panelNum = document.getElementById('panelNum');
+const panelLines = document.getElementById('panelLines');
+const replayBtn = document.getElementById('replayBtn');
+const closeBtn = document.getElementById('closeBtn');
+
+for (let i = 1; i <= 12; i++) {
+  const b = document.createElement('button');
+  b.className = 'cell';
+  b.textContent = i;
+  b.addEventListener('click', () => openCell(i));
+  grid.appendChild(b);
+}
+
+function openCell(n) {
+  panelNum.textContent = n;
+  panelLines.innerHTML = CELLS[n].map(([who, text]) =>
+    `<div class="line"><span class="who">${who}</span>${text}</div>`
+  ).join('');
+  overlay.classList.add('show');
+  speakCell(n);
+}
+
+function closePanel() {
+  overlay.classList.remove('show');
+  window.speechSynthesis.cancel();
+}
+
+function speakCell(n) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const lines = CELLS[n].filter(([who]) => true).map(([, text]) => text.replace('(or) ', ''));
+  let i = 0;
+  function speakNext() {
+    if (i >= lines.length) return;
+    const u = new SpeechSynthesisUtterance(lines[i]);
+    u.lang = 'en-US';
+    u.rate = 0.88;
+    u.onend = () => { i++; setTimeout(speakNext, 250); };
+    window.speechSynthesis.speak(u);
+  }
+  speakNext();
+}
+
+replayBtn.addEventListener('click', () => speakCell(Number(panelNum.textContent)));
+closeBtn.addEventListener('click', closePanel);
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closePanel(); });
+</script>
+</body>
+</html>

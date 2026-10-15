@@ -86,6 +86,24 @@ h1 {
   font-size: 0.85rem;
   line-height: 1.7;
 }
+.list li.offline {
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: 1px dashed var(--mist);
+  border-left: 4px solid var(--mist);
+  border-radius: 0 10px 10px 0;
+}
+.note {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  color: var(--blue);
+  border: 1px solid var(--mist);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
 .placeholder {
   padding: 1.6rem 1.2rem;
   border: 1.5px dashed var(--mist);
@@ -111,12 +129,68 @@ footer {
   <p class="lead">AI와 함께 지은 도구와 앱. 눌러 보면 바로 돌아간다.</p>
   <ul class="list">
     <!-- 새 작품은 이 줄 바로 아래에 얹는다. 최신이 위. -->
+    <li><a href="261014-태양광자동차.html">
+      <div class="date">2026. 10. 14</div>
+      <div class="title">태양광 자동차 도우미</div>
+      <div class="summary">실과 친환경 수송 시간에 키트로 태양광 자동차를 만들며 옆에 띄워 두는 화면. 차가 안 움직이면 증상부터 골라 고장을 찾아간다. 아이들 기기가 느려 AR 앱 대신 이걸 썼다.</div>
+    </a></li>
+    <li><a href="261013-문제상자.html">
+      <div class="date">2026. 10. 13</div>
+      <div class="title">영어 9단원 문제 상자</div>
+      <div class="summary">상자 스물다섯 개를 모둠이 골라 여는 영어 게임. 맞히면 상자를 갖거나 남에게 주고, 그때마다 깜짝 효과가 터진다. 발음 불만이 있던 다음 날이라 소리는 뺐다.</div>
+    </a></li>
+    <li><a href="261012-전개도.html">
+      <div class="date">2026. 10. 12</div>
+      <div class="title">전개도 접기 교실</div>
+      <div class="summary">모눈에 여섯 칸을 그리면 정육면체 전개도인지 판정해 주고, 슬라이더로 접어 3D로 돌려 본다. 열한 가지 전개도를 직접 찾으면 도장을 받는다. 디지털 역량 연수 실습에서 만들었다.</div>
+    </a></li>
+    <li><a href="261012-해피샵.html">
+      <div class="date">2026. 10. 12</div>
+      <div class="title">Happy Shop 연습</div>
+      <div class="summary">영어 9단원 물건 사기 표현을 말판놀이·혼자 쇼핑·챈트로 연습한다. 포스터를 먼저 끝낸 아이들이 남는 시간에 쓰도록 지었다.</div>
+    </a></li>
+    <li class="offline">
+      <div class="date">2026. 9. 30</div>
+      <div class="title">자리 바꾸기</div>
+      <div class="summary">교실에서 모둠 자리를 뽑는 화면. 짝이 겹치지 않게, 떨어져 앉아야 할 아이들은 떨어지게 뽑는다. 아이 이름이 들어 있어 여기에는 싣지 않고 교실에서만 쓴다.</div>
+      <div class="note">교실에서만</div>
+    </li>
+    <li><a href="260908-어림연습.html">
+      <div class="date">2026. 9. 8</div>
+      <div class="title">수의 범위</div>
+      <div class="summary">올림·버림·반올림을 단계별로 푸는 수학 연습. 문제는 풀 때마다 새로 만들어지고, 틀리면 답 대신 자리 상자와 수직선으로 다시 생각하게 한다. 두 번째도 틀려야 풀이가 나온다.</div>
+    </a></li>
+    <li><a href="260831-번호부르기.html">
+      <div class="date">2026. 8. 31</div>
+      <div class="title">번호 부르기</div>
+      <div class="summary">익힘책을 다 푼 아이를 번호로 불러내던 일을 앱이 대신한다. 누를 때마다 「N번 나오세요」가 크게 뜨고 소리로 읽어 준다. 교실 어디서든 리모컨으로 넘긴다.</div>
+    </a></li>
+    <li><a href="260831-나의용돈일주일.html">
+      <div class="date">2026. 8. 31</div>
+      <div class="title">나의 용돈 일주일</div>
+      <div class="summary">실과 용돈 관리. 한 주 용돈으로 목표를 세우고 계획해 써 본 뒤 되돌아본다. 「나의 하루 설계」와 같은 네 단계로 짰다.</div>
+    </a></li>
+    <li><a href="260829-나의하루설계.html">
+      <div class="date">2026. 8. 29</div>
+      <div class="title">나의 하루 설계</div>
+      <div class="summary">실과 시간 관리. 오후 세 시부터 아홉 시까지 열두 칸에 할 일 블록을 채운다. 칸이 딱 맞게 정해져 있어 쉬는 시간을 넣으려면 무언가를 포기해야 한다.</div>
+    </a></li>
     <li><a href="260828-선사시대퀴즈.html">
       <div class="date">2026. 8. 28</div>
       <div class="title">선사시대 모험 퀴즈</div>
       <div class="summary">구석기·신석기·청동기를 열다섯 문제로 건너는 태블릿 퀴즈 게임. 대화로 청하고, 에이전트 직원이 지었다 — 유물 사진의 이름표를 지우는 일까지. html 파일 하나로 인터넷 없이도 돈다.</div>
     </a></li>
-    <li class="placeholder">다음 작품이 올 자리<br>YYMMDD-이름.html로 지으면 여기 한 줄씩 쌓인다</li>
+    <li><a href="260825-동시연습장.html">
+      <div class="date">2026. 8. 25</div>
+      <div class="title">동시 연습장</div>
+      <div class="summary">아이들이 동시를 써 보는 연습장. 서버도 로그인도 없이 쓴 글은 그 기기에만 남는다. 학급 홈페이지에 걸어 시 쓰기 수업에서 썼고, 동학년 선생님들과도 나눴다.</div>
+    </a></li>
+    <li><a href="260806-말판도우미.html">
+      <div class="date">2026. 8. 6</div>
+      <div class="title">말판 도우미</div>
+      <div class="summary">영어 Review 1 말판놀이 곁에 두는 화면. 말판 칸을 누르면 그 칸의 문장이 뜨고 영어 소리가 난다. 소리는 교과서 발음과 달라 접었고, 화면의 문장이 읽기 발판으로 남았다.</div>
+    </a></li>
+    <li class="placeholder">다음 작품이 올 자리<br>YYMMDD-이름.html로 지으면 여기 한 줄씩 쌓인다<br>갈래 나누기는 더 모이면</li>
   </ul>
   <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
 </body>

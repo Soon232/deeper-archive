@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>나의 하루 설계</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { touch-action:manipulation; }
+  body {
+    font-family:'Malgun Gothic','맑은 고딕',sans-serif;
+    background:#faf5ea; color:#3a3226;
+    min-height:100vh; padding:14px;
+  }
+  .wrap { max-width:900px; margin:0 auto; }
+
+  .screen { display:none; }
+  .screen.on { display:block; animation:fadein .35s ease; }
+  @keyframes fadein { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+  h1 { font-size:34px; text-align:center; margin:26px 0 10px; color:#4a3b22; }
+  .sub { text-align:center; font-size:18px; color:#7a6a50; line-height:1.6; }
+  .warmline {
+    margin:26px auto 8px; max-width:460px; text-align:center;
+    background:#fff8e8; border:2px dashed #e0c98f; border-radius:16px;
+    padding:16px 20px; font-size:19px; color:#8a6d3b; line-height:1.6;
+  }
+  .btn {
+    display:inline-block; border:none; cursor:pointer;
+    font-family:inherit; font-weight:bold;
+    border-radius:14px; padding:14px 26px; font-size:20px;
+    background:#e8853c; color:#fff;
+    box-shadow:0 3px 0 #c2691f;
+  }
+  .btn:active { transform:translateY(2px); box-shadow:0 1px 0 #c2691f; }
+  .btn.big { font-size:23px; padding:17px 38px; }
+  .btn.gray { background:#b8ad99; box-shadow:0 3px 0 #948a77; }
+  .btn.green { background:#3f9e63; box-shadow:0 3px 0 #2c7a49; }
+  .btn.blue { background:#4a7bd0; box-shadow:0 3px 0 #3560ab; }
+  .btn[disabled] { background:#d8d0c0; color:#a49a86; box-shadow:0 3px 0 #beb5a3; cursor:default; }
+  .center { text-align:center; }
+
+  .stepbadge {
+    display:inline-block; background:#4a3b22; color:#ffe9b8;
+    border-radius:999px; padding:5px 16px; font-size:16px; font-weight:bold;
+    margin-bottom:8px;
+  }
+  .phase-title { font-size:25px; font-weight:bold; margin:4px 0 6px; color:#4a3b22; }
+  .phase-desc { font-size:17px; color:#7a6a50; line-height:1.55; }
+
+  /* 목표 고르기 */
+  .goal-list { display:flex; flex-direction:column; gap:14px; max-width:440px; margin:24px auto; }
+  .goal-btn {
+    font-family:inherit; font-size:21px; font-weight:bold; cursor:pointer;
+    padding:18px 20px; border-radius:16px; border:3px solid #d8c9a8;
+    background:#fffdf6; color:#4a3b22; text-align:left;
+  }
+  .goal-btn small { display:block; font-size:15px; font-weight:normal; color:#8a7a5e; margin-top:4px; }
+  .goal-btn:active { background:#fff1d2; }
+
+  /* 계획 화면 */
+  .topbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:10px 0 12px; }
+  .chip {
+    background:#fff; border:2px solid #d8c9a8; border-radius:999px;
+    padding:6px 14px; font-size:16px; font-weight:bold; color:#6b5a3d;
+  }
+  .chip.goal { border-color:#e05c7a; color:#c2385a; }
+  .hintline {
+    background:#eef6ee; border-left:5px solid #3f9e63; border-radius:0 10px 10px 0;
+    padding:10px 14px; font-size:16px; color:#2c6a44; margin:10px 0; line-height:1.5;
+  }
+  .planmsg { min-height:24px; font-size:16px; color:#c2385a; font-weight:bold; margin:6px 0; }
+
+  .shelf {
+    display:flex; flex-wrap:wrap; gap:9px; margin:10px 0 18px;
+    background:#f3ead7; border-radius:16px; padding:12px;
+  }
+  .shelf-btn {
+    font-family:inherit; cursor:pointer; border-radius:12px;
+    border:3px solid transparent; padding:10px 13px;
+    font-size:17px; font-weight:bold; color:#fff; min-height:48px;
+  }
+  .shelf-btn small { display:block; font-size:13px; font-weight:normal; opacity:.92; margin-top:2px; }
+  .shelf-btn.placed { opacity:.35; }
+  .shelf-btn.sel { border-color:#4a3b22; transform:scale(1.05); box-shadow:0 0 0 3px #ffe9b8; }
+  .shelf-btn.free-btn { color:#6b5a1e; border-style:dashed; border-color:#c9a83c; background:#f7e39a !important; }
+  .shelf-btn.free-btn.sel { border-color:#4a3b22; }
+  .shelf-btn.goalb { border-color:#e6b000; }
+  .cell.goalcell { box-shadow:0 0 0 3px #e6b000; }
+
+  /* 시간표 */
+  .tl { display:flex; gap:26px; }
+  .tcol { flex:1; display:flex; flex-direction:column; gap:7px; }
+  @media (max-width:680px){ .tl{flex-direction:column; gap:7px;} }
+  .slotrow { display:flex; align-items:center; gap:9px; }
+  .slotrow .t { width:74px; text-align:right; font-size:15px; color:#8a7a5e; font-weight:bold; flex:none; }
+  .cell {
+    flex:1; min-height:48px; border-radius:11px; cursor:pointer;
+    display:flex; align-items:center; padding:4px 14px; gap:8px;
+    border:2.5px dashed #cfc2a6; background:#fffdf6;
+    font-size:17px; font-weight:bold; color:#b0a486;
+  }
+  .cell.filled { border-style:solid; border-color:rgba(0,0,0,.14); color:#fff; }
+  .cell.freecell { background:#f7e39a; border:2.5px dashed #c9a83c; color:#6b5a1e; }
+  .cell.cont { font-size:15px; opacity:.95; }
+  .cell .mark { margin-left:auto; font-size:18px; }
+  .cell.done { opacity:.5; }
+  .cell.cur { outline:4px solid #ffb84d; outline-offset:2px; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{outline-color:#ffb84d;} 50%{outline-color:#ff8c1a;} }
+  .cell.over { border:3px solid #d63333 !important; box-shadow:0 0 0 3px #f5c2c2; }
+  .cell.removable { animation:wig .7s infinite; outline:3px dashed #d63333; outline-offset:2px; }
+  @keyframes wig { 0%,100%{transform:rotate(0);} 25%{transform:rotate(-.8deg);} 75%{transform:rotate(.8deg);} }
+  .endline {
+    margin-top:4px; text-align:center; font-size:15px; font-weight:bold;
+    color:#8a7a5e; border-top:3px solid #c9b98f; padding-top:6px;
+  }
+  .overwarn { color:#c22; }
+
+  .status { font-size:17px; font-weight:bold; color:#6b5a3d; margin:12px 0 8px; }
+
+  /* 실행 화면 */
+  .clockbar {
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:#4a3b22; color:#ffe9b8; border-radius:14px;
+    padding:12px 18px; margin:10px 0 14px; font-size:19px; font-weight:bold;
+  }
+  .clockbar .now { font-size:24px; color:#fff; }
+  .fixbanner {
+    display:none; background:#fdecec; border:3px solid #d63333; border-radius:14px;
+    padding:14px 16px; margin:10px 0; font-size:18px; color:#a02020;
+    font-weight:bold; line-height:1.55;
+  }
+  .fixbanner.on { display:block; }
+  .fixbanner small { display:block; font-weight:normal; font-size:15px; color:#7a5050; margin-top:4px; }
+
+  /* 카드(예상하지 못한 일) */
+  .overlay {
+    display:none; position:fixed; inset:0; background:rgba(40,30,10,.45);
+    z-index:50; align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay.on { display:flex; }
+  .card {
+    background:#fff; border-radius:20px; max-width:430px; width:100%;
+    padding:26px 24px 22px; text-align:center;
+    animation:pop .28s ease; border-top:10px solid #e8853c;
+  }
+  .card.calm { border-top-color:#3f9e63; }
+  @keyframes pop { from{transform:scale(.85); opacity:0;} to{transform:none; opacity:1;} }
+  .card .tag { display:inline-block; background:#fdecec; color:#c22; border-radius:999px; padding:4px 14px; font-size:15px; font-weight:bold; margin-bottom:10px; }
+  .card.calm .tag { background:#eef6ee; color:#2c7a49; }
+  .card h3 { font-size:23px; margin-bottom:10px; color:#3a3226; line-height:1.4; }
+  .card p { font-size:17px; color:#6b5a3d; line-height:1.6; margin-bottom:18px; }
+  .card .btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+
+  /* 토스트 */
+  #toast {
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+    background:#4a3b22; color:#ffe9b8; border-radius:999px;
+    padding:12px 24px; font-size:17px; font-weight:bold;
+    opacity:0; pointer-events:none; transition:opacity .3s; z-index:60;
+    max-width:90vw; text-align:center;
+  }
+  #toast.on { opacity:1; }
+
+  /* 결과 화면 */
+  .resultbox { background:#fff; border-radius:18px; padding:20px 22px; margin:14px 0; border:2px solid #e6dcc4; }
+  .resultbox h4 { font-size:18px; color:#8a7a5e; margin-bottom:10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .rchip { border-radius:999px; padding:7px 15px; font-size:16px; font-weight:bold; }
+  .rchip.ok { background:#eef6ee; color:#2c7a49; border:2px solid #9fd0b2; }
+  .rchip.no { background:#fdecec; color:#c22; border:2px solid #eda9a9; text-decoration:line-through; }
+  .rchip.ex { background:#fff3e2; color:#b5651d; border:2px solid #eec9a0; }
+  .lesson {
+    background:#fff8e8; border:2px dashed #e0c98f; border-radius:16px;
+    padding:16px 20px; font-size:18px; color:#8a6d3b; line-height:1.65; margin:16px 0;
+  }
+  .bookline { font-size:14px; color:#a4967a; margin-top:8px; }
+
+  /* 마무리 화면 */
+  .wheelwrap { text-align:center; margin:16px 0; }
+  .finalq {
+    margin:20px auto; max-width:520px; text-align:center;
+    background:#4a3b22; color:#ffe9b8; border-radius:18px;
+    padding:22px 24px; font-size:22px; line-height:1.6; font-weight:bold;
+  }
+  .btnrow { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══════ 시작 화면 ══════ -->
+  <section id="scr-start" class="screen on">
+    <h1>⏰ 나의 하루 설계</h1>
+    <p class="sub">시간 자원 연습장<br>오후 3시부터 밤 9시까지, 나의 오후를 계획해 봐요.</p>
+    <div class="warmline">계획은 무너져도 괜찮아요.<br>다시 세우면 되니까요.</div>
+    <p class="center" style="margin-top:24px;">
+      <button class="btn big" onclick="goGoal()">시작하기</button>
+    </p>
+  </section>
+
+  <!-- ══════ ① 목표 세우기 ══════ -->
+  <section id="scr-goal" class="screen">
+    <span class="stepbadge">① 목표 세우기</span>
+    <div class="phase-title">오늘 오후에 꼭 하고 싶은 일을 하나 골라요.</div>
+    <p class="phase-desc">구체적이고 이룰 수 있는 목표를 세웁니다.</p>
+    <div class="goal-list">
+      <button class="goal-btn" onclick="pickGoal('recorder')">🎵 리코더 연습 30분 하기<small>다음 주에 리코더 수행 평가가 있어요!</small></button>
+      <button class="goal-btn" onclick="pickGoal('reading')">📖 독서 30분 하기<small>읽던 책이 한창 재미있는 데서 멈췄어요.</small></button>
+      <button class="goal-btn" onclick="pickGoal('play')">⚽ 놀기 1시간 하기<small>오늘은 신나게 놀고 싶은 날!</small></button>
+    </div>
+  </section>
+
+  <!-- ══════ ② 계획하기 ══════ -->
+  <section id="scr-plan" class="screen">
+    <span class="stepbadge">② 계획하기</span>
+    <div class="phase-title">할 일 블록으로 시간표를 채워요.</div>
+    <p class="phase-desc">블록을 한 번 탭하고, 놓을 칸을 탭해요. 놓은 블록을 다시 탭하면 되돌아가요.</p>
+    <div class="topbar">
+      <span class="chip" id="round-chip">1번째 계획</span>
+      <span class="chip goal" id="goal-chip"></span>
+      <span class="chip" id="fill-chip">12칸 중 0칸 찼어요</span>
+    </div>
+    <div class="hintline" id="plan-hint" style="display:none;">
+      교과서의 약속 — “예상하지 못한 일에 대비해 여유 시간을 남겨 둡니다.” (교과서 84쪽)
+    </div>
+    <div class="shelf" id="shelf"></div>
+    <div class="planmsg" id="plan-msg"></div>
+    <div class="tl" id="tl-plan"></div>
+    <div class="endline">🌙 밤 9:00 — 잘 준비를 해요</div>
+    <p class="center" style="margin:20px 0;">
+      <button class="btn big green" id="btn-start-run" onclick="tryStartRun()">③ 실천하기 — 하루 살아보기 ▶</button>
+    </p>
+  </section>
+
+  <!-- ══════ ③ 실천하기 ══════ -->
+  <section id="scr-run" class="screen">
+    <span class="stepbadge">③ 실천하기</span>
+    <div class="clockbar">
+      <span>지금 시각</span><span class="now" id="clock-now">오후 3:00</span>
+      <span style="margin-left:auto;" id="run-round">1번째 하루</span>
+    </div>
+    <div class="fixbanner" id="fixbanner">
+      ⚠ 밤 9시를 넘어가요! 빨간 테두리가 생긴 할 일 중 하나를 탭해서 빼요.
+      <small>예상하지 못한 일이 생기면 <b>융통성 있게 계획을 수정</b>합니다. (교과서 84쪽)</small>
+    </div>
+    <div class="tl" id="tl-run"></div>
+    <div class="endline" id="run-endline">🌙 밤 9:00 — 잘 준비를 해요</div>
+  </section>
+
+  <!-- ══════ ④ 평가하기 ══════ -->
+  <section id="scr-result" class="screen">
+    <span class="stepbadge">④ 평가하기</span>
+    <div class="phase-title" id="result-title">하루 끝! 밤 9시가 되었어요.</div>
+    <p class="phase-desc">목표를 달성했는지, 계획대로 실천했는지 평가합니다.</p>
+
+    <div class="resultbox">
+      <h4>✅ 오늘 한 일</h4>
+      <div class="chips" id="res-done"></div>
+    </div>
+    <div class="resultbox" id="res-lost-box">
+      <h4>❌ 밀려서 못 하게 된 일</h4>
+      <div class="chips" id="res-lost"></div>
+    </div>
+    <div class="resultbox">
+      <h4>🟡 여유 시간 덕분에 한 일</h4>
+      <div class="chips" id="res-absorbed"></div>
+    </div>
+    <div class="resultbox">
+      <h4>🎯 나의 목표</h4>
+      <div class="chips" id="res-goal"></div>
+    </div>
+
+    <div class="lesson" id="res-lesson"></div>
+
+    <div class="btnrow">
+      <button class="btn big blue" onclick="retryPlan()">🔄 계획 고쳐서 다시 살아 보기</button>
+      <button class="btn gray" onclick="goFinal()">마무리하기</button>
+    </div>
+  </section>
+
+  <!-- ══════ 마무리 화면 ══════ -->
+  <section id="scr-final" class="screen">
+    <h1 style="font-size:28px;">시간 자원의 합리적인 관리 방법</h1>
+    <div class="wheelwrap">
+      <svg viewBox="0 0 360 360" width="320" height="320" style="max-width:88vw;height:auto;">
+        <defs>
+          <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#9a8a68"/>
+          </marker>
+        </defs>
+        <path d="M 224 76 A 115 115 0 0 1 284 224" fill="none" stroke="#9a8a68" stroke-width="5" marker-end="url(#arw)"/>
+        <path d="M 224 284 A 115 115 0 0 1 76 224" fill="none" stroke="#9a8a68" stroke-width="5" marker-end="url(#arw)"/>
+        <path d="M 76 136 A 115 115 0 0 1 136 76" fill="none" stroke="#9a8a68" stroke-width="5" marker-end="url(#arw)"/>
+        <path d="M 284 136 A 115 115 0 0 0 224 76" fill="none" stroke="none"/>
+        <path d="M 136 284 A 115 115 0 0 0 284 224" fill="none" stroke="none"/>
+        <g text-anchor="middle" font-family="'Malgun Gothic',sans-serif" font-weight="bold">
+          <circle cx="180" cy="52" r="46" fill="#d63384"/>
+          <text x="180" y="46" fill="#fff" font-size="20">1</text>
+          <text x="180" y="70" fill="#fff" font-size="16">목표 세우기</text>
+          <circle cx="308" cy="180" r="46" fill="#e8622c"/>
+          <text x="308" y="174" fill="#fff" font-size="20">2</text>
+          <text x="308" y="198" fill="#fff" font-size="16">계획하기</text>
+          <circle cx="180" cy="308" r="46" fill="#2f9e44"/>
+          <text x="180" y="302" fill="#fff" font-size="20">3</text>
+          <text x="180" y="326" fill="#fff" font-size="16">실천하기</text>
+          <circle cx="52" cy="180" r="46" fill="#1c7ed6"/>
+          <text x="52" y="174" fill="#fff" font-size="20">4</text>
+          <text x="52" y="198" fill="#fff" font-size="16">평가하기</text>
+          <text x="180" y="172" fill="#4a3b22" font-size="21" id="wheel-line1">이 바퀴를</text>
+          <text x="180" y="202" fill="#c2385a" font-size="26" id="wheel-count">0번</text>
+        </g>
+      </svg>
+      <p class="sub" style="margin-top:6px;" id="final-sub">너는 방금 이 바퀴를 돌았어요.</p>
+    </div>
+    <div class="lesson center">
+      평가 결과는 다음 목표 설정과 시간 계획 수립에 반영합니다.<br>
+      예상하지 못한 일이 생기면 <b>융통성 있게 계획을 수정</b>합니다.
+      <div class="bookline">— 교과서 84쪽, 시간 자원의 합리적인 관리 방법</div>
+    </div>
+    <div class="finalq">💭 내일 진짜 하루에는,<br>여유 시간을 언제 넣을래요?</div>
+    <div class="btnrow">
+      <button class="btn gray" onclick="location.reload()">처음부터 다시 하기</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- 카드 모달 -->
+<div class="overlay" id="overlay">
+  <div class="card" id="cardbox">
+    <span class="tag" id="card-tag">예상하지 못한 일!</span>
+    <h3 id="card-title"></h3>
+    <p id="card-body"></p>
+    <div class="btns" id="card-btns"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ─────────── 데이터 ─────────── */
+const SLOT_MIN = 30, CAP = 12, SPEED = 1000;
+const BLOCKS = [
+  {id:'homework', name:'숙제',        dur:2, color:'#4a7bd0', req:true},
+  {id:'dinner',   name:'저녁 먹기',   dur:1, color:'#e8853c', req:true},
+  {id:'academy',  name:'학원',        dur:2, color:'#8a63c9'},
+  {id:'play',     name:'놀기',        dur:2, color:'#3f9e63'},
+  {id:'recorder', name:'리코더 연습', dur:1, color:'#e05c7a'},
+  {id:'reading',  name:'독서',        dur:1, color:'#2e8f9e'},
+  {id:'errand',   name:'심부름',      dur:1, color:'#a9793b'},
+  {id:'game',     name:'게임하기',    dur:2, color:'#5f6fbf'},
+];
+const FREE = {id:'free', name:'여유 시간', dur:1, color:'#f7e39a'};
+const GOAL_NAMES = {recorder:'리코더 연습 30분 하기', reading:'독서 30분 하기', play:'놀기 1시간 하기'};
+
+/* ── 변수 카드 풀 — 판마다 유형별로 한 장씩 무작위로 뽑는다 ── */
+const CARD_POOL = {
+  extend: [ // 하던 일이 30분 더 걸리는 일 (block이 끝난 직후에 나온다)
+    {key:'hw-math',  block:'homework', title:'숙제가 생각보다 30분 더 걸려요!',
+      body:'수학 문제가 어려웠나 봐요.<br>숙제 시간이 30분 늘어나요.',
+      btn:'어쩔 수 없지…', name:'숙제 (30분 더)', color:'#4a7bd0'},
+    {key:'hw-more',  block:'homework', title:'알림장을 보니 숙제가 하나 더 있어요!',
+      body:'국어 낱말 쓰기를 깜빡했어요.<br>숙제 시간이 30분 늘어나요.',
+      btn:'지금 마저 하자!', name:'숙제 (30분 더)', color:'#4a7bd0'},
+    {key:'dn-talk',  block:'dinner', title:'저녁을 먹다가 이야기가 길어졌어요.',
+      body:'아빠의 어릴 적 이야기가 한창이에요.<br>저녁 시간이 30분 늘어나요.',
+      btn:'이야기가 재미있는걸!', name:'저녁 (30분 더)', color:'#e8853c'},
+  ],
+  sudden: [ // 갑자기 생겨서 30분을 쓰는 일
+    {key:'errand',   title:'엄마가 심부름을 부탁하셨어요.',
+      body:'“두부 한 모만 사다 줄래?”<br>다녀오면 30분이 걸려요.',
+      btn:'네, 다녀올게요!', name:'엄마 심부름', color:'#a9793b'},
+    {key:'clean',    title:'엄마가 방을 정리하라고 하셨어요.',
+      body:'“책상 위가 이게 뭐니?”<br>치우면 30분이 걸려요.',
+      btn:'금방 치울게요!', name:'방 정리', color:'#6d8a3a'},
+    {key:'grandma',  title:'할머니께서 영상 통화를 거셨어요.',
+      body:'“우리 강아지, 얼굴 좀 보자.”<br>통화하면 30분이 걸려요.',
+      btn:'할머니, 안녕하세요!', name:'할머니와 통화', color:'#b05a7c'},
+    {key:'stationery', title:'내일 미술 준비물이 없어요!',
+      body:'문구점에 다녀와야 해요.<br>다녀오면 30분이 걸려요.',
+      btn:'얼른 다녀오자!', name:'문구점 다녀오기', color:'#5b7f9e'},
+  ],
+  tempt: [ // 하고 싶은 일 — 할지 말지 고른다
+    {key:'friend',   title:'친구가 놀자고 해요!',
+      body:'“딱 30분만 놀다 가라!”<br>어떻게 할까요?',
+      yes:'좋아, 30분만!', no:'오늘은 다음에 놀자',
+      noToast:'아쉽지만 계획을 지키기로 했어요.', name:'친구랑 놀기', color:'#3f9e63'},
+    {key:'cartoon',  title:'좋아하는 만화가 막 시작했어요!',
+      body:'이번 편을 다 보면 30분이 걸려요.<br>어떻게 할까요?',
+      yes:'딱 이번 편만!', no:'다음 편부터 볼래',
+      noToast:'만화는 주말에 보기로 했어요.', name:'만화 보기', color:'#d0684a'},
+    {key:'video',    title:'새 게임 영상이 올라왔어요!',
+      body:'좋아하는 채널에 새 영상이 떴어요.<br>다 보면 30분! 어떻게 할까요?',
+      yes:'30분만 봐야지!', no:'오늘은 안 볼래',
+      noToast:'영상은 내일도 볼 수 있으니까요.', name:'영상 보기', color:'#c25555'},
+  ],
+};
+/* 바로 앞 바퀴에 나온 카드는 빼고 뽑는다 → 바퀴마다 조합이 달라진다 */
+let lastCard = {extend:null, sudden:null, tempt:null};
+function drawCard(type){
+  const pool=CARD_POOL[type];
+  let cand=pool.filter(c=>c.key!==lastCard[type]);
+  if(!cand.length) cand=pool;
+  const pick=cand[Math.floor(Math.random()*cand.length)];
+  lastCard[type]=pick.key;
+  return pick;
+}
+
+/* ─────────── 상태 ─────────── */
+let phase='start', goal=null, round=0, runsDone=0;
+let timeline = Array(CAP).fill(null);   // {uid,id,name,color,free,extra,req,seg,of,done,cur}
+let uidSeq=0, selected=null, snapshot=null;
+let R=null, fixDone=null, fixWarn=null; // 실행 상태, 수정 완료 콜백, 목표 빼기 확인
+
+/* ─────────── 화면 전환 ─────────── */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+function goGoal(){ phase='goal'; show('scr-goal'); }
+function pickGoal(g){
+  goal=g; round=1; phase='plan';
+  document.getElementById('goal-chip').textContent='목표: '+GOAL_NAMES[g];
+  enterPlan();
+}
+function enterPlan(){
+  phase='plan'; selected=null;
+  document.getElementById('round-chip').textContent=round+'번째 계획';
+  document.getElementById('plan-hint').style.display = (round>=2)?'block':'none';
+  document.getElementById('plan-msg').textContent='';
+  renderShelf(); renderTimeline('tl-plan'); updateFill();
+  show('scr-plan');
+}
+
+/* ─────────── 계획하기 ─────────── */
+function placedIds(){
+  const s=new Set();
+  timeline.forEach(e=>{ if(e && !e.free && !e.extra) s.add(e.id); });
+  return s;
+}
+function renderShelf(){
+  const shelf=document.getElementById('shelf');
+  shelf.innerHTML='';
+  const placed=placedIds();
+  BLOCKS.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='shelf-btn'+(placed.has(b.id)?' placed':'')+((selected===b.id)?' sel':'')
+      +((b.id===goal)?' goalb':'');
+    btn.style.background=b.color;
+    btn.innerHTML=((b.id===goal)?'⭐ ':'')+b.name+(b.req?' <span style="font-size:12px;">(꼭!)</span>':'')
+      +'<small>'+(b.dur===2?'1시간 · 2칸':'30분 · 1칸')+(b.id===goal?' · 나의 목표!':'')+'</small>';
+    btn.onclick=()=>{
+      if(placed.has(b.id)){ msg('이미 시간표에 놓았어요. 옮기려면 놓은 블록을 탭해요.'); return; }
+      selected = (selected===b.id)? null : b.id;
+      renderShelf(); msg('');
+    };
+    shelf.appendChild(btn);
+  });
+  const fb=document.createElement('button');
+  fb.className='shelf-btn free-btn'+((selected==='free')?' sel':'');
+  fb.innerHTML='🟡 여유 시간<small>30분 · 여러 개 놓아도 돼요</small>';
+  fb.onclick=()=>{ selected=(selected==='free')?null:'free'; renderShelf(); msg(''); };
+  shelf.appendChild(fb);
+}
+function msg(t){ document.getElementById('plan-msg').textContent=t; }
+function slotTime(i){
+  const h=15+Math.floor(i/2), m=(i%2)?'30':'00';
+  return '오후 '+(h-12)+':'+m;
+}
+function tapSlot(i){
+  if(phase==='plan'){
+    const cur=timeline[i];
+    if(cur){ // 되돌리기
+      const uid=cur.uid;
+      timeline=timeline.map(e=>(e&&e.uid===uid)?null:e);
+      renderShelf(); renderTimeline('tl-plan'); updateFill(); msg('');
+      return;
+    }
+    if(!selected){ msg('먼저 아래에서 블록을 탭해 골라요.'); return; }
+    const b = selected==='free' ? FREE : BLOCKS.find(x=>x.id===selected);
+    for(let k=0;k<b.dur;k++){
+      if(i+k>=CAP || timeline[i+k]){ msg('여기엔 자리가 모자라요. 이어진 빈 칸 '+b.dur+'개가 필요해요.'); return; }
+    }
+    const uid=++uidSeq;
+    for(let k=0;k<b.dur;k++){
+      timeline[i+k]={uid, id:b.id, name:b.name, color:b.color,
+        free:b.id==='free', extra:false, req:!!b.req, seg:k+1, of:b.dur, done:false, cur:false};
+    }
+    if(selected!=='free') selected=null;   // 여유 시간은 연달아 놓게 유지
+    renderShelf(); renderTimeline('tl-plan'); updateFill(); msg('');
+  }
+  else if(phase==='fix'){ tryRemoveInFix(i); }
+}
+function updateFill(){
+  const n=timeline.filter(Boolean).length;
+  document.getElementById('fill-chip').textContent=CAP+'칸 중 '+n+'칸 찼어요';
+}
+function tryStartRun(){
+  const n=timeline.filter(Boolean).length;
+  if(n<CAP){ msg('아직 빈 칸이 있어요. 블록으로 하루를 다 채워요.'); return; }
+  const placed=placedIds();
+  if(!placed.has('homework')||!placed.has('dinner')){ msg('숙제와 저녁 먹기는 꼭 넣어야 해요.'); return; }
+  if(!placed.has(goal)){ msg('⭐ 목표로 고른 일이 시간표에 없어요. 목표부터 넣어요!'); return; }
+  startRun();
+}
+
+/* ─────────── 시간표 그리기 ─────────── */
+function renderTimeline(where){
+  const tl=document.getElementById(where);
+  tl.innerHTML='';
+  const colA=document.createElement('div'); colA.className='tcol';
+  const colB=document.createElement('div'); colB.className='tcol';
+  timeline.forEach((e,i)=>{
+    const row=document.createElement('div'); row.className='slotrow';
+    const t=document.createElement('div'); t.className='t';
+    t.textContent = (i<CAP)? slotTime(i) : '밤 9:00+';
+    if(i>=CAP) t.style.color='#c22';
+    const c=document.createElement('div');
+    let cls='cell';
+    if(e){
+      cls+=e.free?' freecell':' filled';
+      if(e.seg>1) cls+=' cont';
+      if(e.done) cls+=' done';
+      if(e.cur) cls+=' cur';
+      if(i>=CAP) cls+=' over';
+      if(phase==='fix' && isRemovable(e)) cls+=' removable';
+      if(e.id===goal && !e.extra) cls+=' goalcell';
+      if(!e.free) c.style.background=e.color;
+      c.innerHTML = (e.seg===1)
+        ? ((e.id===goal && !e.extra)?'⭐ ':'')+esc(e.name)
+          +(e.of>1?' <span style="font-size:13px;opacity:.85;">(1시간)</span>':'')
+          +(e.extra?' <span style="font-size:13px;">⚡</span>':'')
+        : '└ '+esc(e.name)+' 계속';
+      if(e.done) c.innerHTML+='<span class="mark">✓</span>';
+      else if(e.cur) c.innerHTML+='<span class="mark">⏳</span>';
+      else if(i>=CAP) c.innerHTML+='<span class="mark">⚠</span>';
+    } else {
+      c.textContent='비어 있어요';
+    }
+    c.className=cls;
+    c.onclick=()=>tapSlot(i);
+    row.appendChild(t); row.appendChild(c);
+    (i<6?colA:colB).appendChild(row);
+  });
+  tl.appendChild(colA); tl.appendChild(colB);
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+/* ─────────── ③ 실천하기(살아보기) ─────────── */
+function startRun(){
+  snapshot = JSON.parse(JSON.stringify(timeline));
+  timeline.forEach(e=>{ if(e){ e.done=false; e.cur=false; } });
+  R={ idx:0, timer:null, firedA:false, firedB:false, firedC:false,
+      absorbed:[], lost:[],
+      cardA: drawCard('extend'), cardB: drawCard('sudden'), cardC: drawCard('tempt'),
+      bPos: round===1 ? 5 : 4+Math.floor(Math.random()*3),   // 오후 5~6시쯤
+      cPos: round===1 ? 8 : 7+Math.floor(Math.random()*3) }; // 오후 6시반~7시반쯤
+  phase='run';
+  document.getElementById('run-round').textContent=round+'번째 하루';
+  document.getElementById('fixbanner').classList.remove('on');
+  renderTimeline('tl-run'); setClock(0);
+  show('scr-run');
+  schedule(700);
+}
+/* 예약 타이머는 늘 한 개만 — 이중 체인 방지 */
+function schedule(ms){ if(!R) return; clearTimeout(R.timer); R.timer=setTimeout(tick, ms); }
+function setClock(i){
+  const total=15*60 + i*SLOT_MIN;
+  const h=Math.floor(total/60), m=total%60;
+  const disp=(h>=21?'밤 ':'오후 ')+(h-12)+':'+(m<10?'0'+m:m);
+  document.getElementById('clock-now').textContent=disp;
+}
+function tick(){
+  if(phase!=='run') return;
+  if(document.getElementById('overlay').classList.contains('on')) return; // 카드가 떠 있으면 멈춤
+  if(timeline.some(e=>e&&e.cur)) return;                                   // 이미 실행 중인 칸이 있으면 멈춤
+  if(R.idx>=timeline.length){ finishRun(); return; }
+  setClock(R.idx);
+  // 시각에 걸린 카드 (칸이 시작되기 전)
+  if(!R.firedB && R.idx===R.bPos){
+    R.firedB=true;
+    const cb=R.cardB;
+    showCard({alarm:true, title:cb.title, body:cb.body,
+      btns:[{label:cb.btn, fn:()=>{
+        insertExtra(R.idx, mkExtra(cb.name, cb.color));
+      }}]});
+    return;
+  }
+  if(!R.firedC && R.idx===R.cPos){
+    R.firedC=true;
+    const cc=R.cardC;
+    showCard({alarm:true, title:cc.title, body:cc.body,
+      btns:[
+        {label:cc.yes, fn:()=>{ insertExtra(R.idx, mkExtra(cc.name, cc.color)); }},
+        {label:cc.no, gray:true, fn:()=>{ hideCard(); toast(cc.noToast); schedule(600); }}
+      ]});
+    return;
+  }
+  // 이번 칸 실행
+  const s=timeline[R.idx];
+  s.cur=true; renderTimeline('tl-run');
+  setTimeout(()=>{
+    s.cur=false; s.done=true;
+    // 카드가 지켜보는 블록이 막 끝났다면 → 그 일이 30분 더 걸리는 카드
+    if(!R.firedA && s.id===R.cardA.block && !s.extra && s.seg===s.of){
+      R.firedA=true; renderTimeline('tl-run');
+      const ca=R.cardA;
+      showCard({alarm:true, title:ca.title, body:ca.body,
+        btns:[{label:ca.btn, fn:()=>{
+          insertExtra(R.idx+1, mkExtra(ca.name, ca.color), ()=>{ R.idx++; });
+        }}]});
+      return;
+    }
+    R.idx++; renderTimeline('tl-run');
+    schedule(160);
+  }, SPEED);
+}
+function mkExtra(name,color){
+  return {uid:++uidSeq, id:'extra', name, color, free:false, extra:true, req:false, seg:1, of:1, done:false, cur:false};
+}
+function insertExtra(pos, entry, beforeResume){
+  hideCard();
+  timeline.splice(pos,0,entry);
+  // 앞으로 남은 여유 시간에 넣을 수 있는가?
+  let j=-1;
+  for(let k=pos+1;k<timeline.length;k++){
+    if(timeline[k] && timeline[k].free && !timeline[k].done){ j=k; break; }
+  }
+  if(j>-1){
+    timeline.splice(j,1);
+    R.absorbed.push(entry.name);
+    renderTimeline('tl-run');
+    showCard({calm:true, title:'여유 시간이 있어서 괜찮았어요!',
+      body:'여유 시간을 남겨 둔 덕분에<br>계획이 무너지지 않았어요.',
+      btns:[{label:'다행이다!', fn:()=>{ hideCard(); if(beforeResume)beforeResume(); schedule(400); }}]});
+  }
+  else if(timeline.length>CAP){
+    renderTimeline('tl-run');
+    enterFix(()=>{ if(beforeResume)beforeResume(); schedule(500); });
+  }
+  else {
+    renderTimeline('tl-run');
+    if(beforeResume)beforeResume();
+    schedule(400);
+  }
+}
+/* ── 계획 수정(밀림 해결) ── */
+function isRemovable(e){
+  if(!e || e.free || e.extra || e.req || e.done) return false;
+  // 같은 블록의 어느 칸도 아직 시작 전이어야 함
+  return timeline.every(x=>!(x && x.uid===e.uid && x.done));
+}
+function enterFix(doneFn){
+  phase='fix'; fixDone=doneFn; fixWarn=null;
+  const any = timeline.some(e=>isRemovable(e));
+  document.getElementById('fixbanner').classList.add('on');
+  renderTimeline('tl-run');
+  if(!any){ // 뺄 수 있는 게 없으면 맨 끝 일이 밀려 사라짐 (안전장치)
+    autoTrim();
+  }
+}
+function tryRemoveInFix(i){
+  const e=timeline[i];
+  if(!e) return;
+  if(!isRemovable(e)){
+    if(e.req) toast(e.id==='dinner'?'저녁은 먹어야지요!':'숙제는 오늘 꼭 해야 해요.');
+    else if(e.extra) toast('이 일은 이미 하기로 했어요.');
+    else if(e.free) toast('여유 시간은 지금 없어요.');
+    else toast('이미 하고 있거나 끝난 일이에요.');
+    return;
+  }
+  if(e.id===goal && fixWarn!==e.uid){
+    fixWarn=e.uid;
+    toast('⭐ 목표로 고른 일이에요! 정말 빼려면 한 번 더 탭해요.');
+    return;
+  }
+  const uid=e.uid, name=e.name;
+  timeline=timeline.filter(x=>!(x&&x.uid===uid));
+  R.lost.push(name);
+  while(timeline.length<CAP){
+    timeline.push({uid:++uidSeq, id:'free', name:'여유 시간', color:FREE.color,
+      free:true, extra:false, req:false, seg:1, of:1, done:false, cur:false});
+    toast('빈 시간이 생겨서 여유 시간이 되었어요.');
+  }
+  exitFix('“'+name+'”을(를) 빼서 계획을 고쳤어요.');
+}
+function autoTrim(){
+  const names=new Set();
+  while(timeline.length>CAP){
+    const last=timeline.pop();
+    if(last && !last.free) names.add(last.name);
+  }
+  names.forEach(n=>R.lost.push(n+' (밀려남)'));
+  exitFix('밀려난 일은 오늘 못 하게 됐어요…');
+}
+function exitFix(t){
+  phase='run'; document.getElementById('fixbanner').classList.remove('on');
+  renderTimeline('tl-run'); toast(t);
+  const fn=fixDone; fixDone=null;
+  setTimeout(fn, 900);
+}
+
+/* ─────────── ④ 평가하기 ─────────── */
+function finishRun(){
+  phase='result'; runsDone++;
+  setClock(CAP);
+  document.getElementById('result-title').textContent=round+'번째 하루 끝! 밤 9시가 되었어요.';
+  // 한 일 (블록 단위)
+  const doneNames=[], seen=new Set();
+  timeline.forEach(e=>{
+    if(e && e.done && !e.free && !seen.has(e.uid)){
+      const all=timeline.filter(x=>x&&x.uid===e.uid).every(x=>x.done);
+      if(all){ seen.add(e.uid); doneNames.push({name:e.name, extra:e.extra}); }
+    }
+  });
+  const freeUsed=timeline.filter(e=>e&&e.free&&e.done).length;
+  const dBox=document.getElementById('res-done');
+  dBox.innerHTML = doneNames.map(d=>'<span class="rchip '+(d.extra?'ex':'ok')+'">'+(d.extra?'⚡ ':'')+esc(d.name)+'</span>').join('')
+    +(freeUsed?'<span class="rchip ok">🟡 여유 시간 ×'+freeUsed+'</span>':'');
+  // 못 한 일
+  const lBox=document.getElementById('res-lost');
+  lBox.innerHTML = R.lost.length? R.lost.map(n=>'<span class="rchip no">'+esc(n)+'</span>').join('')
+    : '<span class="rchip ok">없음! 🎉</span>';
+  // 여유 시간 덕분에 한 일
+  const aBox=document.getElementById('res-absorbed');
+  aBox.innerHTML = R.absorbed.length? R.absorbed.map(n=>'<span class="rchip ok">🟡 '+esc(n)+'</span>').join('')
+    : '<span class="rchip no" style="text-decoration:none;">여유 시간이 없었어요</span>';
+  // 목표
+  const gBox=document.getElementById('res-goal');
+  const goalDone = doneNames.some(d=>!d.extra && d.name===BLOCKS.find(b=>b.id===goal).name);
+  const goalPlaced = snapshot.some(e=>e&&e.id===goal);
+  const goalWord = goalDone ? (R.lost.length||R.absorbed.length ? '달성! 흔들려도 목표를 지켰어요 🎉' : '달성! 🎉') : '다음에 다시!';
+  let gHtml='<span class="rchip '+(goalDone?'ok':'no')+'" style="text-decoration:none;">⭐ '+esc(GOAL_NAMES[goal])+' — '+goalWord+'</span>';
+  if(!goalPlaced) gHtml+='<span class="rchip no" style="text-decoration:none;">목표로 고른 일이 시간표에 없었어요.</span>';
+  gBox.innerHTML=gHtml;
+  // 배움 문장
+  const les=document.getElementById('res-lesson');
+  if(R.lost.length>0){
+    les.innerHTML='오늘은 <b>예상하지 못한 일</b>이 생겨서 계획이 밀렸어요.<br>'
+      +'다음 계획에는 <b>여유 시간</b>을 남겨 두면 어떨까요?'
+      +'<div class="bookline">“예상하지 못한 일에 대비해 여유 시간을 남겨 둡니다.” — 교과서 84쪽</div>';
+  } else if(R.absorbed.length>0){
+    les.innerHTML='<b>여유 시간</b>을 남겨 둔 덕분에, 예상하지 못한 일이 생겨도 계획이 버텼어요.<br>이게 시간 자원을 합리적으로 관리하는 힘이에요!';
+  } else {
+    les.innerHTML='오늘은 예상하지 못한 일들을 잘 지나갔어요.<br>진짜 하루에도 이렇게 될까요? 한 번 더 살아 봐요!';
+  }
+  show('scr-result');
+}
+function retryPlan(){
+  timeline = JSON.parse(JSON.stringify(snapshot));
+  timeline.forEach(e=>{ if(e){ e.done=false; e.cur=false; } });
+  round++; enterPlan();
+}
+function goFinal(){
+  phase='final';
+  document.getElementById('wheel-count').textContent=runsDone+'번';
+  document.getElementById('final-sub').textContent='목표 세우기 → 계획하기 → 실천하기 → 평가하기. 너는 방금 이 바퀴를 '+runsDone+'번 돌았어요.';
+  show('scr-final');
+}
+
+/* ─────────── 카드·토스트 ─────────── */
+function showCard(o){
+  const box=document.getElementById('cardbox');
+  box.className='card'+(o.calm?' calm':'');
+  document.getElementById('card-tag').textContent=o.calm?'계획이 버텼어요':'예상하지 못한 일!';
+  document.getElementById('card-title').innerHTML=o.title;
+  document.getElementById('card-body').innerHTML=o.body;
+  const btns=document.getElementById('card-btns');
+  btns.innerHTML='';
+  o.btns.forEach(b=>{
+    const el=document.createElement('button');
+    el.className='btn'+(b.gray?' gray':'');
+    el.textContent=b.label;
+    el.onclick=b.fn;
+    btns.appendChild(el);
+  });
+  document.getElementById('overlay').classList.add('on');
+}
+function hideCard(){ document.getElementById('overlay').classList.remove('on'); }
+let toastT=null;
+function toast(t){
+  const el=document.getElementById('toast');
+  el.textContent=t; el.classList.add('on');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('on'), 2600);
+}
+
+/* 검토용 (수업에는 영향 없음) */
+window.App={
+  get state(){ return {phase, goal, round, runsDone, timeline, R}; },
+};
+</script>
+</body>
+</html>

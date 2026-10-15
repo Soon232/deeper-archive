@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>번호 부르기</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    font-family:'Malgun Gothic','맑은 고딕',sans-serif;
+    background:linear-gradient(160deg,#FFF9F0 0%,#FFEEDA 100%);
+    color:#24345E;
+    display:flex; flex-direction:column;
+    height:100vh; overflow:hidden;
+    word-break:keep-all;
+    user-select:none;
+  }
+
+  /* 머리 */
+  header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 22px; flex:none;
+  }
+  .title { font-size:18px; font-weight:bold; color:#8a7a63; letter-spacing:1px; }
+  .head-right { display:flex; align-items:center; gap:12px; }
+  .round-badge {
+    font-size:16px; color:#8a7a63;
+    background:#fff; border:1.5px solid #e8d9c2; border-radius:999px;
+    padding:4px 14px;
+  }
+  #soundBtn {
+    font-family:inherit; font-size:16px; cursor:pointer;
+    background:#fff; color:#24345E;
+    border:1.5px solid #e8d9c2; border-radius:999px;
+    padding:5px 16px;
+  }
+  #soundBtn.off { color:#b0a48f; }
+  #voiceSel {
+    font-family:inherit; font-size:14px; color:#24345E;
+    background:#fff; border:1.5px solid #e8d9c2; border-radius:999px;
+    padding:5px 10px; max-width:190px; cursor:pointer;
+  }
+  #voiceTestBtn {
+    font-family:inherit; font-size:14px; cursor:pointer;
+    background:#fff; color:#24345E;
+    border:1.5px solid #e8d9c2; border-radius:999px;
+    padding:5px 12px;
+  }
+  #voiceTestBtn:active { background:#f5ecdd; }
+
+  /* 가운데 표시 */
+  main {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    min-height:0; text-align:center; padding:0 16px;
+  }
+  #bigNum {
+    font-size:min(38vw,44vh); font-weight:900; line-height:0.92;
+    color:#D9480F; letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums;
+  }
+  #tail { font-size:min(8vw,9vh); font-weight:bold; color:#24345E; margin-top:1vh; }
+  #hint { font-size:min(6vw,6.5vh); color:#a3937b; font-weight:bold; line-height:1.4; }
+  #doneTitle { font-size:min(15vw,18vh); font-weight:900; color:#2b8a3e; line-height:1.1; }
+  #doneSub { font-size:min(4.5vw,4.5vh); color:#8a7a63; margin-top:2.5vh; font-weight:bold; }
+  .hidden { display:none !important; }
+
+  /* 단추 */
+  .controls {
+    display:flex; align-items:center; justify-content:center; gap:18px;
+    padding:6px 16px 14px; flex:none;
+  }
+  button { font-family:inherit; cursor:pointer; }
+  #nextBtn {
+    font-size:30px; font-weight:900; color:#fff;
+    background:#E8710A; border:none; border-radius:18px;
+    padding:18px 58px;
+    box-shadow:0 4px 0 #b95a08;
+  }
+  #nextBtn:active { transform:translateY(3px); box-shadow:0 1px 0 #b95a08; }
+  .sub-btn {
+    font-size:18px; font-weight:bold; color:#24345E;
+    background:#fff; border:2px solid #d9c9ae; border-radius:14px;
+    padding:14px 24px;
+  }
+  .sub-btn:active { background:#f5ecdd; }
+  .sub-btn:disabled { color:#c9bda7; border-color:#ece2cf; cursor:default; background:#fdfaf4; }
+
+  /* 번호 알갱이 줄 */
+  .chips {
+    display:flex; justify-content:center; gap:8px;
+    padding:0 12px 16px; flex:none; flex-wrap:wrap;
+  }
+  .chip {
+    width:44px; height:44px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:19px; font-weight:bold;
+    background:#fff; color:#a3937b; border:2px solid #e8d9c2;
+  }
+  .chip.called { background:#24345E; color:#fff; border-color:#24345E; }
+  .chip.current {
+    background:#E8710A; color:#fff; border-color:#E8710A;
+    transform:scale(1.18); box-shadow:0 0 0 4px #ffdfc2;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title">수학 · 번호 부르기</div>
+  <div class="head-right">
+    <div class="round-badge" id="roundBadge">1바퀴째</div>
+    <select id="voiceSel" title="목소리 고르기">
+      <option value="">목소리 찾는 중…</option>
+    </select>
+    <button id="voiceTestBtn" title="고른 목소리 미리 듣기">들어보기</button>
+    <button id="soundBtn" title="소리 켬/끔">&#128266; 소리 켬</button>
+  </div>
+</header>
+
+<main id="display">
+  <div id="hint">누르면 1번부터 불러요</div>
+  <div id="numWrap" class="hidden">
+    <div id="bigNum">1</div>
+    <div id="tail">번 나오세요</div>
+  </div>
+  <div id="doneWrap" class="hidden">
+    <div id="doneTitle">한 바퀴 끝!</div>
+    <div id="doneSub">또 누르면 1번부터 다시 불러요</div>
+  </div>
+</main>
+
+<div class="controls">
+  <button id="prevBtn" class="sub-btn">&#8592; 이전</button>
+  <button id="nextBtn">다음 번호</button>
+  <button id="resetBtn" class="sub-btn">처음부터</button>
+</div>
+
+<div class="chips" id="chips"></div>
+
+<script>
+'use strict';
+
+// ── 번호 순서: 1~18 연속 (15번 자석은 종이로 만들어 채움, 19번 없음)
+var SEQ = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+var LEN = SEQ.length;           // 18
+var DONE = LEN + 1;             // pos===19 → '한 바퀴 끝' 화면
+
+// ── 상태: pos 0=시작 전, 1~18=그만큼 불렀음, 19=한 바퀴 끝 화면
+var pos = 0, round = 1, soundOn = true, voiceName = '';
+var LS_KEY = 'beonho_v2';   // 번호 구성이 바뀌어 키 승격(옛 v1 위치는 무시됨)
+
+function loadState(){
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    if (typeof s.p === 'number' && s.p >= 0 && s.p <= DONE) pos = s.p;
+    if (typeof s.r === 'number' && s.r >= 1) round = s.r;
+    if (typeof s.s === 'boolean') soundOn = s.s;
+    if (typeof s.v === 'string') voiceName = s.v;
+  } catch(e){}
+}
+function saveState(){
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({p:pos, r:round, s:soundOn, v:voiceName}));
+  } catch(e){}
+}
+
+// ── 한자어 숫자: 화면엔 "1번", 음성엔 "일 번" (안 그러면 "한번"으로 읽음)
+var KO_UNITS = ['','일','이','삼','사','오','육','칠','팔','구'];
+function koNum(n){
+  if (n <= 9) return KO_UNITS[n];
+  if (n === 10) return '십';
+  return '십' + KO_UNITS[n - 10];   // 11~19
+}
+
+// ── 소리: 차임(Web Audio) + 음성(speechSynthesis, ko-KR)
+var actx = null;
+function ensureAudio(){
+  try {
+    var C = window.AudioContext || window.webkitAudioContext;
+    if (!actx && C) actx = new C();
+    if (actx && actx.state === 'suspended') actx.resume();
+  } catch(e){}
+}
+function chime(){
+  if (!soundOn || !actx) return;
+  try {
+    var t = actx.currentTime;
+    [[880, 0, 0.28], [1174.66, 0.16, 0.42]].forEach(function(n){
+      var o = actx.createOscillator();
+      var g = actx.createGain();
+      o.type = 'sine'; o.frequency.value = n[0];
+      g.gain.setValueAtTime(0.0001, t + n[1]);
+      g.gain.exponentialRampToValueAtTime(0.35, t + n[1] + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + n[1] + n[2]);
+      o.connect(g); g.connect(actx.destination);
+      o.start(t + n[1]); o.stop(t + n[1] + n[2] + 0.05);
+    });
+  } catch(e){}
+}
+
+var koVoices = [], koVoice = null, voicesKnown = false;
+function voiceLabel(name){
+  // "Microsoft SunHi Online (Natural) - Korean (Korea)" → "SunHi Online (Natural)"
+  return String(name).replace(/^Microsoft\s*/i, '').replace(/\s*-\s*Korean.*$/i, '');
+}
+function pickDefaultVoice(){
+  for (var i = 0; i < koVoices.length; i++){
+    if (/natural|online/i.test(koVoices[i].name || '')) return koVoices[i];
+  }
+  return koVoices[0] || null;
+}
+function renderVoiceMenu(){
+  var sel = document.getElementById('voiceSel');
+  if (!sel) return;
+  sel.innerHTML = '';
+  if (!koVoices.length){
+    var o = document.createElement('option');
+    o.value = ''; o.textContent = '한국어 음성 없음';
+    sel.appendChild(o);
+    sel.disabled = true;
+    return;
+  }
+  sel.disabled = false;
+  for (var i = 0; i < koVoices.length; i++){
+    var op = document.createElement('option');
+    op.value = koVoices[i].name;
+    op.textContent = voiceLabel(koVoices[i].name);
+    sel.appendChild(op);
+  }
+  if (koVoice) sel.value = koVoice.name;
+}
+function refreshVoices(){
+  try {
+    if (!('speechSynthesis' in window)) return;
+    var vs = speechSynthesis.getVoices();
+    if (vs && vs.length){
+      voicesKnown = true;
+      koVoices = [];
+      for (var i = 0; i < vs.length; i++){
+        if (vs[i].lang && vs[i].lang.toLowerCase().indexOf('ko') === 0) koVoices.push(vs[i]);
+      }
+      koVoice = null;
+      if (voiceName){
+        for (var j = 0; j < koVoices.length; j++){
+          if (koVoices[j].name === voiceName){ koVoice = koVoices[j]; break; }
+        }
+      }
+      if (!koVoice) koVoice = pickDefaultVoice();
+      renderVoiceMenu();
+    }
+  } catch(e){}
+}
+try {
+  if ('speechSynthesis' in window){
+    refreshVoices();
+    speechSynthesis.onvoiceschanged = refreshVoices;
+  }
+} catch(e){}
+
+function speak(text, force){
+  if (!soundOn && !force) return;
+  try {
+    if (!('speechSynthesis' in window)) return;
+    refreshVoices();
+    // 한국어 음성이 없다고 확인되면 조용히 화면만 (차임은 이미 울림)
+    if (voicesKnown && !koVoice) return;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ko-KR';
+    if (koVoice) u.voice = koVoice;
+    u.rate = 0.95;
+    window.__lastUtterText = text;   // 검증용
+    speechSynthesis.speak(u);
+  } catch(e){}
+}
+var speakTimer = null;
+function announce(text){
+  window.__lastAnnounceText = text;  // 검증용
+  chime();
+  if (speakTimer) clearTimeout(speakTimer);
+  speakTimer = setTimeout(function(){ speak(text); }, 380);
+}
+
+// ── 화면 그리기
+var elHint = document.getElementById('hint');
+var elNumWrap = document.getElementById('numWrap');
+var elBigNum = document.getElementById('bigNum');
+var elDoneWrap = document.getElementById('doneWrap');
+var elRound = document.getElementById('roundBadge');
+var elChips = document.getElementById('chips');
+var btnNext = document.getElementById('nextBtn');
+var btnPrev = document.getElementById('prevBtn');
+var btnReset = document.getElementById('resetBtn');
+var btnSound = document.getElementById('soundBtn');
+
+// 알갱이 18개 미리 생성 (1~18 전원)
+var chipEls = {};
+(function(){
+  for (var n = 1; n <= 18; n++){
+    var d = document.createElement('div');
+    d.className = 'chip';
+    d.textContent = n;
+    d.id = 'chip-' + n;
+    elChips.appendChild(d);
+    chipEls[n] = d;
+  }
+})();
+
+function render(){
+  // 가운데
+  elHint.classList.add('hidden');
+  elNumWrap.classList.add('hidden');
+  elDoneWrap.classList.add('hidden');
+  if (pos === 0){
+    elHint.classList.remove('hidden');
+  } else if (pos >= 1 && pos <= LEN){
+    elBigNum.textContent = SEQ[pos - 1];
+    elNumWrap.classList.remove('hidden');
+  } else {
+    elDoneWrap.classList.remove('hidden');
+  }
+  // 바퀴
+  elRound.textContent = round + '바퀴째';
+  // 알갱이
+  var current = (pos >= 1 && pos <= LEN) ? SEQ[pos - 1] : 0;
+  var calledCount = Math.min(pos, LEN);
+  var calledSet = {};
+  for (var i = 0; i < calledCount; i++) calledSet[SEQ[i]] = true;
+  for (var n = 1; n <= 18; n++){
+    var c = chipEls[n];
+    c.className = 'chip';
+    if (n === current) c.classList.add('current');
+    else if (calledSet[n]) c.classList.add('called');
+  }
+  // 단추
+  btnPrev.disabled = (pos === 0 && round === 1);
+  btnNext.textContent = (pos === LEN) ? '한 바퀴 끝' : (pos === DONE ? '다시 1번부터' : '다음 번호');
+  // 소리 단추
+  btnSound.innerHTML = soundOn ? '&#128266; 소리 켬' : '&#128263; 소리 끔';
+  btnSound.classList.toggle('off', !soundOn);
+}
+
+// ── 조작
+function next(){
+  ensureAudio();
+  if (pos < LEN){
+    pos++;
+    announce(koNum(SEQ[pos - 1]) + ' 번 나오세요');
+  } else if (pos === LEN){
+    pos = DONE;
+    announce('한 바퀴 끝났습니다');
+  } else { // DONE → 다음 바퀴
+    round++;
+    pos = 1;
+    announce(koNum(SEQ[0]) + ' 번 나오세요');
+  }
+  saveState();
+  render();
+}
+
+function prev(){
+  ensureAudio();
+  if (pos === 0){
+    if (round > 1){ round--; pos = DONE; }
+    else return;
+  } else if (pos === DONE){
+    pos = LEN;
+    announce(koNum(SEQ[LEN - 1]) + ' 번 나오세요');
+  } else {
+    pos--;
+    if (pos >= 1) announce(koNum(SEQ[pos - 1]) + ' 번 나오세요');
+  }
+  saveState();
+  render();
+}
+
+function resetAll(){
+  ensureAudio();
+  if (!confirm('처음부터 다시 시작할까요?\n지금까지 부른 기록이 지워집니다.')) return;
+  pos = 0; round = 1;
+  saveState();
+  render();
+}
+
+btnNext.addEventListener('click', function(){ next(); btnNext.blur(); });
+btnPrev.addEventListener('click', function(){ prev(); btnPrev.blur(); });
+btnReset.addEventListener('click', function(){ resetAll(); btnReset.blur(); });
+btnSound.addEventListener('click', function(){
+  ensureAudio();
+  soundOn = !soundOn;
+  if (!soundOn){
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e){}
+  }
+  saveState();
+  render();
+  btnSound.blur();
+});
+
+// 목소리 고르기 + 들어보기
+var selVoice = document.getElementById('voiceSel');
+var btnVoiceTest = document.getElementById('voiceTestBtn');
+selVoice.addEventListener('change', function(){
+  voiceName = selVoice.value || '';
+  for (var i = 0; i < koVoices.length; i++){
+    if (koVoices[i].name === voiceName){ koVoice = koVoices[i]; break; }
+  }
+  saveState();
+  selVoice.blur();   // 리모컨 키가 메뉴에 잡히지 않게
+});
+btnVoiceTest.addEventListener('click', function(){
+  ensureAudio();
+  speak('일 번 나오세요', true);   // 소리 끔 상태여도 견본은 들려줌
+  btnVoiceTest.blur();
+});
+// 방향키 등이 select에 잡히지 않게: 고른 뒤 포커스를 빼 준다
+selVoice.addEventListener('keydown', function(e){ e.stopPropagation(); });
+
+// 키보드: 스페이스/엔터/→/PageDown = 다음, ←/PageUp = 이전 (프레젠터 리모컨 대응)
+document.addEventListener('keydown', function(e){
+  var k = e.key;
+  if (k === ' ' || k === 'Spacebar' || k === 'Enter' || k === 'ArrowRight' || k === 'PageDown'){
+    e.preventDefault();
+    next();
+  } else if (k === 'ArrowLeft' || k === 'PageUp'){
+    e.preventDefault();
+    prev();
+  }
+});
+
+// ── 시작
+loadState();
+render();
+</script>
+</body>
+</html>
