@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>바른말 투표 미리보기</title>
+<style>
+:root{--bg:#E9EDF2;--paper:#fff;--ink:#1B2430;--muted:#5F6B7A;--line:#D7DDE5;--accent:#2F55A4;--soft:#E4EBF8;--warn:#B4401A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",sans-serif;font-size:16px}
+header{background:var(--ink);color:#fff;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+header b{font-size:18px}
+header .note{opacity:.75;font-size:14px}
+nav{display:flex;gap:6px;padding:10px 16px 0;flex-wrap:wrap}
+nav button{font:inherit;padding:10px 18px;border:0;border-radius:12px 12px 0 0;background:#D3DAE4;cursor:pointer;font-weight:700}
+nav button.on{background:var(--paper);color:var(--accent)}
+.pane{display:none;background:var(--paper);margin:0 16px 16px;padding:14px;border-radius:0 12px 12px 12px}
+.pane.on{display:block}
+.frame-wrap{margin:0 auto;border:8px solid #2B3340;border-radius:22px;overflow:hidden;background:#fff;transition:width .2s}
+iframe{display:block;width:100%;height:78vh;border:0;background:#F3F5F7}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tools button{font:inherit;padding:8px 14px;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-weight:700}
+.tools button.main{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tools .sep{width:1px;height:28px;background:var(--line);margin:0 4px}
+.log{font-size:14px;color:var(--muted);min-height:1.4em;margin:6px 0 10px}
+.sheets{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.sheets h3{margin:0 0 6px;font-size:15px}
+table{border-collapse:collapse;font-size:13px;width:100%}
+td,th{border:1px solid var(--line);padding:3px 6px;text-align:left;white-space:nowrap}
+th{background:var(--soft)}
+.scroll{max-height:46vh;overflow:auto}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;line-height:1.6}
+</style>
+</head>
+<body>
+<header><b>바른말 투표 — 미리보기(시험판)</b>
+<span class="note">구글 없이 이 컴퓨터 안에서만 돌아가요. 진짜 투표는 구글에 올린 주소로 합니다. 결과 비밀번호: 1234</span></header>
+<nav>
+<button class="on" data-p="s">학생 화면</button>
+<button data-p="r">결과 화면 (선생님)</button>
+<button data-p="t">시험 도우미 · 시트 보기</button>
+</nav>
+
+<section class="pane on" id="p-s">
+<div class="tools">
+<button onclick="폭(375)">휴대폰 폭</button><button onclick="폭(800)">태블릿 폭</button><button onclick="폭(0)">넓게</button>
+<span class="sep"></span>
+<button onclick="학생다시()">다른 아이 기기처럼 새로 열기</button>
+</div>
+<div class="frame-wrap" id="fw" style="width:800px;max-width:100%"><iframe id="fs" title="학생 화면"></iframe></div>
+</section>
+
+<section class="pane" id="p-r">
+<div class="tools"><button onclick="결과다시()">결과 화면 새로 열기</button></div>
+<div class="frame-wrap" style="width:100%"><iframe id="fr" title="결과 화면"></iframe></div>
+</section>
+
+<section class="pane" id="p-t">
+<p class="hint">순서대로 눌러 보면 1차 → 동점 → 결선 → 추첨까지 볼 수 있어요. 마감·결선 열기·추첨은 「결과 화면」 탭의 버튼으로 하세요.<br>
+아래 표는 진짜 구글 시트에 쌓일 모양 그대로예요(시간 칸만 짧게).</p>
+<div class="tools">
+<button class="main" onclick="처음상태()">처음 상태로</button>
+<span class="sep"></span>
+<button onclick="동점만들기()">1차: 3번·7번 동점 되게 모두 내기</button>
+<button onclick="무작위()">남은 사람 무작위로 내기</button>
+<span class="sep"></span>
+<button onclick="결선반반()">결선: 8 대 8 (17번은 안 냄)</button>
+<button onclick="결선당선()">결선: 7번이 이기게</button>
+</div>
+<p class="log" id="log"></p>
+<div class="sheets" id="sheets"></div>
+</section>
+
+<script>
+/*
+ * 가짜시트.js — 구글 시트·잠금(LockService)을 흉내 내는 시험용 부품.
+ * node 시험(도구/시험.js)과 미리보기_테스트.html이 함께 씁니다.
+ * 진짜 구글에는 올리지 않습니다.
+ */
+function 가짜구글_만들기() {
+  var 탭들 = [];
+
+  function 숫자처럼(v) {
+    return typeof v === 'string' && /^-?\d+(\.\d+)?$/.test(v.trim());
+  }
+
+  function 가짜탭(이름) {
+    var t = { 이름: 이름, 줄: [], 글자칸: {} };
+
+    function 칸쓰기(r, c, v) {
+      while (t.줄.length < r) t.줄.push([]);
+      var row = t.줄[r - 1];
+      while (row.length < c) row.push('');
+      if (v === null || v === undefined) v = '';
+      if (t.글자칸[c]) v = (v instanceof Date) ? v : String(v);
+      else if (숫자처럼(v)) v = Number(v);   // 시트는 숫자처럼 생긴 글자를 숫자로 바꿔 둔다
+      row[c - 1] = v;
+    }
+    function 칸읽기(r, c) {
+      var row = t.줄[r - 1];
+      if (!row || row[c - 1] === undefined) return '';
+      return row[c - 1];
+    }
+    function 끝줄() {
+      for (var i = t.줄.length; i > 0; i--) {
+        if (t.줄[i - 1].some(function (v) { return v !== ''; })) return i;
+      }
+      return 0;
+    }
+    function 끝칸() {
+      var m = 0;
+      t.줄.forEach(function (row) {
+        for (var j = row.length; j > 0; j--) { if (row[j - 1] !== '') { m = Math.max(m, j); break; } }
+      });
+      return m;
+    }
+
+    function 범위(r, c, nr, nc) {
+      nr = nr || 1; nc = nc || 1;
+      var g = {
+        getValues: function () {
+          var out = [];
+          for (var i = 0; i < nr; i++) {
+            var row = [];
+            for (var j = 0; j < nc; j++) row.push(칸읽기(r + i, c + j));
+            out.push(row);
+          }
+          return out;
+        },
+        getValue: function () { return 칸읽기(r, c); },
+        setValues: function (vals) {
+          if (vals.length !== nr || vals.some(function (row) { return row.length !== nc; })) {
+            throw new Error('setValues: 범위 크기와 값 크기가 달라요');
+          }
+          for (var i = 0; i < nr; i++) for (var j = 0; j < nc; j++) 칸쓰기(r + i, c + j, vals[i][j]);
+          return g;
+        },
+        setValue: function (v) {
+          for (var i = 0; i < nr; i++) for (var j = 0; j < nc; j++) 칸쓰기(r + i, c + j, v);
+          return g;
+        },
+        setNumberFormat: function (f) {
+          if (f === '@') for (var j = 0; j < nc; j++) t.글자칸[c + j] = true;
+          return g;
+        }
+      };
+      ['setFontWeight', 'setBackground', 'setFontColor', 'setHorizontalAlignment', 'setWrap',
+        'setFontSize', 'setNote'].forEach(function (k) { g[k] = function () { return g; }; });
+      return g;
+    }
+
+    var 탭 = {
+      getName: function () { return t.이름; },
+      setName: function (n) { t.이름 = n; return 탭; },
+      getLastRow: 끝줄,
+      getLastColumn: 끝칸,
+      getDataRange: function () { return 범위(1, 1, Math.max(끝줄(), 1), Math.max(끝칸(), 1)); },
+      getRange: function (r, c, nr, nc) { return 범위(r, c, nr, nc); },
+      appendRow: function (arr) {
+        var r = 끝줄() + 1;
+        arr.forEach(function (v, j) { 칸쓰기(r, j + 1, v); });
+        return 탭;
+      },
+      deleteRow: function (r) { t.줄.splice(r - 1, 1); return 탭; },
+      _속: t
+    };
+    ['setFrozenRows', 'setColumnWidth', 'setTabColor', 'autoResizeColumns'].forEach(function (k) {
+      탭[k] = function () { return 탭; };
+    });
+    return 탭;
+  }
+
+  탭들.push(가짜탭('시트1'));   // 새 구글 시트에는 빈 탭 하나가 있다
+
+  var 시트파일 = {
+    getSheets: function () { return 탭들.slice(); },
+    getSheetByName: function (n) {
+      for (var i = 0; i < 탭들.length; i++) if (탭들[i].getName() === n) return 탭들[i];
+      return null;
+    },
+    insertSheet: function (n) {
+      if (시트파일.getSheetByName(n)) throw new Error('같은 이름의 탭이 있어요: ' + n);
+      var s = 가짜탭(n); 탭들.push(s); return s;
+    },
+    toast: function () {}
+  };
+
+  var 잠금중 = false;
+  return {
+    SpreadsheetApp: {
+      getActiveSpreadsheet: function () { return 시트파일; },
+      flush: function () {}
+    },
+    LockService: {
+      getScriptLock: function () {
+        return {
+          tryLock: function () { if (잠금중) return false; 잠금중 = true; return true; },
+          waitLock: function () { if (잠금중) throw new Error('잠금 실패'); 잠금중 = true; },
+          releaseLock: function () { 잠금중 = false; }
+        };
+      }
+    },
+    HtmlService: {
+      createHtmlOutputFromFile: function (f) {
+        var o = { 파일: f, setTitle: function () { return o; }, addMetaTag: function () { return o; } };
+        return o;
+      }
+    },
+    Logger: { log: function () {} },
+    시트파일: 시트파일,
+    잠겨있나: function () { return 잠금중; }
+  };
+}
+
+
+</script>
+<script>
+var 코드_원본 = "/**\r\n * 이달의 바른말 어린이 투표 — 서버 쪽 (Code.gs)\r\n *\r\n * 처음 한 번: 위쪽 함수 고르는 칸에서 「설치」를 고르고 [실행]을 누릅니다.\r\n * 학생 화면: 웹 앱 주소 그대로\r\n * 결과 화면: 웹 앱 주소 끝에 ?page=result\r\n *\r\n * 이 파일에는 학생 이름이 들어 있지 않습니다. 이름은 시트의 「명단」 탭에 적습니다.\r\n * 이름이 _ 로 끝나는 함수는 안에서만 쓰는 부품이라 바깥(학생 기기)에서 부를 수 없습니다.\r\n */\r\n\r\nvar TAB_ROSTER = '명단';\r\nvar TAB_SETTINGS = '설정';\r\nvar TAB_VOTES = '투표';\r\nvar TAB_LOG = '당선기록';\r\n\r\nvar PHASE_FIRST = '1차';\r\nvar PHASE_RUNOFF = '결선';\r\nvar PHASE_CLOSED = '마감';\r\n\r\nvar KEY = {\r\n  month: '이번 달',\r\n  phase: '단계',\r\n  runoff: '결선 후보',\r\n  tied: '동점자',\r\n  closedRound: '마감한 회차',\r\n  winner: '당선',\r\n  method: '정한 방법',\r\n  password: '결과 비밀번호'\r\n};\r\n\r\nvar CLASS_SIZE = 17;   // 설치할 때 명단 탭에 만들어 둘 번호 칸 수 (나중에 줄을 늘리거나 비워도 됩니다)\r\n\r\n\r\n/* ───────── 화면 열기 ───────── */\r\n\r\nfunction doGet(e) {\r\n  var isResult = !!(e && e.parameter && e.parameter.page === 'result');\r\n  return HtmlService.createHtmlOutputFromFile(isResult ? 'Result' : 'Index')\r\n    .setTitle(isResult ? '바른말 어린이 결과' : '바른말 어린이 뽑기')\r\n    .addMetaTag('viewport', 'width=device-width, initial-scale=1');\r\n}\r\n\r\n\r\n/* ───────── 처음 한 번: 탭 만들기 ─────────\r\n * 이미 있는 탭과 적어 둔 내용은 건드리지 않습니다. 여러 번 눌러도 괜찮습니다. */\r\n\r\nfunction 설치() {\r\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\r\n  var made = [];\r\n\r\n  // 새 시트에 처음부터 있는 빈 탭(시트1)은 「명단」으로 이름만 바꿔 씁니다.\r\n  var sheets = ss.getSheets();\r\n  if (!ss.getSheetByName(TAB_ROSTER) && sheets.length === 1 && sheets[0].getLastRow() === 0) {\r\n    sheets[0].setName(TAB_ROSTER);\r\n  }\r\n\r\n  var roster = ss.getSheetByName(TAB_ROSTER) || ss.insertSheet(TAB_ROSTER);\r\n  if (roster.getLastRow() === 0) {\r\n    var rows = [['번호', '이름']];\r\n    for (var i = 1; i <= CLASS_SIZE; i++) rows.push([i, '']);\r\n    roster.getRange(1, 1, rows.length, 2).setValues(rows);\r\n    roster.getRange(1, 1, 1, 2).setFontWeight('bold').setBackground('#E4EBF8');\r\n    roster.getRange(1, 3).setValue('← 이름 칸에 학생 이름을 적어 주세요. 이름이 빈 줄은 투표에 나오지 않아요.');\r\n    roster.setFrozenRows(1);\r\n    roster.setColumnWidth(2, 140);\r\n    made.push(TAB_ROSTER);\r\n  }\r\n\r\n  var settings = ss.getSheetByName(TAB_SETTINGS) || ss.insertSheet(TAB_SETTINGS);\r\n  if (settings.getLastRow() === 0) {\r\n    settings.getRange(1, 2, 20, 1).setNumberFormat('@');   // 값 칸은 글자로 둡니다 (3, 7 이 37로 바뀌지 않게)\r\n    var month = (new Date().getMonth() + 1) + '월';\r\n    var pw = String(Math.floor(1000 + Math.random() * 9000));\r\n    var srows = [\r\n      ['항목', '값', '설명'],\r\n      [KEY.month, month, '결과 화면의 [새 달 시작]으로 바꿔요'],\r\n      [KEY.phase, PHASE_FIRST, '1차 / 결선 / 마감 — 결과 화면 버튼이 바꿔요'],\r\n      [KEY.runoff, '', '결선에 오른 번호 (손대지 마세요)'],\r\n      [KEY.tied, '', '마감했을 때 동점인 번호 (손대지 마세요)'],\r\n      [KEY.closedRound, '', '마지막으로 마감한 회차 (손대지 마세요)'],\r\n      [KEY.winner, '', '이번 달 당선 번호 (손대지 마세요)'],\r\n      [KEY.method, '', '1차 투표 / 결선 투표 / 추첨'],\r\n      [KEY.password, pw, '결과 화면에 들어갈 때 써요. 바꿔도 돼요']\r\n    ];\r\n    settings.getRange(1, 1, srows.length, 3).setValues(srows);\r\n    settings.getRange(1, 1, 1, 3).setFontWeight('bold').setBackground('#E4EBF8');\r\n    settings.setFrozenRows(1);\r\n    settings.setColumnWidth(1, 120);\r\n    settings.setColumnWidth(3, 320);\r\n    made.push(TAB_SETTINGS);\r\n  }\r\n\r\n  var votes = ss.getSheetByName(TAB_VOTES) || ss.insertSheet(TAB_VOTES);\r\n  if (votes.getLastRow() === 0) {\r\n    votes.getRange(1, 1, 1, 6).setValues([['시간', '달', '회차', '번호', '고른 사람1', '고른 사람2']])\r\n      .setFontWeight('bold').setBackground('#E4EBF8');\r\n    votes.setFrozenRows(1);\r\n    made.push(TAB_VOTES);\r\n  }\r\n\r\n  var log = ss.getSheetByName(TAB_LOG) || ss.insertSheet(TAB_LOG);\r\n  if (log.getLastRow() === 0) {\r\n    log.getRange(1, 1, 1, 5).setValues([['달', '번호', '이름', '정한 방법', '정한 때']])\r\n      .setFontWeight('bold').setBackground('#E4EBF8');\r\n    log.setFrozenRows(1);\r\n    made.push(TAB_LOG);\r\n  }\r\n\r\n  var msg = made.length\r\n    ? '설치 끝! 만든 탭: ' + made.join(', ') + '. 「명단」에 이름을 적고 「설정」에서 결과 비밀번호를 확인하세요.'\r\n    : '탭이 이미 다 있어요. 바꾼 것은 없습니다.';\r\n  try { ss.toast(msg, '바른말 투표', 10); } catch (err) { /* 화면이 없을 때는 넘어갑니다 */ }\r\n  Logger.log(msg);\r\n  return msg;\r\n}\r\n\r\n\r\n/* ───────── 판정 로직 시작 ─────────\r\n * 집계·동점·투표 검사. 미리보기_테스트.html도 이 파일을 통째로 넣어 쓰므로\r\n * 시험판과 진짜가 같은 계산을 합니다. */\r\n\r\nfunction toNo_(v) {\r\n  var n = parseInt(String(v === null || v === undefined ? '' : v).trim(), 10);\r\n  return (isFinite(n) && n > 0) ? n : 0;\r\n}\r\n\r\nfunction parseList_(s) {\r\n  var seen = {}, out = [];\r\n  String(s === null || s === undefined ? '' : s).split(/[^0-9]+/).forEach(function (x) {\r\n    var n = toNo_(x);\r\n    if (n && !seen[n]) { seen[n] = true; out.push(n); }\r\n  });\r\n  return out;\r\n}\r\n\r\n// 명단 탭의 줄들 → [{no, name}] (번호나 이름이 빈 줄은 건너뜀)\r\nfunction rosterFromRows_(rows) {\r\n  var list = [], seen = {};\r\n  for (var i = 1; i < rows.length; i++) {\r\n    var no = toNo_(rows[i][0]);\r\n    var name = String(rows[i][1] === null || rows[i][1] === undefined ? '' : rows[i][1]).trim();\r\n    if (!no || !name) continue;\r\n    if (seen[no]) throw new Error('명단에 ' + no + '번이 두 번 있어요. 「명단」 탭을 고쳐 주세요.');\r\n    seen[no] = true;\r\n    list.push({ no: no, name: name });\r\n  }\r\n  list.sort(function (a, b) { return a.no - b.no; });\r\n  return list;\r\n}\r\n\r\n// 투표 탭의 줄들 → [{month, round, no, picks}]\r\nfunction votesFromRows_(rows) {\r\n  var out = [];\r\n  for (var i = 1; i < rows.length; i++) {\r\n    var r = rows[i];\r\n    var no = toNo_(r[3]);\r\n    if (!no) continue;\r\n    out.push({\r\n      month: String(r[1]).trim(),\r\n      round: String(r[2]).trim(),\r\n      no: no,\r\n      picks: [toNo_(r[4]), toNo_(r[5])].filter(function (n) { return n > 0; })\r\n    });\r\n  }\r\n  return out;\r\n}\r\n\r\nfunction roundVotes_(votes, month, round) {\r\n  return votes.filter(function (v) { return v.month === month && v.round === round; });\r\n}\r\n\r\nfunction hasVoted_(votes, month, round, no) {\r\n  return roundVotes_(votes, month, round).some(function (v) { return v.no === no; });\r\n}\r\n\r\n// 후보마다 받은 표 → 많은 순(같으면 번호 순)\r\nfunction tally_(votes, month, round, candidateNos) {\r\n  var count = {};\r\n  candidateNos.forEach(function (n) { count[n] = 0; });\r\n  roundVotes_(votes, month, round).forEach(function (v) {\r\n    v.picks.forEach(function (p) { if (count.hasOwnProperty(p)) count[p] += 1; });\r\n  });\r\n  return candidateNos\r\n    .map(function (n) { return { no: n, count: count[n] }; })\r\n    .sort(function (a, b) { return (b.count - a.count) || (a.no - b.no); });\r\n}\r\n\r\n// 1등 표 수와 1등인 번호들 (둘 이상이면 동점)\r\nfunction topOf_(tally) {\r\n  if (!tally.length) return { count: 0, nos: [] };\r\n  var max = tally[0].count;\r\n  return {\r\n    count: max,\r\n    nos: tally.filter(function (t) { return t.count === max; }).map(function (t) { return t.no; })\r\n  };\r\n}\r\n\r\n// 지금 세고 있는(또는 방금 마감한) 회차\r\nfunction currentRound_(st) {\r\n  if (st.phase === PHASE_FIRST || st.phase === PHASE_RUNOFF) return st.phase;\r\n  if (st.phase === PHASE_CLOSED) return st.closedRound || '';\r\n  return '';\r\n}\r\n\r\n// 한 표를 받기 전에 하는 검사. 문제가 없으면 null.\r\nfunction checkVote_(st, voterNo, picks, clientPhase) {\r\n  if (st.phase === PHASE_CLOSED) return { code: 'closed', msg: '투표가 끝났어요.' };\r\n  if (st.phase !== PHASE_FIRST && st.phase !== PHASE_RUNOFF) {\r\n    return { code: 'setting', msg: '설정 탭의 「단계」가 이상해요. 선생님께 알려 주세요.' };\r\n  }\r\n  if (String(clientPhase) !== st.phase) {\r\n    return { code: 'stale', msg: '선생님이 투표를 바꾸셨어요. 처음부터 다시 해 주세요.' };\r\n  }\r\n  var no = toNo_(voterNo);\r\n  var rosterNos = st.roster.map(function (s) { return s.no; });\r\n  if (rosterNos.indexOf(no) < 0) return { code: 'who', msg: '명단에 없는 번호예요.' };\r\n  if (hasVoted_(st.votes, st.month, st.phase, no)) return { code: 'done', msg: '이 번호는 벌써 냈어요.' };\r\n\r\n  var need = st.phase === PHASE_FIRST ? 2 : 1;\r\n  var p = Array.isArray(picks) ? picks.map(toNo_) : [];\r\n  if (p.length !== need || p.some(function (x) { return !x; })) {\r\n    return { code: 'count', msg: need === 2 ? '친구를 꼭 2명 골라 주세요.' : '1명만 골라 주세요.' };\r\n  }\r\n  if (need === 2 && p[0] === p[1]) return { code: 'count', msg: '서로 다른 친구 2명을 골라 주세요.' };\r\n  if (p.indexOf(no) >= 0) return { code: 'self', msg: '자기 자신은 고를 수 없어요.' };\r\n  var allowed = st.phase === PHASE_FIRST ? rosterNos : st.runoff;\r\n  if (p.some(function (x) { return allowed.indexOf(x) < 0; })) {\r\n    return st.phase === PHASE_RUNOFF\r\n      ? { code: 'pick', msg: '결선에 오른 친구 중에서 골라 주세요.' }\r\n      : { code: 'pick', msg: '명단에 없는 친구예요.' };\r\n  }\r\n  return null;\r\n}\r\n\r\n// 마감할 때의 판정: 1명이면 당선, 여럿이면 동점\r\nfunction decideClose_(st) {\r\n  var round = st.phase;\r\n  if (round !== PHASE_FIRST && round !== PHASE_RUNOFF) return { ok: false, msg: '지금은 마감할 투표가 없어요.' };\r\n  if (roundVotes_(st.votes, st.month, round).length === 0) return { ok: false, msg: '아직 낸 사람이 없어요.' };\r\n  var cands = round === PHASE_FIRST ? st.roster.map(function (s) { return s.no; }) : st.runoff;\r\n  var top = topOf_(tally_(st.votes, st.month, round, cands));\r\n  if (top.nos.length === 1) {\r\n    return { ok: true, round: round, winner: top.nos[0], tied: [], method: round === PHASE_FIRST ? '1차 투표' : '결선 투표' };\r\n  }\r\n  return { ok: true, round: round, winner: 0, tied: top.nos, method: '' };\r\n}\r\n\r\nfunction nextMonthName_(m) {\r\n  var hit = /^(\\d+)\\s*월/.exec(String(m));\r\n  return hit ? ((parseInt(hit[1], 10) % 12) + 1) + '월' : '';\r\n}\r\n\r\n/* ───────── 판정 로직 끝 ───────── */\r\n\r\n\r\n/* ───────── 시트 읽고 쓰기 ───────── */\r\n\r\nfunction sheet_(name) {\r\n  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);\r\n  if (!sh) throw new Error('「' + name + '」 탭이 없어요. 앱스 스크립트에서 「설치」를 먼저 실행해 주세요.');\r\n  return sh;\r\n}\r\n\r\nfunction readSettings_() {\r\n  var rows = sheet_(TAB_SETTINGS).getDataRange().getValues();\r\n  var map = {};\r\n  rows.forEach(function (r) {\r\n    var k = String(r[0]).trim();\r\n    if (k) map[k] = String(r[1] === null || r[1] === undefined ? '' : r[1]).trim();\r\n  });\r\n  return map;\r\n}\r\n\r\nfunction writeSettings_(changes) {\r\n  var sh = sheet_(TAB_SETTINGS);\r\n  var rows = sh.getDataRange().getValues();\r\n  Object.keys(changes).forEach(function (k) {\r\n    var v = String(changes[k]);\r\n    for (var i = 0; i < rows.length; i++) {\r\n      if (String(rows[i][0]).trim() === k) { sh.getRange(i + 1, 2).setValue(v); return; }\r\n    }\r\n    sh.appendRow([k, v, '']);\r\n  });\r\n}\r\n\r\nfunction loadState_() {\r\n  var s = readSettings_();\r\n  return {\r\n    settings: s,\r\n    month: s[KEY.month] || '',\r\n    phase: s[KEY.phase] || '',\r\n    runoff: parseList_(s[KEY.runoff]),\r\n    tied: parseList_(s[KEY.tied]),\r\n    closedRound: s[KEY.closedRound] || '',\r\n    winner: toNo_(s[KEY.winner]),\r\n    method: s[KEY.method] || '',\r\n    roster: rosterFromRows_(sheet_(TAB_ROSTER).getDataRange().getValues()),\r\n    votes: votesFromRows_(sheet_(TAB_VOTES).getDataRange().getValues())\r\n  };\r\n}\r\n\r\nfunction nameOf_(st, no) {\r\n  for (var i = 0; i < st.roster.length; i++) if (st.roster[i].no === no) return st.roster[i].name;\r\n  return no + '번';\r\n}\r\n\r\nfunction logWinner_(st, no, method) {\r\n  var sh = sheet_(TAB_LOG);\r\n  var rows = sh.getDataRange().getValues();\r\n  var row = [st.month, no, nameOf_(st, no), method, new Date()];\r\n  for (var i = 1; i < rows.length; i++) {\r\n    if (String(rows[i][0]).trim() === st.month) { sh.getRange(i + 1, 1, 1, 5).setValues([row]); return; }\r\n  }\r\n  sh.appendRow(row);\r\n}\r\n\r\nfunction clearLog_(month) {\r\n  var sh = sheet_(TAB_LOG);\r\n  var rows = sh.getDataRange().getValues();\r\n  for (var i = rows.length - 1; i >= 1; i--) {\r\n    if (String(rows[i][0]).trim() === month) sh.deleteRow(i + 1);\r\n  }\r\n}\r\n\r\nfunction withLock_(fn) {\r\n  var lock = LockService.getScriptLock();\r\n  if (!lock.tryLock(20000)) {\r\n    return { ok: false, code: 'busy', msg: '친구들이 한꺼번에 내고 있어요. 잠깐 뒤에 다시 눌러 주세요.' };\r\n  }\r\n  try { return fn(); } finally { lock.releaseLock(); }\r\n}\r\n\r\n\r\n/* ───────── 학생 화면이 부르는 것 ───────── */\r\n\r\n// 누가 누구를 뽑았는지는 보내지 않습니다. 「냈는지」만 보냅니다.\r\nfunction getStudentState() {\r\n  var st = loadState_();\r\n  var round = currentRound_(st);\r\n  return {\r\n    month: st.month,\r\n    phase: st.phase,\r\n    candidates: st.phase === PHASE_RUNOFF ? st.runoff : [],\r\n    roster: st.roster.map(function (s) {\r\n      return { no: s.no, name: s.name, voted: round ? hasVoted_(st.votes, st.month, round, s.no) : false };\r\n    })\r\n  };\r\n}\r\n\r\nfunction submitVote(voterNo, picks, clientPhase) {\r\n  return withLock_(function () {\r\n    var st = loadState_();\r\n    var err = checkVote_(st, voterNo, picks, clientPhase);\r\n    if (err) return { ok: false, code: err.code, msg: err.msg };\r\n    var p = picks.map(toNo_);\r\n    sheet_(TAB_VOTES).appendRow([new Date(), st.month, st.phase, toNo_(voterNo), p[0], p.length > 1 ? p[1] : '']);\r\n    SpreadsheetApp.flush();\r\n    return { ok: true };\r\n  });\r\n}\r\n\r\n\r\n/* ───────── 결과 화면이 부르는 것 (모두 비밀번호 확인) ───────── */\r\n\r\nfunction pwOk_(st, pw) {\r\n  var real = String(st.settings[KEY.password] || '').trim();\r\n  return real !== '' && String(pw === null || pw === undefined ? '' : pw).trim() === real;\r\n}\r\n\r\nvar PW_FAIL = { ok: false, code: 'pw', msg: '비밀번호가 맞지 않아요.' };\r\n\r\nfunction resultView_(st) {\r\n  var round = currentRound_(st);\r\n  var rosterNos = st.roster.map(function (s) { return s.no; });\r\n  var voters = {};\r\n  if (round) roundVotes_(st.votes, st.month, round).forEach(function (v) { voters[v.no] = true; });\r\n  var named = function (t) { return { no: t.no, name: nameOf_(st, t.no), count: t.count }; };\r\n  var person = function (n) { return { no: n, name: nameOf_(st, n) }; };\r\n  var hasRunoff = st.runoff.length > 0;\r\n  var awaitingRunoff = st.phase === PHASE_CLOSED && st.closedRound === PHASE_FIRST && !st.winner && st.tied.length > 1;\r\n  var awaitingDraw = st.phase === PHASE_CLOSED && st.closedRound === PHASE_RUNOFF && !st.winner && st.tied.length > 1;\r\n  return {\r\n    month: st.month,\r\n    phase: st.phase,\r\n    round: round,\r\n    closedRound: st.closedRound,\r\n    total: st.roster.length,\r\n    submitted: rosterNos.filter(function (n) { return voters[n]; }).length,\r\n    notVoted: rosterNos.filter(function (n) { return !voters[n]; }),\r\n    firstTally: tally_(st.votes, st.month, PHASE_FIRST, rosterNos).map(named),\r\n    runoffTally: hasRunoff ? tally_(st.votes, st.month, PHASE_RUNOFF, st.runoff).map(named) : null,\r\n    runoff: st.runoff.map(person),\r\n    tied: st.tied.map(person),\r\n    winner: st.winner ? person(st.winner) : null,\r\n    method: st.method,\r\n    canOpenRunoff: awaitingRunoff,\r\n    canDraw: awaitingDraw,\r\n    canReopen: st.phase === PHASE_CLOSED && (st.closedRound === PHASE_FIRST || st.closedRound === PHASE_RUNOFF),\r\n    nextMonth: nextMonthName_(st.month)\r\n  };\r\n}\r\n\r\nfunction getResult(pw) {\r\n  var st = loadState_();\r\n  if (!pwOk_(st, pw)) return PW_FAIL;\r\n  return { ok: true, data: resultView_(st) };\r\n}\r\n\r\nfunction closeRound(pw) {\r\n  return withLock_(function () {\r\n    var st = loadState_();\r\n    if (!pwOk_(st, pw)) return PW_FAIL;\r\n    var d = decideClose_(st);\r\n    if (!d.ok) return { ok: false, msg: d.msg, data: resultView_(st) };\r\n    var ch = {};\r\n    ch[KEY.phase] = PHASE_CLOSED;\r\n    ch[KEY.closedRound] = d.round;\r\n    ch[KEY.tied] = d.tied.join(', ');\r\n    ch[KEY.winner] = d.winner || '';\r\n    ch[KEY.method] = d.method;\r\n    writeSettings_(ch);\r\n    if (d.winner) logWinner_(st, d.winner, d.method);\r\n    return { ok: true, data: resultView_(loadState_()) };\r\n  });\r\n}\r\n\r\nfunction openRunoff(pw) {\r\n  return withLock_(function () {\r\n    var st = loadState_();\r\n    if (!pwOk_(st, pw)) return PW_FAIL;\r\n    if (!resultView_(st).canOpenRunoff) return { ok: false, msg: '지금은 결선을 열 수 없어요.', data: resultView_(st) };\r\n    var ch = {};\r\n    ch[KEY.phase] = PHASE_RUNOFF;\r\n    ch[KEY.runoff] = st.tied.join(', ');\r\n    ch[KEY.tied] = '';\r\n    ch[KEY.closedRound] = '';\r\n    writeSettings_(ch);\r\n    return { ok: true, data: resultView_(loadState_()) };\r\n  });\r\n}\r\n\r\nfunction drawLots(pw) {\r\n  return withLock_(function () {\r\n    var st = loadState_();\r\n    if (!pwOk_(st, pw)) return PW_FAIL;\r\n    if (!resultView_(st).canDraw) return { ok: false, msg: '지금은 추첨할 수 없어요.', data: resultView_(st) };\r\n    var pick = st.tied[Math.floor(Math.random() * st.tied.length)];\r\n    var ch = {};\r\n    ch[KEY.winner] = pick;\r\n    ch[KEY.method] = '추첨';\r\n    writeSettings_(ch);\r\n    logWinner_(st, pick, '추첨');\r\n    return { ok: true, data: resultView_(loadState_()) };\r\n  });\r\n}\r\n\r\n// 마감을 되돌려 같은 회차를 다시 엽니다 (안 낸 아이가 있을 때)\r\nfunction reopenRound(pw) {\r\n  return withLock_(function () {\r\n    var st = loadState_();\r\n    if (!pwOk_(st, pw)) return PW_FAIL;\r\n    if (!resultView_(st).canReopen) return { ok: false, msg: '다시 열 투표가 없어요.', data: resultView_(st) };\r\n    var ch = {};\r\n    ch[KEY.phase] = st.closedRound;\r\n    ch[KEY.closedRound] = '';\r\n    ch[KEY.tied] = '';\r\n    ch[KEY.winner] = '';\r\n    ch[KEY.method] = '';\r\n    writeSettings_(ch);\r\n    clearLog_(st.month);\r\n    return { ok: true, data: resultView_(loadState_()) };\r\n  });\r\n}\r\n\r\n// 새 달: 지난 표는 시트에 그대로 남고, 「달」 칸으로 구분됩니다.\r\nfunction startMonth(pw, monthName) {\r\n  return withLock_(function () {\r\n    var st = loadState_();\r\n    if (!pwOk_(st, pw)) return PW_FAIL;\r\n    var name = String(monthName === null || monthName === undefined ? '' : monthName).trim();\r\n    if (!name) return { ok: false, msg: '달 이름을 적어 주세요. (예: 11월)' };\r\n    if (name.length > 20) return { ok: false, msg: '달 이름은 20자 안으로 적어 주세요.' };\r\n    // 숫자만 있으면 시트가 숫자·날짜로 바꿔 버려서 한글을 한 글자 넣게 합니다.\r\n    if (!/[가-힣]/.test(name)) return { ok: false, msg: '「11월」처럼 한글을 넣어 적어 주세요.' };\r\n    if (st.votes.some(function (v) { return v.month === name; })) {\r\n      return { ok: false, msg: '「' + name + '」은 이미 투표에 쓴 이름이에요. 「' + name + ' 2」처럼 다르게 적어 주세요.' };\r\n    }\r\n    var ch = {};\r\n    ch[KEY.month] = name;\r\n    ch[KEY.phase] = PHASE_FIRST;\r\n    ch[KEY.runoff] = '';\r\n    ch[KEY.tied] = '';\r\n    ch[KEY.closedRound] = '';\r\n    ch[KEY.winner] = '';\r\n    ch[KEY.method] = '';\r\n    writeSettings_(ch);\r\n    return { ok: true, data: resultView_(loadState_()) };\r\n  });\r\n}\r\n";
+var 학생_원본 = "<!DOCTYPE html>\r\n<html lang=\"ko\">\r\n<head>\r\n<base target=\"_top\">\r\n<meta charset=\"utf-8\">\r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n<title>바른말 어린이 뽑기<\/title>\r\n<style>\r\n:root{\r\n  --bg:#F3F5F7; --paper:#FFFFFF; --ink:#1B2430; --muted:#5F6B7A; --line:#D7DDE5;\r\n  --accent:#2F55A4; --accent-ink:#FFFFFF; --accent-soft:#E4EBF8;\r\n  --pick:#1F8A5B; --pick-soft:#E2F4EB; --warn:#B4401A; --warn-soft:#FCEBE4;\r\n  --r:16px;\r\n}\r\n*{box-sizing:border-box}\r\nhtml,body{margin:0;padding:0}\r\nbody{background:var(--bg);color:var(--ink);font-family:\"Malgun Gothic\",\"맑은 고딕\",\"Apple SD Gothic Neo\",\"Noto Sans KR\",sans-serif;font-size:19px;line-height:1.5;-webkit-text-size-adjust:100%}\r\nbutton{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}\r\nbutton:focus-visible{outline:3px solid var(--accent);outline-offset:2px}\r\n.wrap{max-width:760px;margin:0 auto;padding:18px 16px 40px}\r\n.month{margin:0 0 4px;color:var(--muted);font-size:16px;font-weight:700}\r\nh1{margin:0 0 6px;font-size:28px;line-height:1.3;font-weight:800}\r\n.hint{margin:0 0 16px;color:var(--muted);font-size:17px}\r\n.who{display:inline-block;margin:0 0 12px;padding:6px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:17px}\r\n.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}\r\n.card{min-height:76px;padding:10px 8px;border:2px solid var(--line);border-radius:var(--r);background:var(--paper);text-align:center;line-height:1.25}\r\n.card .no{display:block;font-size:15px;color:var(--muted);font-weight:700}\r\n.card .nm{display:block;font-size:22px;font-weight:800;margin-top:2px;word-break:keep-all}\r\n.card .tag{display:block;font-size:14px;margin-top:2px;font-weight:700}\r\n.card:active{transform:scale(.98)}\r\n.card[disabled]{cursor:default;opacity:.38;background:#ECEFF3}\r\n.card[disabled]:active{transform:none}\r\n.card.on{border-color:var(--pick);background:var(--pick-soft)}\r\n.card.on .tag{color:var(--pick)}\r\n.bar{position:sticky;bottom:0;margin-top:18px;padding:12px 0 4px;background:linear-gradient(rgba(243,245,247,0),var(--bg) 30%)}\r\n.row{display:flex;gap:10px;flex-wrap:wrap}\r\n.btn{flex:1 1 160px;min-height:62px;padding:12px 18px;border:0;border-radius:var(--r);background:var(--accent);color:var(--accent-ink);font-size:22px;font-weight:800}\r\n.btn.sub{background:var(--paper);color:var(--ink);border:2px solid var(--line)}\r\n.btn[disabled]{opacity:.4;cursor:default}\r\n.count{margin:0 0 8px;font-weight:700;color:var(--muted)}\r\n.count b{color:var(--pick);font-size:22px}\r\n.back{border:0;background:none;color:var(--accent);font-size:17px;font-weight:700;padding:6px 0;margin:0 0 6px}\r\n.center{text-align:center;padding-top:8vh}\r\n.big{font-size:34px;font-weight:800;line-height:1.35;margin:0 0 12px;word-break:keep-all}\r\n.names{font-size:30px;font-weight:800;color:var(--pick);margin:6px 0 4px;word-break:keep-all}\r\n.box{padding:18px;border-radius:var(--r);background:var(--paper);border:2px solid var(--line);margin:0 0 18px}\r\n.box.warn{border-color:var(--warn);background:var(--warn-soft)}\r\n.loading{color:var(--muted);text-align:center;padding-top:12vh;font-size:20px}\r\n.dot{display:inline-block;width:72px;height:72px;border-radius:50%;background:var(--pick-soft);border:4px solid var(--pick);position:relative;margin-bottom:16px}\r\n.dot:after{content:\"\";position:absolute;left:22px;top:12px;width:18px;height:32px;border:solid var(--pick);border-width:0 6px 6px 0;transform:rotate(45deg)}\r\n@media (max-width:420px){\r\n  h1{font-size:25px}\r\n  .grid{grid-template-columns:repeat(2,1fr)}\r\n  .card .nm{font-size:20px}\r\n  .big{font-size:28px}\r\n}\r\n<\/style>\r\n<\/head>\r\n<body>\r\n<main class=\"wrap\" id=\"app\"><p class=\"loading\">불러오는 중이에요…<\/p><\/main>\r\n\r\n<script>\r\nvar 상태 = null;     // 서버에서 받은 이번 달·단계·명단\r\nvar 나 = null;       // 고른 내 번호 {no, name}\r\nvar 고른 = [];        // 고른 친구 번호들\r\nvar 보내는중 = false;\r\n\r\nfunction $(id) { return document.getElementById(id); }\r\nfunction 글(s) {\r\n  return String(s).replace(/[&<>\"']/g, function (c) {\r\n    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c];\r\n  });\r\n}\r\nfunction 그리기(html) { $('app').innerHTML = html; window.scrollTo(0, 0); }\r\nfunction 이름(no) {\r\n  for (var i = 0; i < 상태.roster.length; i++) if (상태.roster[i].no === no) return 상태.roster[i].name;\r\n  return no + '번';\r\n}\r\nfunction 결선인가() { return 상태 && 상태.phase === '결선'; }\r\nfunction 몇명() { return 결선인가() ? 1 : 2; }\r\n\r\nfunction 서버(fn, args, ok) {\r\n  var r = google.script.run\r\n    .withSuccessHandler(ok)\r\n    .withFailureHandler(function (e) {\r\n      보내는중 = false;\r\n      오류화면('연결이 잠깐 끊겼어요. 다시 해 볼까요?', (e && e.message) ? e.message : '', fn === 'submitVote');\r\n    });\r\n  r[fn].apply(r, args || []);\r\n}\r\n\r\nfunction 불러오기() {\r\n  그리기('<p class=\"loading\">불러오는 중이에요…<\/p>');\r\n  나 = null; 고른 = []; 보내는중 = false;\r\n  서버('getStudentState', [], function (s) { 상태 = s; 번호화면(); });\r\n}\r\n\r\n/* ① 나는 몇 번? */\r\nfunction 번호화면() {\r\n  if (상태.phase === '마감') { 마감화면(); return; }\r\n  if (상태.phase !== '1차' && 상태.phase !== '결선') {\r\n    오류화면('지금은 투표를 할 수 없어요. 선생님께 알려 주세요.'); return;\r\n  }\r\n  var h = '<p class=\"month\">' + 글(상태.month) + ' 바른말 어린이' + (결선인가() ? ' · 결선' : '') + '<\/p>'\r\n        + '<h1>나는 몇 번?<\/h1>'\r\n        + '<p class=\"hint\">내 번호를 눌러요.<\/p><div class=\"grid\">';\r\n  상태.roster.forEach(function (s) {\r\n    h += '<button class=\"card\" ' + (s.voted ? 'disabled' : 'onclick=\"나고르기(' + s.no + ')\"') + '>'\r\n       + '<span class=\"no\">' + s.no + '번<\/span><span class=\"nm\">' + 글(s.name) + '<\/span>'\r\n       + (s.voted ? '<span class=\"tag\">냈어요<\/span>' : '') + '<\/button>';\r\n  });\r\n  h += '<\/div>';\r\n  if (!상태.roster.length) h = '<div class=\"box warn\">명단이 비어 있어요. 선생님께 알려 주세요.<\/div>';\r\n  그리기(h);\r\n}\r\n\r\nfunction 나고르기(no) {\r\n  나 = { no: no, name: 이름(no) };\r\n  고른 = [];\r\n  고르기화면();\r\n}\r\n\r\n/* ② 친구 고르기 (결선이면 1명) */\r\nfunction 후보들() {\r\n  var list = 결선인가()\r\n    ? 상태.candidates.map(function (n) { return { no: n, name: 이름(n) }; })\r\n    : 상태.roster.slice();\r\n  return list.filter(function (s) { return s.no !== 나.no; });\r\n}\r\n\r\nfunction 고르기화면() {\r\n  var need = 몇명();\r\n  var h = '<button class=\"back\" onclick=\"번호화면()\">← 내 번호 다시 고르기<\/button><br>'\r\n        + '<span class=\"who\">' + 나.no + '번 ' + 글(나.name) + '<\/span>';\r\n  if (결선인가()) {\r\n    h += '<h1>결선! 1명만 골라요<\/h1>'\r\n       + '<p class=\"hint\">표가 똑같이 나와서 한 번 더 뽑아요.<\/p>';\r\n  } else {\r\n    h += '<h1>바른말을 쓰는 친구 2명을 골라요<\/h1>'\r\n       + '<p class=\"hint\">고운 말로 말하고, 고마워·미안해를 잘하던 친구를 떠올려 보세요.<\/p>';\r\n  }\r\n  h += '<p class=\"count\" id=\"cnt\"><\/p><div class=\"grid\">';\r\n  후보들().forEach(function (s) {\r\n    h += '<button class=\"card\" id=\"c' + s.no + '\" onclick=\"친구누르기(' + s.no + ')\">'\r\n       + '<span class=\"no\">' + s.no + '번<\/span><span class=\"nm\">' + 글(s.name) + '<\/span>'\r\n       + '<span class=\"tag\" id=\"t' + s.no + '\"><\/span><\/button>';\r\n  });\r\n  h += '<\/div><div class=\"bar\"><div class=\"row\">'\r\n     + '<button class=\"btn\" id=\"go\" onclick=\"확인화면()\">다 골랐어요<\/button><\/div><\/div>';\r\n  그리기(h);\r\n  고른모습();\r\n}\r\n\r\nfunction 친구누르기(no) {\r\n  var i = 고른.indexOf(no);\r\n  if (i >= 0) 고른.splice(i, 1);\r\n  else if (몇명() === 1) 고른 = [no];\r\n  else if (고른.length < 2) 고른.push(no);\r\n  고른모습();\r\n}\r\n\r\nfunction 고른모습() {\r\n  var need = 몇명(), full = 고른.length >= need;\r\n  후보들().forEach(function (s) {\r\n    var on = 고른.indexOf(s.no) >= 0;\r\n    var b = $('c' + s.no);\r\n    b.className = 'card' + (on ? ' on' : '');\r\n    b.disabled = (!on && full && need > 1);\r\n    $('t' + s.no).textContent = on ? '골랐어요' : '';\r\n  });\r\n  $('cnt').innerHTML = '<b>' + 고른.length + '<\/b> / ' + need + '명';\r\n  $('go').disabled = !full;\r\n}\r\n\r\n/* ③ 확인 */\r\nfunction 확인화면() {\r\n  if (고른.length !== 몇명()) return;\r\n  var names = 고른.map(function (n) { return 글(이름(n)); }).join(', ');\r\n  그리기('<div class=\"center\">'\r\n    + '<span class=\"who\">' + 나.no + '번 ' + 글(나.name) + '<\/span>'\r\n    + '<p class=\"names\">' + names + '<\/p>'\r\n    + '<p class=\"big\">맞나요?<\/p>'\r\n    + '<p class=\"hint\">내고 나면 바꿀 수 없어요.<\/p>'\r\n    + '<div class=\"row\"><button class=\"btn sub\" onclick=\"고르기화면()\">다시 고르기<\/button>'\r\n    + '<button class=\"btn\" id=\"send\" onclick=\"내기()\">내기<\/button><\/div><\/div>');\r\n}\r\n\r\nfunction 내기() {\r\n  if (보내는중) return;\r\n  보내는중 = true;\r\n  var b = $('send'); b.disabled = true; b.textContent = '보내는 중…';\r\n  서버('submitVote', [나.no, 고른.slice(), 상태.phase], function (r) {\r\n    보내는중 = false;\r\n    if (r && r.ok) { 끝화면(); return; }\r\n    var msg = (r && r.msg) ? r.msg : '내지 못했어요.';\r\n    if (r && r.code === 'busy') { 오류화면(msg, '', true); return; }\r\n    오류화면(msg);\r\n  });\r\n}\r\n\r\n/* ④ 끝 */\r\nfunction 끝화면() {\r\n  그리기('<div class=\"center\"><span class=\"dot\"><\/span>'\r\n    + '<p class=\"big\">냈어요!<br>고마워요<\/p>'\r\n    + '<p class=\"hint\">누구를 골랐는지는 아무도 몰라요.<\/p>'\r\n    + '<div class=\"row\"><button class=\"btn sub\" onclick=\"불러오기()\">처음 화면으로<\/button><\/div><\/div>');\r\n}\r\n\r\nfunction 마감화면() {\r\n  그리기('<div class=\"center\"><p class=\"month\">' + 글(상태.month) + ' 바른말 어린이<\/p>'\r\n    + '<p class=\"big\">투표가 끝났어요<\/p>'\r\n    + '<p class=\"hint\">결과는 선생님이 알려 주실 거예요.<\/p>'\r\n    + '<div class=\"row\"><button class=\"btn sub\" onclick=\"불러오기()\">다시 보기<\/button><\/div><\/div>');\r\n}\r\n\r\nfunction 오류화면(msg, 자세히, 다시내기) {\r\n  var h = '<div class=\"center\"><div class=\"box warn\"><p class=\"big\" style=\"font-size:24px\">' + 글(msg) + '<\/p>'\r\n        + (자세히 ? '<p class=\"hint\" style=\"margin:0\">' + 글(자세히) + '<\/p>' : '') + '<\/div><div class=\"row\">';\r\n  if (다시내기) h += '<button class=\"btn\" onclick=\"확인화면()\">다시 내 보기<\/button>';\r\n  h += '<button class=\"btn' + (다시내기 ? ' sub' : '') + '\" onclick=\"불러오기()\">처음부터<\/button><\/div><\/div>';\r\n  그리기(h);\r\n}\r\n\r\n불러오기();\r\n<\/script>\r\n<\/body>\r\n<\/html>\r\n";
+var 결과_원본 = "<!DOCTYPE html>\n<html lang=\"ko\">\n<head>\n<base target=\"_top\">\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>바른말 어린이 결과<\/title>\n<style>\n:root{\n  --bg:#F3F5F7; --paper:#FFFFFF; --ink:#1B2430; --muted:#5F6B7A; --line:#D7DDE5;\n  --accent:#2F55A4; --accent-ink:#FFFFFF; --accent-soft:#E4EBF8;\n  --pick:#1F8A5B; --pick-soft:#E2F4EB; --gold:#C98A0B; --gold-soft:#FFF4D6;\n  --warn:#B4401A; --warn-soft:#FCEBE4;\n  --r:18px; --shadow:0 1px 2px rgba(20,30,50,.06), 0 6px 20px rgba(20,30,50,.07);\n}\n*{box-sizing:border-box}\nhtml,body{margin:0;padding:0}\nbody{background:var(--bg);color:var(--ink);font-family:\"Malgun Gothic\",\"맑은 고딕\",\"Apple SD Gothic Neo\",\"Noto Sans KR\",sans-serif;font-size:clamp(17px,1.5vw,22px);line-height:1.5}\nbutton,input{font:inherit;color:inherit}\nbutton{cursor:pointer}\nbutton:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}\n.wrap{max-width:1280px;margin:0 auto;padding:clamp(14px,2vw,28px) 16px 40px}\n.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}\nh1{margin:0;font-size:clamp(26px,3vw,44px);font-weight:800;letter-spacing:-.01em;word-break:keep-all}\n.badge{display:inline-block;padding:6px 16px;border-radius:999px;font-weight:800;background:var(--accent-soft);color:var(--accent)}\n.badge.closed{background:#E9ECF1;color:var(--muted)}\n.cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:18px;align-items:start}\n@media (max-width:860px){.cols{grid-template-columns:1fr}}\n.card{background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);padding:clamp(16px,2vw,26px);margin-bottom:18px}\n.card h2{margin:0 0 12px;font-size:clamp(19px,1.7vw,26px)}\n.muted{color:var(--muted)}\n.prog{font-size:clamp(34px,4.2vw,64px);font-weight:800;line-height:1.1}\n.prog small{font-size:.45em;color:var(--muted);font-weight:700}\n.track{height:16px;border-radius:99px;background:#E6EAF0;overflow:hidden;margin:10px 0 14px}\n.track i{display:block;height:100%;background:var(--accent);border-radius:99px}\n.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}\n.chip{min-width:46px;padding:4px 12px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-weight:800;text-align:center}\n.btn{min-height:58px;padding:12px 22px;border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:clamp(18px,1.6vw,24px)}\n.btn.sub{background:var(--paper);color:var(--ink);border:2px solid var(--line)}\n.btn.gold{background:var(--gold);color:#fff}\n.btn.danger{background:var(--warn)}\n.btn[disabled]{opacity:.45;cursor:default}\n.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}\n.ask{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--warn-soft);border:2px solid var(--warn)}\n.ask p{margin:0 0 8px;font-weight:700}\n.hero{text-align:center;background:linear-gradient(180deg,var(--gold-soft),var(--paper));border:3px solid var(--gold)}\n.hero .label{font-weight:800;color:var(--gold);font-size:clamp(18px,1.8vw,28px)}\n.hero .who{font-size:clamp(48px,7.5vw,120px);font-weight:800;line-height:1.15;margin:6px 0;word-break:keep-all}\n.hero .who small{font-size:.42em;color:var(--muted);margin-right:.3em}\n.hero .how{color:var(--muted);font-weight:700}\n.tie{border:3px solid var(--accent)}\n.tie .names{font-size:clamp(30px,4vw,60px);font-weight:800;line-height:1.25;word-break:keep-all}\n.bars{display:flex;flex-direction:column;gap:8px}\n.b{display:grid;grid-template-columns:minmax(90px,9em) 1fr 3.4em;align-items:center;gap:10px}\n.b .n{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.b .n small{color:var(--muted);margin-right:4px}\n.b .t{height:clamp(20px,2.2vw,32px);background:#EEF1F5;border-radius:8px;overflow:hidden}\n.b .t i{display:block;height:100%;background:#9BB0D8;border-radius:8px;min-width:2px}\n.b.top .t i{background:var(--accent)}\n.b.top .n{color:var(--accent)}\n.b.win .t i{background:var(--gold)}\n.b .c{font-weight:800;text-align:right}\n.cover{padding:28px 12px;text-align:center;border:2px dashed var(--line);border-radius:14px;color:var(--muted)}\n.small .b{font-size:.85em}\n.small .b .t{height:16px}\n.login{max-width:420px;margin:12vh auto 0;text-align:center}\n.login input{width:100%;min-height:60px;padding:10px 16px;border:2px solid var(--line);border-radius:14px;font-size:26px;text-align:center;margin:12px 0}\n.msg{margin:10px 0 0;color:var(--warn);font-weight:700;min-height:1.5em}\n.menu{border-top:2px solid var(--line);margin-top:8px;padding-top:16px}\n.menu input{min-height:52px;padding:8px 14px;border:2px solid var(--line);border-radius:12px;width:10em;max-width:100%}\n.roll{position:fixed;inset:0;background:rgba(27,36,48,.86);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:9;text-align:center;padding:16px}\n.roll .nm{font-size:clamp(54px,9vw,140px);font-weight:800;word-break:keep-all}\n.roll .lb{font-size:clamp(20px,2vw,30px);opacity:.8}\n.foot{margin-top:6px;font-size:.85em}\n<\/style>\n<\/head>\n<body>\n<main class=\"wrap\" id=\"app\"><\/main>\n\n<script>\nvar 비번 = '';\nvar 판 = null;          // 서버에서 받은 결과\nvar 바쁨 = false;\nvar 순위보기 = false;\nvar 묻는중 = '';        // 지금 열려 있는 「정말요?」 칸\nvar 알림 = '';\n\nfunction $(id) { return document.getElementById(id); }\nfunction 글(s) {\n  return String(s).replace(/[&<>\"']/g, function (c) {\n    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c];\n  });\n}\nfunction 저장(v) { try { sessionStorage.setItem('바른말비번', v); } catch (e) {} }\nfunction 꺼내기() { try { return sessionStorage.getItem('바른말비번') || ''; } catch (e) { return ''; } }\n\nfunction 서버(fn, args, ok) {\n  바쁨 = true;\n  var r = google.script.run\n    .withSuccessHandler(function (res) {\n      바쁨 = false;\n      if (res && res.code === 'pw') { 저장(''); 비번 = ''; 로그인화면('비밀번호가 맞지 않아요.'); return; }\n      ok(res);\n    })\n    .withFailureHandler(function (e) {\n      바쁨 = false;\n      알림 = '연결이 잠깐 끊겼어요. [새로고침]을 눌러 주세요. ' + ((e && e.message) ? '(' + e.message + ')' : '');\n      if (판) 그리기(); else 로그인화면(알림);\n    });\n  r[fn].apply(r, [비번].concat(args || []));\n}\n\nfunction 받기(res) {\n  if (res && res.data) 판 = res.data;\n  알림 = (res && !res.ok && res.msg) ? res.msg : '';\n  묻는중 = '';\n  그리기();\n}\n\n/* ── 들어가기 ── */\nfunction 로그인화면(msg) {\n  $('app').innerHTML = '<div class=\"login card\"><h1>바른말 어린이 결과<\/h1>'\n    + '<p class=\"muted\">결과 비밀번호를 넣어 주세요.<\/p>'\n    + '<input id=\"pw\" type=\"password\" inputmode=\"numeric\" autocomplete=\"off\" onkeydown=\"if(event.key===\\'Enter\\')들어가기()\">'\n    + '<button class=\"btn\" style=\"width:100%\" onclick=\"들어가기()\">들어가기<\/button>'\n    + '<p class=\"msg\">' + 글(msg || '') + '<\/p><\/div>';\n  setTimeout(function () { var i = $('pw'); if (i) i.focus(); }, 30);\n}\n\nfunction 들어가기() {\n  비번 = ($('pw').value || '').trim();\n  if (!비번) return;\n  서버('getResult', [], function (res) { 저장(비번); 받기(res); });\n}\n\n/* ── 그리기 ── */\nfunction 막대들(list, 크게, 당선no) {\n  if (!list || !list.length) return '<p class=\"muted\">후보가 없어요.<\/p>';\n  var max = 0;\n  list.forEach(function (t) { if (t.count > max) max = t.count; });\n  var h = '<div class=\"bars' + (크게 ? '' : ' small') + '\">';\n  list.forEach(function (t) {\n    var w = max ? Math.round(t.count / max * 100) : 0;\n    var cls = 'b' + (당선no === t.no ? ' win' : (max && t.count === max ? ' top' : ''));\n    h += '<div class=\"' + cls + '\"><span class=\"n\"><small>' + t.no + '<\/small>' + 글(t.name) + '<\/span>'\n       + '<span class=\"t\"><i style=\"width:' + w + '%\"><\/i><\/span><span class=\"c\">' + t.count + '표<\/span><\/div>';\n  });\n  return h + '<\/div>';\n}\n\nfunction 이름들(list) {\n  return list.map(function (p) { return 글(p.name); }).join(', ');\n}\n\nfunction 단계말(d) {\n  if (d.phase === '1차') return ['1차 투표 중', ''];\n  if (d.phase === '결선') return ['결선 투표 중', ''];\n  if (d.phase === '마감') return ['마감', 'closed'];\n  return [d.phase || '?', 'closed'];\n}\n\nfunction 그리기() {\n  var d = 판;\n  var 열림 = d.phase === '1차' || d.phase === '결선';\n  var bd = 단계말(d);\n  var h = '<div class=\"top\"><h1>' + 글(d.month) + ' 바른말 어린이<\/h1>'\n        + '<span class=\"badge ' + bd[1] + '\">' + bd[0] + '<\/span><\/div>'\n        + '<div class=\"cols\"><div>';\n\n  // 왼쪽: 지금 할 일\n  if (d.winner) {\n    var how = d.method === '추첨' ? '동점이라 추첨으로 정했어요'\n            : d.method === '결선 투표' ? '결선 투표로 정했어요' : '투표로 정했어요';\n    h += '<div class=\"card hero\"><div class=\"label\">' + 글(d.month) + ' 바른말 어린이<\/div>'\n       + '<div class=\"who\"><small>' + d.winner.no + '번<\/small>' + 글(d.winner.name) + '<\/div>'\n       + '<div class=\"how\">' + how + '<\/div><\/div>';\n  } else if (d.canOpenRunoff) {\n    h += '<div class=\"card tie\"><h2>동점이에요<\/h2><div class=\"names\">' + 이름들(d.tied) + '<\/div>'\n       + '<p class=\"muted\">이 친구들끼리 한 번 더 뽑아요. 같은 주소로 1명만 고르면 돼요.<\/p>'\n       + '<div class=\"btns\"><button class=\"btn\" onclick=\"결선열기()\">동점자끼리 결선 열기<\/button><\/div><\/div>';\n  } else if (d.canDraw) {\n    h += '<div class=\"card tie\"><h2>결선도 동점이에요<\/h2><div class=\"names\">' + 이름들(d.tied) + '<\/div>'\n       + '<p class=\"muted\">마지막 방법으로, 이 중 1명을 무작위로 뽑아요.<\/p>'\n       + '<div class=\"btns\"><button class=\"btn gold\" onclick=\"추첨()\">추첨<\/button><\/div><\/div>';\n  }\n\n  if (열림 || !d.winner) {\n    var pct = d.total ? Math.round(d.submitted / d.total * 100) : 0;\n    h += '<div class=\"card\"><h2>' + (d.round === '결선' ? '결선' : '1차') + ' 낸 사람<\/h2>'\n       + '<div class=\"prog\">' + d.submitted + ' <small>/ ' + d.total + '명<\/small><\/div>'\n       + '<div class=\"track\"><i style=\"width:' + pct + '%\"><\/i><\/div>';\n    if (d.notVoted.length) {\n      h += '<div class=\"muted\">아직 안 낸 번호<\/div><div class=\"chips\">'\n         + d.notVoted.map(function (n) { return '<span class=\"chip\">' + n + '<\/span>'; }).join('') + '<\/div>';\n    } else {\n      h += '<div class=\"muted\">모두 냈어요.<\/div>';\n    }\n    if (열림) {\n      h += '<div class=\"btns\"><button class=\"btn\" onclick=\"마감묻기()\">투표 마감하고 결과 보기<\/button><\/div>';\n      if (묻는중 === '마감') {\n        h += '<div class=\"ask\"><p>아직 ' + d.notVoted.length + '명이 안 냈어요. 그래도 마감할까요?<\/p>'\n           + '<div class=\"btns\" style=\"margin:0\"><button class=\"btn danger\" onclick=\"마감하기()\">네, 마감해요<\/button>'\n           + '<button class=\"btn sub\" onclick=\"묻기닫기()\">기다릴게요<\/button><\/div><\/div>';\n      }\n    }\n    h += '<\/div>';\n  }\n  if (알림) h += '<div class=\"card\" style=\"border:2px solid var(--warn)\"><p class=\"msg\" style=\"margin:0\">' + 글(알림) + '<\/p><\/div>';\n  h += '<\/div>';\n\n  // 오른쪽: 득표\n  h += '<div>';\n  var 당선no = d.winner ? d.winner.no : 0;\n  if (d.runoffTally) {\n    h += '<div class=\"card\"><h2>결선 득표<\/h2>' + 가린막대(d.runoffTally, true, 당선no, 열림) + '<\/div>'\n       + '<div class=\"card\"><h2>1차 득표<\/h2>' + 막대들(d.firstTally, false, 0) + '<\/div>';\n  } else {\n    h += '<div class=\"card\"><h2>1차 득표<\/h2>' + 가린막대(d.firstTally, true, 당선no, 열림) + '<\/div>';\n  }\n  h += '<\/div><\/div>';\n\n  // 아래: 선생님 메뉴\n  h += '<div class=\"menu\"><div class=\"btns\">'\n     + '<button class=\"btn sub\" onclick=\"새로고침()\">새로고침<\/button>'\n     + '<button class=\"btn sub\" onclick=\"새달묻기()\">새 달 시작<\/button>'\n     + (d.canReopen ? '<button class=\"btn sub\" onclick=\"다시열기묻기()\">마감 취소하고 다시 열기<\/button>' : '')\n     + '<\/div>';\n  if (묻는중 === '새달') {\n    h += '<div class=\"ask\"><p>새 달 이름 ' + (d.winner ? '' : '<span style=\"font-weight:400\">(이번 달은 아직 당선이 안 정해졌어요)<\/span>') + '<\/p>'\n       + '<input id=\"mon\" value=\"' + 글(d.nextMonth || '') + '\" placeholder=\"예: 11월\"> '\n       + '<div class=\"btns\" style=\"margin-top:10px\"><button class=\"btn\" onclick=\"새달하기()\">시작<\/button>'\n       + '<button class=\"btn sub\" onclick=\"묻기닫기()\">그만<\/button><\/div>'\n       + '<p class=\"muted foot\" style=\"margin:8px 0 0\">지난 표는 시트 「투표」 탭에 그대로 남아요.<\/p><\/div>';\n  }\n  if (묻는중 === '다시') {\n    h += '<div class=\"ask\"><p>' + (d.closedRound || '') + ' 투표를 다시 열까요? 이미 낸 표는 그대로 두고, 안 낸 친구만 더 낼 수 있어요.<\/p>'\n       + '<div class=\"btns\" style=\"margin:0\"><button class=\"btn danger\" onclick=\"다시열기()\">다시 열기<\/button>'\n       + '<button class=\"btn sub\" onclick=\"묻기닫기()\">그만<\/button><\/div><\/div>';\n  }\n  h += '<p class=\"muted foot\">누가 누구를 골랐는지는 이 화면에 나오지 않아요.<\/p><\/div>';\n\n  $('app').innerHTML = h;\n  if (묻는중 === '새달') { var m = $('mon'); if (m) m.focus(); }\n}\n\nfunction 가린막대(list, 크게, 당선no, 열림) {\n  if (열림 && !순위보기) {\n    return '<div class=\"cover\"><p style=\"margin:0 0 10px\">투표하는 동안 순위는 가려 두었어요.<\/p>'\n         + '<button class=\"btn sub\" onclick=\"순위보기=true;그리기()\">순위 보기<\/button><\/div>';\n  }\n  var h = 막대들(list, 크게, 당선no);\n  if (열림) h += '<div class=\"btns\"><button class=\"btn sub\" onclick=\"순위보기=false;그리기()\">순위 가리기<\/button><\/div>';\n  return h;\n}\n\n/* ── 버튼들 ── */\nfunction 묻기닫기() { 묻는중 = ''; 그리기(); }\nfunction 새로고침() { if (!바쁨) 서버('getResult', [], 받기); }\nfunction 마감묻기() {\n  if (판.notVoted.length) { 묻는중 = '마감'; 그리기(); } else 마감하기();\n}\nfunction 마감하기() { if (!바쁨) { 순위보기 = true; 서버('closeRound', [], 받기); } }\nfunction 결선열기() { if (!바쁨) { 순위보기 = false; 서버('openRunoff', [], 받기); } }\nfunction 새달묻기() { 묻는중 = '새달'; 그리기(); }\nfunction 새달하기() {\n  var v = ($('mon').value || '').trim();\n  if (!v || 바쁨) return;\n  순위보기 = false;\n  서버('startMonth', [v], 받기);\n}\nfunction 다시열기묻기() { 묻는중 = '다시'; 그리기(); }\nfunction 다시열기() { if (!바쁨) { 순위보기 = false; 서버('reopenRound', [], 받기); } }\n\nfunction 추첨() {\n  if (바쁨) return;\n  var 후보 = 판.tied.map(function (p) { return p.name; });\n  서버('drawLots', [], function (res) {\n    if (!res || !res.ok || !res.data || !res.data.winner) { 받기(res); return; }\n    굴리기(후보, res.data.winner.name, function () { 받기(res); });\n  });\n}\n\n// 동점자 이름을 돌리다가 뽑힌 이름에서 멈춥니다 (결과는 서버가 이미 정했어요)\nfunction 굴리기(후보, 끝이름, done) {\n  var box = document.createElement('div');\n  box.className = 'roll';\n  box.innerHTML = '<div class=\"lb\">추첨 중…<\/div><div class=\"nm\" id=\"rn\"><\/div>';\n  document.body.appendChild(box);\n  var i = 0, 간격 = 70, 지난 = 0;\n  function 한번() {\n    $('rn').textContent = 후보[i % 후보.length];\n    i++; 지난 += 간격;\n    if (지난 > 1600) 간격 = Math.round(간격 * 1.18);\n    if (지난 > 3200) {\n      $('rn').textContent = 끝이름;\n      box.querySelector('.lb').textContent = '뽑혔어요!';\n      setTimeout(function () { document.body.removeChild(box); done(); }, 1400);\n      return;\n    }\n    setTimeout(한번, 간격);\n  }\n  한번();\n}\n\n// 투표가 열려 있는 동안 8초마다 숫자를 새로 받아 옵니다\nsetInterval(function () {\n  if (!판 || 바쁨 || 묻는중 || !비번) return;\n  if (판.phase !== '1차' && 판.phase !== '결선') return;\n  if (document.hidden) return;\n  서버('getResult', [], 받기);\n}, 8000);\n\n(function 시작() {\n  비번 = 꺼내기();\n  if (비번) {\n    $('app').innerHTML = '<p class=\"muted\" style=\"text-align:center;padding-top:12vh\">불러오는 중이에요…<\/p>';\n    서버('getResult', [], 받기);\n  } else 로그인화면('');\n})();\n<\/script>\n<\/body>\n<\/html>\n";
+(0, eval)(코드_원본);   // Code.gs를 그대로 돌림 — doGet·submitVote·closeRound… 가 이 창에 생김
+
+var 지금구글 = null;
+function 판새로() {
+  지금구글 = 가짜구글_만들기();
+  window.SpreadsheetApp = 지금구글.SpreadsheetApp;
+  window.LockService = 지금구글.LockService;
+  window.HtmlService = 지금구글.HtmlService;
+  window.Logger = 지금구글.Logger;
+  설치();
+  var ss = 지금구글.시트파일;
+  var 명단 = ss.getSheetByName('명단');
+  for (var i = 1; i <= 17; i++) 명단.getRange(i + 1, 2).setValue('학생' + i);
+  var 설정 = ss.getSheetByName('설정'), rows = 설정.getDataRange().getValues();
+  for (var r = 0; r < rows.length; r++) {
+    if (rows[r][0] === '결과 비밀번호') 설정.getRange(r + 1, 2).setValue('1234');
+    if (rows[r][0] === '이번 달') 설정.getRange(r + 1, 2).setValue('10월');
+  }
+}
+
+// iframe 안의 google.script.run이 부르는 곳. 이름이 _ 로 끝나는 함수는 진짜처럼 막음.
+window.가짜서버 = {
+  call: function (fn, args) {
+    if (/_$/.test(fn) || typeof window[fn] !== 'function' || fn === '설치') throw new Error('부를 수 없는 함수: ' + fn);
+    var r = window[fn].apply(null, args);
+    setTimeout(시트그리기, 0);
+    return r === undefined ? null : JSON.parse(JSON.stringify(r));
+  }
+};
+
+var 가짜실행기 = '<scr' + 'ipt>(function(){function mk(ok,fail){return new Proxy({},{get:function(t,p){'
+  + 'if(p==="withSuccessHandler")return function(h){return mk(h,fail)};'
+  + 'if(p==="withFailureHandler")return function(h){return mk(ok,h)};'
+  + 'if(p==="withUserObject")return function(){return mk(ok,fail)};'
+  + 'return function(){var a=[].slice.call(arguments);setTimeout(function(){var r;'
+  + 'try{r=parent.가짜서버.call(p,a)}catch(e){if(fail)fail(e);return}if(ok)ok(r)},350)}}})}'
+  + 'window.google={script:{run:mk(null,null)}}})();</scr' + 'ipt>';
+
+function 띄우기(id, 원본) { document.getElementById(id).srcdoc = 원본.replace('<head>', '<head>' + 가짜실행기); }
+function 학생다시() { 띄우기('fs', 학생_원본); }
+function 결과다시() { 띄우기('fr', 결과_원본); }
+function 폭(w) { document.getElementById('fw').style.width = w ? w + 16 + 'px' : '100%'; }
+
+document.querySelectorAll('nav button').forEach(function (b) {
+  b.onclick = function () {
+    document.querySelectorAll('nav button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === 'p-' + b.dataset.p); });
+    if (b.dataset.p === 'r') { try { var w = document.getElementById('fr').contentWindow; if (w.새로고침 && w.판) w.새로고침(); } catch (e) {} }
+    if (b.dataset.p === 't') 시트그리기();
+  };
+});
+
+function 알리기(s) { document.getElementById('log').textContent = s; }
+function 남은번호() {
+  var st = loadState_(), round = currentRound_(st);
+  return st.roster.filter(function (s) { return !hasVoted_(st.votes, st.month, round, s.no); }).map(function (s) { return s.no; });
+}
+function 내기묶음(고르기) {
+  var st = loadState_();
+  if (st.phase !== '1차' && st.phase !== '결선') { 알리기('지금 단계는 「' + st.phase + '」라서 낼 수 없어요.'); return; }
+  var ok = 0, 거부 = [];
+  남은번호().forEach(function (no) {
+    var p = 고르기(no, st);
+    if (!p) return;
+    var r = submitVote(no, p, st.phase);
+    if (r.ok) ok++; else 거부.push(no + '번: ' + r.msg);
+  });
+  알리기(st.phase + ' — ' + ok + '명 냄' + (거부.length ? ' / 거부 ' + 거부.join(', ') : ''));
+  시트그리기();
+}
+function 처음상태() { 판새로(); 학생다시(); 결과다시(); 알리기('처음 상태로 돌렸어요. 학생1~학생17, 10월, 1차.'); 시트그리기(); }
+function 동점만들기() {
+  내기묶음(function (no, st) {
+    if (st.phase !== '1차') return null;
+    return no === 3 ? [7, 1] : no === 7 ? [3, 1] : [3, 7];
+  });
+}
+function 무작위() {
+  내기묶음(function (no, st) {
+    var pool = (st.phase === '1차' ? st.roster.map(function (s) { return s.no; }) : st.runoff.slice())
+      .filter(function (n) { return n !== no; });
+    for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+    return pool.slice(0, st.phase === '1차' ? 2 : 1);
+  });
+}
+function 결선반반() {
+  var 몇 = {};
+  내기묶음(function (no, st) {
+    if (st.phase !== '결선' || st.runoff.length !== 2 || no === 17) return null;
+    var a = st.runoff[0], b = st.runoff[1];
+    if (no === a) return [b];
+    if (no === b) return [a];
+    몇[a] = 몇[a] || 1; 몇[b] = 몇[b] || 1;   // 후보 둘이 서로 한 표씩 냈다고 치고 나머지를 나눔
+    var p = 몇[a] <= 몇[b] ? a : b; 몇[p]++;
+    return [p];
+  });
+}
+function 결선당선() {
+  내기묶음(function (no, st) {
+    if (st.phase !== '결선') return null;
+    var 이길 = st.runoff.indexOf(7) >= 0 ? 7 : st.runoff[0];
+    if (no === 이길) return [st.runoff.filter(function (n) { return n !== no; })[0]];
+    return [이길];
+  });
+}
+
+function 표로(이름, 줄수) {
+  var sh = 지금구글.시트파일.getSheetByName(이름);
+  if (!sh) return '';
+  var rows = sh.getDataRange().getValues();
+  var 머리 = rows[0], 몸 = rows.slice(1);
+  if (줄수 && 몸.length > 줄수) 몸 = 몸.slice(-줄수);
+  function 칸(v) {
+    if (v instanceof Date) v = ('0' + v.getHours()).slice(-2) + ':' + ('0' + v.getMinutes()).slice(-2) + ':' + ('0' + v.getSeconds()).slice(-2);
+    return String(v).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
+  }
+  return '<div><h3>「' + 이름 + '」 탭 (' + (rows.length - 1) + '줄)</h3><div class="scroll"><table><tr>'
+    + 머리.map(function (v) { return '<th>' + 칸(v) + '</th>'; }).join('') + '</tr>'
+    + 몸.map(function (r) { return '<tr>' + r.map(function (v) { return '<td>' + 칸(v) + '</td>'; }).join('') + '</tr>'; }).join('')
+    + '</table></div></div>';
+}
+function 시트그리기() {
+  if (!document.getElementById('p-t').classList.contains('on')) return;
+  document.getElementById('sheets').innerHTML = 표로('설정') + 표로('투표', 60) + 표로('당선기록') + 표로('명단');
+}
+
+판새로();
+학생다시();
+결과다시();
+</script>
+</body>
+</html>
