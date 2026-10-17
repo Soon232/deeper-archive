@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>수사 1주차 · 인사이트 카드와 이름 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">수사 과제 · 1주차</span>
+    <h1>인사이트 카드 넷과 이름 하나</h1>
+    <p class="meta">2026. 10. 12 · 긱어스 DEEPER 「[디퍼 2기] 수사 과제 아카이브」에 올린 글</p>
+  </header>
+
+  <h2>인사이트 카드</h2>
+  <div class="box">
+    <p class="quote">“생각할 시간에도 몸에 맞는 길이가 있다. 3초.”</p>
+    <div class="chips"><span class="chip">몸에 맞는 길이</span><span class="chip">3초</span></div>
+    <p class="small">사이</p>
+    <p class="between"><span>“실은 내 어깨만큼 — 몸에 맞는 길이라야 꼬이지 않는다. 어릴 때는 팔꿈치만큼.” <em>2026-07-17</em></span><span>“읽고 생각할 시간을 꼭 주자. 3초.” <em>2026-08-04</em></span></p>
+    <p class="small">2026-10-05 · 종합 씨앗 · 차원: 시간의 결</p>
+  </div>
+  <div class="box">
+    <p class="quote">“부끄러운 연습도, 완성되어 가는 무언가다.”</p>
+    <div class="chips"><span class="chip">연습</span><span class="chip">완성</span></div>
+    <p class="small">사이</p>
+    <p class="between"><span>“집에서 입던 낡은 티셔츠에 반바지 입고 연습하러 갔는데 넘 부끄러웠다.” <em>2026-09-19</em></span><span>“무언가 완성되어 가는게 즐거워서 계속 하는 것 같아.” <em>2026-10-09</em></span></p>
+    <p class="small">2026-10-09 · 종합 씨앗 · 차원: 감정의 결</p>
+  </div>
+  <div class="box">
+    <p class="quote">“단순한 전등을 새로 달면, 1제곱미터도 안 되는 책상도 내 집이 된다.”</p>
+    <div class="chips"><span class="chip">책상</span><span class="chip">내 집</span></div>
+    <p class="small">사이</p>
+    <p class="between"><span>“저렴하지만 단순한 전등을 새로 달면서 이제서야 내 집이 되는 것 같다.” <em>2026-08-09</em></span><span>“1제곱미터도 안 되는 책상이, 하얀 바다를 마주하면 그 어디보다 광활한 바다가 된다.” <em>2024</em></span></p>
+    <p class="small">2026-10-09 · 종합 씨앗 · 차원: 뜻밖의 짝</p>
+  </div>
+  <div class="box">
+    <p class="quote">“아이들과 재미있게 수업하면, 틀려도 되고 도전해도 된다.”</p>
+    <div class="chips"><span class="chip">수업</span><span class="chip">도전</span><span class="chip">아이들</span></div>
+    <p class="small">사이</p>
+    <p class="between"><span>“아이들과 재미있게 수업하기를 원해요.” <em>2026-10-10</em></span><span>“아마추어이기 때문에 틀려도 되고, 아마추어 이기에 도전해도 된다.” <em>2026-10-10</em></span></p>
+    <p class="small">2026-10-11 · 종합 씨앗 · 차원: 뜻밖의 짝</p>
+  </div>
+
+  <h2>이름 후보</h2>
+  <p class="lead-quote">가늘고 길게</p>
+  <p>“나만의 꾸준함을 유지하는 방법이 바로 가늘고 길게가 아닐까 해.”</p>
+  <p class="small">후보 셋 — 돌다리 하나씩 · 가늘고 길게 · 건너가는 말</p>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

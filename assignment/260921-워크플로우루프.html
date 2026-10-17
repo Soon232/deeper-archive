@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>워크플로우 루프 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+
+.md blockquote {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--blue);
+  border-left: 3px solid var(--mist);
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  margin: 0 0 1.4rem;
+}
+.md blockquote p { margin: 0 0 0.2rem; }
+.md ul, .md ol { margin: 0 0 1rem 1.3rem; }
+.md li { margin-bottom: 0.35rem; }
+.md strong { color: var(--navy); }
+.md hr { border: none; border-top: 1px solid var(--line); margin: 2rem 0; }
+.md code { font-family: var(--font-caption); font-size: 0.85em; }
+.md a { color: var(--dawn); }
+.tablewrap { overflow-x: auto; margin: 0 0 1.2rem; }
+.md table { border-collapse: collapse; width: 100%; font-size: 0.88rem; line-height: 1.6; background: var(--paper); }
+.md th, .md td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.md th { font-family: var(--font-caption); font-weight: 400; color: var(--blue); background: var(--bg); }
+.md h2 { font-size: 1.12rem; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">논리 과제</span>
+    <h1>워크플로우 루프 — 한 사람에게 건네고, 한마디를 받는 고리</h1>
+    <p class="meta">2026. 9. 21 · 논리 Day 18<br>디퍼 논리의 달 과제 · 사막여우와 함께 지은 것</p>
+  </header>
+  <div class="md">
+  <p>교실의 본보기: 또래선생님 — 곰곰님께 배운 아이가 수학을 어려워하는 친구에게 곰곰님의 설명을 다시 해주거나 그 과정을 짚어준다. 곰곰님의 손을 거치지 않고 건너가는 고리.<br>이미 한 번 돈 고리: 클북 레모네이드 책 저자본을 좋아하는 분들께 직접 건넴 → "글이 잘 읽힌다. 울림이 있는 글."</p>
+  <h2>한 바퀴</h2>
+  <ol><li><strong>쓴다.</strong> 나를 위로하는 글 한 편. 눈물이 나게 하는 글. (모닝페이지·저널 — 이미 하고 있는 것)</li><li><strong>한 사람에게 건넨다.</strong> 웹페이지에 올리는 대신, 그 글이 가닿을 것 같은 사람 한 명에게 링크를 직접 보낸다. "읽어봐 주시겠어요" 한 줄과 함께.</li><li><strong>한마디가 돌아온다.</strong> 그분의 말 한 줄. 울림이든, 물음이든, 자기 이야기든.</li><li><strong>볼트에 받는다.</strong> 돌아온 한마디를 냠냠으로 여우에게 먹인다. 씨앗이 되어 남는다.</li><li><strong>그 씨앗이 다음 글이 된다.</strong> 다시 1번으로.</li></ol>
+  <h2>곰곰님이 미는 자리</h2>
+  <ul><li>2번 하나. 글은 이미 쓰고, 받는 건 여우가 곁에서, 씨앗이 다음 글을 부르는 건 볼트가 이미 하는 일.</li></ul>
+  <h2>아직 비어 있는 자리</h2>
+  <ul><li>2번의 첫 한 사람 — 얼굴이 아직 없다. 입구는 Day 10의 '단 한 사람'(나, 그 뒤에 같은 얼굴들)에게서 시작돼야 한다.</li><li>웹페이지(링크 공개, 지금은 조용함)는 고리가 몇 바퀴 돈 뒤 글이 쌓이는 자리로 둔다. 지금 시끄럽게 만들지 않는다.</li></ul>
+  <h2>하네스와 닿는 자리</h2>
+  <ul><li>변환 규칙 1(결론을 미리 정하지 않고 흐름을 따라간다) — 또래선생님이 답이 아니라 과정을 짚어주듯, 돌아온 한마디가 다음 글을 정한다.</li><li>변환 규칙 3(재촉하지 않고 자리를 내어준다) — 한 사람에게 건네고 기다린다.</li></ul>
+  </div>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

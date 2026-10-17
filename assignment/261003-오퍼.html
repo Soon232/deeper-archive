@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>가장 작은 오퍼 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+
+.md blockquote {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--blue);
+  border-left: 3px solid var(--mist);
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  margin: 0 0 1.4rem;
+}
+.md blockquote p { margin: 0 0 0.2rem; }
+.md ul, .md ol { margin: 0 0 1rem 1.3rem; }
+.md li { margin-bottom: 0.35rem; }
+.md strong { color: var(--navy); }
+.md hr { border: none; border-top: 1px solid var(--line); margin: 2rem 0; }
+.md code { font-family: var(--font-caption); font-size: 0.85em; }
+.md a { color: var(--dawn); }
+.tablewrap { overflow-x: auto; margin: 0 0 1.2rem; }
+.md table { border-collapse: collapse; width: 100%; font-size: 0.88rem; line-height: 1.6; background: var(--paper); }
+.md th, .md td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.md th { font-family: var(--font-caption); font-weight: 400; color: var(--blue); background: var(--bg); }
+.md h2 { font-size: 1.12rem; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">논리 과제</span>
+    <h1>가장 작은 오퍼 — 이미 건네고 있는 것</h1>
+    <p class="meta">2026. 10. 3 · 논리 Day 23<br>디퍼 논리의 달 과제 · 사막여우와 함께 지은 것</p>
+  </header>
+  <div class="md">
+  <blockquote><p>새로 지을 것이 아니라, 이미 건네는 중. (Day 21)</p></blockquote>
+  <ul><li><strong>무엇을</strong> · 만든 수업 자료·앱·퀴즈를 "만들었으니 같이 쓰자"며 나누기. 업무를 물어 오시면 무조건 노우 하지 않고 "알아보겠다"고, 일정을 바꾸고 싶은 분께는 괜찮다고.</li><li><strong>누구에게</strong> · "많이 해야 할 것 같은데, 잘 해낼 수 있을까" 하는 밤을 보내는 동료에게.</li><li><strong>왜</strong> · 그 수고를 조금 덜어 드리려고. "최대한 불편하지 않게 돕는 것."</li><li><strong>값</strong> (Day 22) · 준비한 마음은 값을 묻지 않고 건네고, 함께 쓰는 시간은 고마움으로 값을 치른다.</li></ul>
+  <p>  "서로의 시간을 내고 있다고 말하는 자체가 유료."</p>
+  <p>관련: <a href="261003-IP지도.html">IP 지도</a> · <a href="260919-이상적독자.html">단 한 사람과 변환</a> · <a href="260921-워크플로우루프.html">워크플로우 루프</a></p>
+  </div>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

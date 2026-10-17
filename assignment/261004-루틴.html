@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>루틴 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+
+.md blockquote {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--blue);
+  border-left: 3px solid var(--mist);
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  margin: 0 0 1.4rem;
+}
+.md blockquote p { margin: 0 0 0.2rem; }
+.md ul, .md ol { margin: 0 0 1rem 1.3rem; }
+.md li { margin-bottom: 0.35rem; }
+.md strong { color: var(--navy); }
+.md hr { border: none; border-top: 1px solid var(--line); margin: 2rem 0; }
+.md code { font-family: var(--font-caption); font-size: 0.85em; }
+.md a { color: var(--dawn); }
+.tablewrap { overflow-x: auto; margin: 0 0 1.2rem; }
+.md table { border-collapse: collapse; width: 100%; font-size: 0.88rem; line-height: 1.6; background: var(--paper); }
+.md th, .md td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.md th { font-family: var(--font-caption); font-weight: 400; color: var(--blue); background: var(--bg); }
+.md h2 { font-size: 1.12rem; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">논리 과제</span>
+    <h1>루틴 — 가늘고 길게 나는 법</h1>
+    <p class="meta">2026. 10. 4 · 논리 Day 26 ~ 28<br>디퍼 논리의 달 과제 · 사막여우와 함께 지은 것</p>
+  </header>
+  <div class="md">
+  <blockquote><p>바라는 양이 아니라 이미 지키고 있는 양. 곰곰님이 실제로 하신 말로만 모았다.</p><p>완성이 아니라 기준선이다 — 몸에 안 맞는 줄은 곰곰님 손으로 고친다.</p></blockquote>
+  <h2>지킬 수 있는 분량 (Day 26)</h2>
+  <ul><li>모닝페이지 한 페이지</li><li>매주 수업 계획 세우기, 두 과목 수업 준비</li><li>가야금 — 목요일 레슨 시간 꼭 지키기</li></ul>
+  <p>"이 정도는 끊기지 않게 하려고 노력해."<br>실측: 여정 걸음이 한 주에 문법 3~6, 논리 1~8. 추석 주에 1~3으로 줄었지만 0인 주는 없었다.</p>
+  <h2>에너지의 시간대 (Day 27)</h2>
+  <div class="tablewrap"><table><tr><th>시간</th><th>힘</th><th>하는 일</th></tr><tr><td>아침 6시 30분</td><td>머리가 가장 맑음</td><td>모닝페이지</td></tr><tr><td>오후 3~4시 (아이들이 가고 난 뒤)</td><td>그래도 힘이 있음</td><td>수업 준비에 집중</td></tr><tr><td>저녁</td><td>힘이 가장 적음</td><td>마무리하려 하지만 "누워버리는게 더 쉬워서"</td></tr></table></div>
+  <p><strong>아직 자리가 없는 것</strong> — 문해력 공저와 책 읽기(Day 19의 1년 결과물).<br>"공저와 책 읽기 자리가 지금은 없어. 그래서 책읽기가 자꾸 안된다고 생각하는 것 같아. 가장 후순위로 밀려."<br>→ 어느 시간대에 놓을지는 Day 30 악보에서 함께 정한다.</p>
+  <h2>회복의 최소 규칙 (Day 28)</h2>
+  <p><strong>펼치는 손.</strong></p>
+  <ul><li>모닝페이지 못 쓸 것 같을 때 — 공책을 펴 본다</li><li>컴퓨터 전원 버튼을 눌러 화면을 펼친다</li><li>교과서를 한 번 펴 본다</li></ul>
+  <p>"그걸 하고 나면 조금이라도 하게 되더라고."<br>실측: "모닝페이지를 못 쓰니 부정적인 생각만 자꾸 들어서, 안되겠다 싶어 일어났다."<br>형식 체계의 노끈 '내 손'과 같은 손 — 해낼 힘이 없을 때도 펼칠 힘은 남아 있다.</p>
+  <h2>곁에 둔 것</h2>
+  <ul><li>형식 체계: <a href="260902-형식체계.html">형식 체계</a></li><li>악보 「가늘고 길게」: <a href="261004-악보.html">악보 「가늘고 길게」</a> — 5단계 '잇는다'의 바닥이 위 분량과 같은 자리</li></ul>
+  <h2>판올림 기록</h2>
+  <ul><li>v1 · 2026-10-04 · 논리 Day 26~28 답으로 처음 지음 — 곰곰님 확인: "응, 맞아."</li></ul>
+  </div>
+  <p class="note">두 줄에서 몇 마디는 나만의 노트에 남겼다.</p>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

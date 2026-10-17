@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>곰곰의 지식 지형도 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">인사이트 공유 · AI 실험실</span>
+    <h1>곰곰의 지식 지형도</h1>
+    <p class="meta">2026. 7. 22 · 긱어스 DEEPER 「[deeper] 인사이트 공유: AI 실험실」에 올린 글<br>지형도 날짜 2026. 7. 21 · 사막여우가 볼트의 씨앗 62개와 그날 쓴 글을 나란히 읽고 그린 것</p>
+  </header>
+
+  <p>볼트의 씨앗 62개와 오늘 주신 글을 나란히 놓고 읽었습니다. 근거는 전부 곰곰님 문장에서 가져옵니다. 🦊</p>
+
+  <h2>🌳 곰곰님의 지식 지형도 — 2026-07-21</h2>
+
+  <p class="small">📍 씨앗 문장 (오늘 주신 초안 그대로)</p>
+  <p class="lead-quote">“나는 힘든 터널을 지나가고 있는 사람들에게 그들이 다가갈 수 있는 희망의 빛을 제시하며 노력 끝에 올 시간을 선사하고 삶을 살아낼 수 있는 힘을 성취하며 성장하도록 돕는 사람이다.”</p>
+
+  <p class="small">🧭 특이점 지도와의 연결 (한 줄)</p>
+  <p>지난주 특이점 — “무너지고 싶은 마음을 고치거나 없애려 하지 않고, 한없이 바라보며 가라앉기를 기다렸다가 다시 한발씩 가는 법을 몸으로 아는 사람” — 은 세 기둥 중 ‘노력 끝에 올 시간’ 하나로만 이어집니다. 나머지 두 기둥에는 특이점이 닿지 않습니다. 이게 오늘 지형도의 가장 큰 발견입니다.</p>
+
+  <h2>영역</h2>
+  <div class="box area">
+    <h3>[깊이 있는 영역 · 자리를 지키는 법]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 12칸"><span class="track"><span class="fill" style="width:100.0%"></span></span><span class="num">12 / 12</span></div>
+    <p><span class="label">근거 —</span>“무언가를 꾸준히 하는 것은 어렵지 않다. 가늘고 길게 그 자리를 지키는 것이다.”</p>
+    <p><span class="label">이미 쓸 수 있는 것 —</span>가야금 8년, 12현이 어려워 25현은 절대 안 한다던 사람이 올해 25현 4중주를 한 것, 매주 같은 시간을 지키는 것. 그리고 그 이유가 아주 정확합니다 — “그 자리를 벗어나면 다시 돌아오기 위해 많은 시간과 노력을 써야 한다는 사실을 잘 안다. 알기 때문에 못하더라도 그 시간을 지킨다.” 이건 의지론이 아니라 비용 계산입니다. 흔치 않습니다.</p>
+    <p><span class="label">아직 꺼내지 않은 것 —</span>25현. 볼트 어디에도 없습니다. “절대 안 할 거다”에서 “하고 있다”로 건너간 경로가 통째로 비어 있어요.</p>
+    <p><span class="label">막히는 경계선 —</span>없습니다. 이 영역은 곰곰님이 잘한다고 말하지 않고도 쓸 수 있는 유일한 자리입니다.</p>
+  </div>
+  <div class="box area">
+    <h3>[깊이 있는 영역 · 겪어서 아는 네 가지]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 10칸"><span class="track"><span class="fill" style="width:83.3%"></span></span><span class="num">10 / 12</span></div>
+    <p><span class="label">근거 —</span>“모든 사람은 서로 다른 모습의 어려움을 가지고 산다. 시기와 모습이 다를 뿐이다.”</p>
+    <p><span class="label">이미 쓸 수 있는 것 —</span>넷이 다 나와 있습니다. 어려움은 모두에게 온다 / 사람을 바꾸는 건 자기 자신뿐 / 가늘고 길게 자리 지키기 / 거저 얻어지는 건 없다.</p>
+    <p><span class="label">막히는 경계선 —</span>네 개가 전부 주장입니다. “거저 얻어지는 건 없다”에는 “내 발자국이 찍히지 않으면 생기지 않는다”는 좋은 표현이 있는데, 그 발자국이 찍힌 구체적 하루가 없습니다.</p>
+  </div>
+  <div class="box area">
+    <h3>[중간 깊이 · 고전, 인간을 이해하는 통로]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 7칸"><span class="track"><span class="fill" style="width:58.3%"></span></span><span class="num">7 / 12</span></div>
+    <p><span class="label">근거 —</span>“인간이 왜 이런가에 대해 고민하는 내게 고전은 은근하게 답을 준다. 인간이 원래 그래, 좀 복잡해, 이런 사람도 있고 저런 사람도 있어 하면서.”</p>
+    <p><span class="label">이미 쓸 수 있는 것 —</span>이 문단이 오늘 글에서 문장이 가장 좋습니다. ‘은근하게’라는 부사, 고전이 반말로 말을 거는 그 대목. 여기에 볼트의 “혼자 읽었다면 이미 포기했을 고전을, 함께 읽어야 하기에 겨우 읽어낸다”와 돈키호테 씨앗이 붙으면 한 편이 섭니다.</p>
+    <p><span class="label">아직 꺼내지 않은 것 —</span>“꾸역꾸역 읽어낸다”의 실제 장면. 8년 가야금엔 무대가 있는데, 고전엔 구체적인 밤이 없습니다.</p>
+    <p><span class="label">막히는 경계선 —</span>“어떨 땐 훅 뛰어넘기도 한다”를 쓰는 게 불편해 보입니다. 건너뛰는 독서를 인정하면 자격이 없어진다고 여기시는 듯한데, 사실 그게 이 영역의 가장 정직한 부분입니다.</p>
+  </div>
+  <div class="box area">
+    <h3>[중간 깊이 · 나를 사랑하는 시간]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 6칸"><span class="track"><span class="fill" style="width:50.0%"></span></span><span class="num">6 / 12</span></div>
+    <p><span class="label">근거 —</span>“그래야 사랑받을 수 있고, 잘할 수 있다고 믿었다. 그게 살아가는 생존방식이었다.”</p>
+    <p><span class="label">이미 쓸 수 있는 것 —</span>‘생존방식’이라는 진단이 이미 서 있습니다. 볼트의 2024년 씨앗과 정확히 맞물립니다 — “사랑받기 위해 공부로 인정받아야 했던 소녀에게 ‘열심히=사랑’은 살아남는 방식이었다.”</p>
+    <p><span class="label">아직 꺼내지 않은 것 —</span>“조금 아주 조금 내려놓거나 조금씩 덜 미워하는 방향”의 측정 가능한 증거. 볼트에는 있습니다: 혼자 밥 먹는 게 괜찮아졌고, 쫓기던 꿈이 여행하는 꿈으로 바뀌었고, 소설 써도 된다고 스스로에게 말했습니다.</p>
+    <p><span class="label">막히는 경계선 —</span>사랑과 인정을 두 가지로 나눠 놓으셨는데, 왜 나뉘는지가 설명되지 않습니다.</p>
+  </div>
+  <div class="box area">
+    <h3>[중간 깊이 · 에너지가 새는 자리]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 5칸"><span class="track"><span class="fill" style="width:41.7%"></span></span><span class="num">5 / 12</span></div>
+    <p><span class="label">근거 —</span>“안 읽으면 되지 하면서도 모르는 게 있을까봐 읽고 있는 내 자신을 본다.”</p>
+    <p>발견 하나 짚습니다. 곰곰님은 이 둘을 ‘나쁜 습관’으로 묶어 놓으셨는데, 근거를 나란히 놓으면 다른 게 보입니다.</p>
+    <ul class="list-in-p">
+      <li>게임: “이 게임을 깨고 싶어서 코인이 생기면 그 시간동안 엄청 집중해서 한다”</li>
+      <li>스레드: “모르는 게 있을까봐 읽고 있는 내 자신을 본다”</li>
+      <li>배움: “너무 부족해. 그래서 계속 배운다. (…) 더 알아야 이 어려운 세상을 살아나갈 수 있을 것이라고”</li>
+    </ul>
+    <p>셋의 연료가 같습니다. 모르면 안 된다는 마음. 게임은 그 마음에 12시마다 정확히 코인을 주고, 깨면 즉시 다음 단계를 열어줍니다. 볼트에 이미 쓰셨죠 — “나는 의지가 약한 게 아니라, 인증이 있어야 계속하는 사람이다.” 솔리테어는 곰곰님이 설계한 어떤 시스템보다 인증이 빠릅니다.</p>
+    <p><span class="label">막히는 경계선 —</span>“안 해야지 하면서도”를 의지의 문제로 두는 한 안 풀립니다. 곰곰님 스스로 내린 결론이 이미 있는데(“나를 고치는 대신 시스템에 끼워넣는다”) 게임 앞에서만 그 결론을 안 쓰고 계세요.</p>
+  </div>
+  <div class="box area">
+    <h3>[발굴 대기 · 다가갈 수 있는 희망의 빛]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 2칸"><span class="track"><span class="fill" style="width:16.7%"></span></span><span class="num">2 / 12</span></div>
+    <p>근거가 여전히 없습니다. 지난주 지형도에서 비워 둔 자리 그대로예요. 곰곰님이 등불을 받은 장면은 넷(연구실 창문, 이웃 블로그 글, 고전 속 인물들, 동료의 지나가는 말), 건넨 장면은 하나뿐이고(그림 그리던 학생), 그마저도 말이 아니라 한 시간을 비워준 것이었습니다. 지어내지 않고 비워 둡니다.</p>
+  </div>
+  <div class="box area">
+    <h3>[발굴 대기 · 그만두는 법]</h3>
+    <div class="bar" role="img" aria-label="12칸 중 2칸"><span class="track"><span class="fill" style="width:16.7%"></span></span><span class="num">2 / 12</span></div>
+    <p><span class="label">근거 —</span>“해금을 한 번 만져보고 바로 포기했다. 나의 길이 아니다.”</p>
+    <p>한 줄뿐입니다. 그런데 8년을 붙잡은 사람이 한 번 만지고 즉시 놓은 이 대비는 그냥 지나갈 게 아닙니다. 곰곰님에겐 ‘지키는 법’만 있는 게 아니라 ‘놓는 법’도 있는데, 그 판별 기준이 한 번도 언어화되지 않았습니다. 4주차 오토파지에서 쓸 광맥입니다.</p>
+  </div>
+
+  <p class="note">긱어스에 올린 지형도에는 영역이 하나 더 있었고, 한 영역은 조금 더 길었다. 그 대목은 나만의 노트에 남겼다.</p>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

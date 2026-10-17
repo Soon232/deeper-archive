@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>형식 체계 v1 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+
+.md blockquote {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--blue);
+  border-left: 3px solid var(--mist);
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  margin: 0 0 1.4rem;
+}
+.md blockquote p { margin: 0 0 0.2rem; }
+.md ul, .md ol { margin: 0 0 1rem 1.3rem; }
+.md li { margin-bottom: 0.35rem; }
+.md strong { color: var(--navy); }
+.md hr { border: none; border-top: 1px solid var(--line); margin: 2rem 0; }
+.md code { font-family: var(--font-caption); font-size: 0.85em; }
+.md a { color: var(--dawn); }
+.tablewrap { overflow-x: auto; margin: 0 0 1.2rem; }
+.md table { border-collapse: collapse; width: 100%; font-size: 0.88rem; line-height: 1.6; background: var(--paper); }
+.md th, .md td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.md th { font-family: var(--font-caption); font-weight: 400; color: var(--blue); background: var(--bg); }
+.md h2 { font-size: 1.12rem; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">논리 과제</span>
+    <h1>형식 체계 v1 — 하네스</h1>
+    <p class="meta">2026. 9. 2 · 논리 1주 (Day 3 ~ Day 8)<br>디퍼 논리의 달 과제 · 사막여우와 함께 지은 것</p>
+  </header>
+  <div class="md">
+  <blockquote><p>논리 1주의 답을 모아 지은 첫 규칙책. 곰곰님이 실제로 쓰신 말로만 조립했다.</p><p>완성이 아니라 기준선이다 — 몸에 안 맞는 줄은 곰곰님 손으로 고친다.</p></blockquote>
+  <h2>노끈 — 세 공리를 꿰는 한 줄</h2>
+  <p><strong>내 손.</strong> 내 이름으로 나가는 것도, 맡은 일도, 싫은 일도 — 내 손으로 한다.</p>
+  <h2>공리 — 값을 치르더라도 타협하지 않는 것</h2>
+  <p><strong>공리 1 · 내 이름으로 나가는 것은 내 손으로 고친다.</strong> (Day 3)<br>남이 해놓은 공문·수업을 그대로 가져다 쓰지 않는다. 참고만 하고, 끝까지 내 손으로 고친다.<br>"내 것이 아니면 몸에 맞지 않으니까." — 퇴근이 늦어져도 치러온 값.</p>
+  <p><strong>공리 2 · 맡겨진 일은 끝까지 처리한다.</strong> (Day 4)<br>든든하기도 답답하기도 한 원칙.<br>그림자: 호구 같다는 느낌의 끝에는 타인과의 비교가 있었다.</p>
+  <p><strong>공리 3 · 내가 하고 싶지 않은 일을 가족에게 시키지 않는다.</strong> (Day 8)<br>청소·설거지·쓰레기 비우기 — 번거로운 일일수록 내 손으로. "나도 싫은데 하라고 하면 싫으니까."<br>직접 하는 게 마음도 편하다.</p>
+  <h2>변환 규칙 — 무언가를 만들 때 자꾸 반복되는 방식</h2>
+  <p><strong>규칙 1 · 결론을 미리 정하지 않고 흐름을 따라간다.</strong> (Day 5)<br>글에서는 "아," 하고 생각이 꺾이는 순간을 지우지 않고 남긴다.<br>수업에서는 아이들 사고 과정에 따라 흐름이 바뀌는 것을 허락한다.<br>그래서 계획서의 기대 효과·예상 반응을 답처럼 미리 적지 못한다. "애들 반응은 때때로 다르잖아."</p>
+  <p><strong>규칙 2 · 큰 틀만 짜고 세부는 흐름 속에서 — 내 첫 판단까지 열어 둔다.</strong> (Day 6)<br>시 수업에서 "뛰어넘자"던 첫 판단을 앨리의 조언에 다시 들여다보았고, 색깔판 나눔이 한 줄 시가 되었다.<br>아쉬움이 클 것 같으면 미리 준비한다. 끝이 매번 창대하지 않아도 아이들 반응을 살피며 간다.</p>
+  <p><strong>규칙 3 · 치우치면 스스로 꺾고, 재촉하지 않고 자리를 내어준다.</strong> (Day 5 · 의미의 축)<br>생각이 한쪽으로 기울면 스스로 꺾는다. 곁의 사람에게는 재촉 대신 걸어갈 자리를 내어준다.<br>단, 발을 빼는 것이 전부는 아니다 — 함께 짜고 나누고 싶은 마음도 이 규칙 안에 산다. (Day 1)</p>
+  <h2>체계의 구멍 — 이 방법 안에서는 풀리지 않는 것 (Day 7)</h2>
+  <p>"사람이 최선을 다한다고 해서 가능하지 않다는 걸 몸으로 느꼈다."<br>→ 구멍은 결함이 아니라 다음 확장의 씨앗. 내 손이 닿지 않는 자리에서 규칙 3이 일한다.</p>
+  <h2>이월된 물음</h2>
+  <ul><li>"직책이 있어야 그 말이 힘이 있나?" (Day 1)</li><li>규칙의 영토: 교실과 집에서는 "미안하다, 잘 몰랐다"가 되는데 업무의 땅에서만 안 된다. (오아시스 34)</li></ul>
+  <h2>판올림 기록</h2>
+  <ul><li>v1 · 2026-09-02 · 논리 1주 답으로 처음 지음 — 곰곰님 확인: "나 같아. 규칙 3도 내 말로 읽혀"</li></ul>
+  </div>
+  <p class="note">공리 2에서 몇 마디, 「체계의 구멍」에서 두 줄은 나만의 노트에 남겼다.</p>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>악보 · 가늘고 길게 — 곰곰</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F5F8;
+  --ink: #232E3B;
+  --navy: #1E3A5F;
+  --blue: #3D5A80;
+  --dawn: #A85426;
+  --mist: #8DA3B9;
+  --paper: #FDFEFE;
+  --line: #DDE5EC;
+  --font-title: 'Gowun Batang', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+  --font-caption: 'Gowun Dodum', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.85;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.back:hover { color: var(--navy); }
+header { margin: 2.2rem 0 2.4rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--dawn);
+  border: 1px solid var(--dawn);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.8rem;
+}
+h1 {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--dawn);
+  margin-bottom: 0.6rem;
+}
+.meta {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 1.6rem 0 0.5rem;
+}
+p { margin: 0 0 0.9rem; }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--dawn);
+  border-radius: 0 0 10px 10px;
+  padding: 1.2rem 1.2rem 0.6rem;
+  margin: 0 0 1.1rem;
+}
+.quote {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.small {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.8rem; }
+.chip {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+.between {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border-left: 2px solid var(--mist);
+  padding-left: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.between span { display: block; }
+.between span + span { margin-top: 0.3rem; }
+.between em { font-style: normal; font-family: var(--font-caption); font-size: 0.78rem; color: var(--blue); }
+.lead-quote {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--navy);
+  border-left: 3px solid var(--dawn);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 0 0 1rem;
+}
+ul.toc { list-style: none; margin: 0 0 1rem; }
+ul.toc li { padding: 0.15rem 0 0.15rem 1rem; text-indent: -1rem; }
+ul.toc li::before { content: "· "; color: var(--dawn); }
+.part {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dawn);
+  margin: 1.2rem 0 0.3rem;
+}
+.part:first-child { margin-top: 0; }
+.area h3 { margin-top: 0; }
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+.bar .track {
+  flex: 0 1 12rem;
+  height: 0.55rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar .fill { display: block; height: 100%; background: var(--dawn); border-radius: 999px; }
+.bar .num { font-family: var(--font-caption); font-size: 0.75rem; color: var(--blue); }
+.label {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--dawn);
+  margin-right: 0.25rem;
+}
+.list-in-p { margin: 0 0 0.9rem 1rem; }
+.list-in-p li { margin-bottom: 0.2rem; }
+.note {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mist);
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--blue);
+  line-height: 1.8;
+}
+.onward {
+  margin-top: 2rem;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+}
+.onward a { color: var(--blue); text-decoration: none; }
+.onward a:hover { color: var(--navy); }
+footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quote { font-size: 1.05rem; }
+}
+
+.md blockquote {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--blue);
+  border-left: 3px solid var(--mist);
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  margin: 0 0 1.4rem;
+}
+.md blockquote p { margin: 0 0 0.2rem; }
+.md ul, .md ol { margin: 0 0 1rem 1.3rem; }
+.md li { margin-bottom: 0.35rem; }
+.md strong { color: var(--navy); }
+.md hr { border: none; border-top: 1px solid var(--line); margin: 2rem 0; }
+.md code { font-family: var(--font-caption); font-size: 0.85em; }
+.md a { color: var(--dawn); }
+.tablewrap { overflow-x: auto; margin: 0 0 1.2rem; }
+.md table { border-collapse: collapse; width: 100%; font-size: 0.88rem; line-height: 1.6; background: var(--paper); }
+.md th, .md td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.md th { font-family: var(--font-caption); font-weight: 400; color: var(--blue); background: var(--bg); }
+.md h2 { font-size: 1.12rem; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 과제</a>
+  <header>
+    <span class="tag">논리 과제</span>
+    <h1>악보 — 가늘고 길게</h1>
+    <p class="meta">2026. 10. 4 · 두 번째 판 (10. 5 확인)<br>디퍼 논리의 달 과제 · 사막여우와 함께 지은 것</p>
+  </header>
+  <div class="md">
+  <blockquote><p>거꾸로 세워 찾은 핵으로, 정방향으로 지은 악보. 처음 보는 사람이 그대로 따라 할 수 있는 순서.</p></blockquote>
+  <p><strong>주제</strong> 많아 보여서 잠 못 드는 밤에서 다시 하나씩 걷는 아침으로 넘어가는 일</p>
+  <p><strong>불변량</strong> 갈림길은 잘하느냐가 아니라 떠나느냐에 있다. 떠나지 않는 한, 못하는 날도 하는 날이다.</p>
+  <p><strong>단계</strong></p>
+  <ol><li><strong>쏟는다</strong> — 아침에 걱정을 손글씨로 끝까지 적는다. 머릿속에서만 굴리지 말고 종이에 적는다.</li><li><strong>묻는다</strong> — 적은 걱정 하나하나에 "아직 일어난 일이야?"라고 묻는다. 상상 속 일이면 옆에 '상상'이라고 적는다.</li><li><strong>고른다</strong> — 오늘 끝낼 일 하나만 데일리노트 「가장 중요한 한 가지」 칸에 적는다. 그 일부터 끝낸다.</li><li><strong>덜어낸다</strong> — 이번 주에 쉴 것 하나를 고르고 다시 시작할 날짜를 옆에 적는다. 날짜를 적을 수 없으면 쉬지 말고, 하는 양만 줄인다.</li><li><strong>잇는다</strong> — 가야금·고전·글 가운데 하나를 오늘 조금이라도 한다. 한 만큼을 데일리노트에 한 줄로 적는다. 잘했는지는 적지 않는다.</li></ol>
+  <p><strong>변주 규칙</strong> 다섯 단계의 순서는 매일 그대로 둔다. 2·3·4 칸의 말만 바꾼다. 바쁜 주에는 4의 '줄이기'를 늘린다. 다시 시작할 날짜가 없는 쉼은 만들지 않고, 5는 0으로 두지 않는다.</p>
+  <hr>
+  <h2>근거</h2>
+  <ul><li>거꾸로 세운 과정 ① — 결론("끝까지 하고 있어서 잘하고 있구나")을 맨 앞에 두고 거꾸로 읽어 봤다. 9/3과 9/28의 불안은 이 결론을 무너뜨리지 않았다. 오히려 그 결론까지 걸어온 길이었다.</li><li>거꾸로 세운 과정 ② — 정반대 주장 "잘해야 남을 자격이 있다"를 끝까지 밀어 봤다. 그러면 "공저도 무섭다. 못하는 내 모습이 드러날까봐"(냠냠 · 9/28)를 지나 "좋아하지 않는다고 해야 쿨해 보이고"(냠냠 · 10/2)에 닿는다. 결국 떠나는 쪽으로 간다. 앞으로 읽든 뒤로 읽든 갈림길은 '남느냐 떠나느냐' 하나였다.</li><li>주제 — "하나씩 해보자. 가능해. 할 수 있는 일인데 많아서 그래." (냠냠 · 9/2)</li><li>불변량 — "그만두면 다시 돌아오기 어려운 것을 알기 때문에" (냠냠 · 9/19). 9/30의 "발을 빼면 더 돌아가기 어려운 걸 알지만"(냠냠 → 씨앗)도 같은 모양의 문장.</li><li>1 — "생각이 많을 때는 써야 정리가 되는데 생각만 해서는 더 복잡하게만 느껴진다." (냠냠 · 9/20)</li><li>2 — "결국 나를 두렵게 하고 나를 힘들게 했던건 내 상상속에서 일어나고 있는 일들이 많다는 걸" (냠냠 · 9/28)</li><li>3 — "그땐 그렇게 할 수 있는 일들을 하나씩 하면서 살았어." (여정 · Day 13)</li><li>4 — "이번엔 쉬고 변하는 걸 보고 다시 신청하기로 했다." (냠냠 · 10/3)</li><li>5 — "잘 해내야 하는 게 아니고, 그냥 즐길 수 있는 것 도 해야지." (냠냠 · 9/19)</li><li>변주 — "그만둘 거 아니냐고 끊임없이 의심하면서도, 어쨌든 간에 꾸준히 하고 있다." (씨앗 · 오아시스 49)</li></ul>
+  <h2>가정</h2>
+  <p>"앞으로 읽든 뒤로 읽든"을 두 방향으로 읽었다. 결론에서 출발해 거슬러 가는 방향, 그리고 정반대 주장에서 출발해 끝까지 미는 방향이다. 주제는 v1 것을 그대로 썼다. 4단계의 '날짜를 적을 수 없으면 쉬지 말고 양만 줄인다'와 5단계의 '잘했는지는 적지 않는다'는 재료에 없는 규칙이다. 불변량에서 끌어낸 것이라 곰곰님 확인이 필요하다.</p>
+  <h2>창발 후보</h2>
+  <p>「미리 내려놓는 말」(여우가 지은 이름) — "나 잘 못해"라는 손사래(9/19)와 "교직에 안맞아"(10/2)는 둘 다 떠날 때를 대비해 자기를 미리 낮춰 두는 말이었다. 9/19에 곰곰님은 그 말을 하지 않고 "그냥 웃었다"고 썼다. 그날 처음으로 이 말을 멈춘 셈이다.</p>
+  <hr>
+  <h2>판올림 기록</h2>
+  <ul><li><strong>확인 · 2026-10-05</strong> · 「가정」에 적은 재료 밖의 두 줄(4단계 '날짜를 적을 수 없으면 쉬지 말고 양만 줄인다', 5단계 '잘했는지는 적지 않는다')을 곰곰님이 확인. 5단계는 논리 Day 29("이미 내 속에서 평가를 많이 하기 때문에"), 4단계는 Day 31 되읽기("다 내 입에 붙어").</li><li><strong>v2 · 2026-10-04</strong> · 각도 「거꾸로 세우기」로 불변량을 다시 찾음. v1의 창발 후보(「돌아올 줄」)가 핵으로 올라왔고, 4·5단계가 그에 맞춰 바뀜.</li><li><strong>v1 · 2026-10-04</strong> · 첫 판. 각도 없이 여정 4주 '점프와 루틴'(Day 26·28)을 각도로 가정해 지음.<ul><li>불변량: 잘해서가 아니라, 그만두지 않고 끝까지 있어서 하고 있는 것이다.</li><li>4 덜어낸다: 이번 주에 쉴 것 하나를 정한다. "이번엔 쉬고 변하는 걸 보고 다시"처럼 언제 돌아올지도 같이 적는다.</li><li>5 잇는다: 가야금·고전·글 가운데 하나를 오늘 조금이라도 한다. 잘하든 못하든 한다. 무대가 있으면 올라간다.</li><li>변주: 순서는 그대로 두고 2·3·4 칸의 말만 바꾼다. 바쁜 주에는 4를 하나 늘리고, 5는 줄이더라도 0으로 두지 않는다.</li><li>창발 후보: 「돌아올 줄」 — 무서운 것은 못하는 것보다 떠나는 것. 쉴 때마다 언제 돌아올지를 함께 적는 일이 안전장치.</li></ul></li></ul>
+  </div>
+  <p class="onward"><a href="index.html">← 과제 목록으로</a></p>
+  <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
+</body>
+</html>

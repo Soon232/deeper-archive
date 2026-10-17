@@ -83,6 +83,12 @@ h1 {
   padding: 0.15rem 0.6rem;
   margin-bottom: 0.7rem;
 }
+.date {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--blue);
+  margin-bottom: 0.2rem;
+}
 .title {
   font-family: var(--font-title);
   font-size: 1.1rem;
@@ -94,6 +100,16 @@ h1 {
   font-size: 0.85rem;
   line-height: 1.7;
 }
+.group {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #DDE5EC;
+}
+.lead + .group { margin-top: 0; }
 .placeholder {
   padding: 2rem 1.2rem;
   border: 1.5px dashed var(--mist);
@@ -117,10 +133,75 @@ footer {
   <a class="back" href="../index.html">← 곰곰</a>
   <h1>과제</h1>
   <p class="lead">살롱 과제로 지은 결과물. 한 편씩, 만든 날짜와 함께 쌓인다.</p>
+  <!-- 갈래마다 머리표 하나와 카드 묶음 하나. 새 과제는 제 갈래의 grid 맨 앞에 얹는다(최신이 앞). -->
+  <h2 class="group">수사 과제</h2>
   <div class="grid">
-    <!-- 새 과제는 이 줄 바로 아래에 얹는다. 최신이 앞. 중요한 것은 class="card featured" -->
-    <div class="placeholder">첫 결과물이 올 자리<br>YYMMDD-이름.html로 지으면 카드가 하나씩 늘어난다</div>
-    <div class="placeholder">다음 결과물의 자리</div>
+    <a class="card" href="261016-수사2주차.html">
+      <span class="tag">수사 과제 · 2주차</span>
+      <div class="date">2026. 10. 16</div>
+      <div class="title">『결국 돌아돌아 책』</div>
+      <div class="desc">책이 손에 잡히지 않는 계절을 지나도 결국 책으로 돌아온다. 이 한 문장을 등뼈로 4부 10장 목차를 세웠다.</div>
+    </a>
+    <a class="card" href="261012-수사1주차.html">
+      <span class="tag">수사 과제 · 1주차</span>
+      <div class="date">2026. 10. 12</div>
+      <div class="title">인사이트 카드 넷과 이름 하나</div>
+      <div class="desc">서로 다른 날 쓴 문장을 둘씩 짝지어 카드 네 장을 만들었다. 이름 후보는 「가늘고 길게」.</div>
+    </a>
+  </div>
+  <h2 class="group">논리 과제</h2>
+  <div class="grid">
+    <a class="card" href="261004-악보.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 10. 4</div>
+      <div class="title">악보 — 가늘고 길게</div>
+      <div class="desc">많아 보여서 잠 못 드는 밤에서 다시 하나씩 걷는 아침으로. 처음 보는 사람도 따라 할 수 있게 다섯 단계로 적었다.</div>
+    </a>
+    <a class="card" href="261004-루틴.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 10. 4</div>
+      <div class="title">루틴 — 가늘고 길게 나는 법</div>
+      <div class="desc">바라는 양 말고 이미 지키고 있는 양. 모닝페이지 한 쪽, 목요일 가야금, 힘이 없는 날을 위한 「펼치는 손」.</div>
+    </a>
+    <a class="card" href="261003-오퍼.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 10. 3</div>
+      <div class="title">가장 작은 오퍼</div>
+      <div class="desc">새로 지을 것 없이 이미 건네고 있는 것. 만든 수업 자료를 동료와 같이 쓰자고 나누는 일.</div>
+    </a>
+    <a class="card" href="261003-IP지도.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 10. 3</div>
+      <div class="title">IP 지도 — 씨앗이 자라는 길</div>
+      <div class="desc">6개월, 1년, 3년. 걸어온 궤적을 앞으로 한 번 더 이어 그은 선, 그리고 가지 않을 길.</div>
+    </a>
+    <a class="card" href="260921-워크플로우루프.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 9. 21</div>
+      <div class="title">워크플로우 루프</div>
+      <div class="desc">쓴 글을 한 사람에게 건네고, 돌아온 한마디를 다음 글의 재료로 받는 고리.</div>
+    </a>
+    <a class="card" href="260919-이상적독자.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 9. 19</div>
+      <div class="title">단 한 사람과 변환</div>
+      <div class="desc">내 글이 가닿을 단 한 사람은 나. 그 사람이 뒤척이는 밤과, 그 밤을 건너가는 말.</div>
+    </a>
+    <a class="card" href="260902-형식체계.html">
+      <span class="tag">논리 과제</span>
+      <div class="date">2026. 9. 2</div>
+      <div class="title">형식 체계 v1 — 하네스</div>
+      <div class="desc">논리 1주의 답을 모아 지은 첫 규칙책. 공리 셋과 변환 규칙 셋을 「내 손」 한 줄로 꿰었다.</div>
+    </a>
+  </div>
+  <h2 class="group">인사이트 공유</h2>
+  <div class="grid">
+    <a class="card" href="260721-지식지형도.html">
+      <span class="tag">인사이트 공유</span>
+      <div class="date">2026. 7. 22</div>
+      <div class="title">곰곰의 지식 지형도</div>
+      <div class="desc">사막여우가 씨앗 62개와 그날 쓴 글을 나란히 읽고 그린 지형도. 어디가 깊고 어디가 아직 비었는지.</div>
+    </a>
   </div>
   <footer>© 2026 곰곰 · 디퍼 언브랜딩 살롱의 기록</footer>
 </body>
